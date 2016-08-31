@@ -1,0 +1,446 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01//EN"
+"http://www.w3.org/TR/html4/strict.dtd">
+
+<html xmlns="http://www.w3.org/1999/xhtml" lang="en">
+
+	<head>
+		<meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+		<title>PTcheck论文检测报告</title>
+		<link rel="stylesheet" href="../css/base.css" />
+		<style type="text/css">
+		a {
+    color: #0796fe;
+}
+a:hover{
+    color:#0796fe!important;
+}
+			.mainContainer {
+				padding: 20px;
+	
+			}
+			
+			.navigation span {
+				display: inline-block;
+				padding-left: 5px;
+				padding-right: 5px;
+				color: #666;
+			}
+			
+			.btn_gray {
+				border: solid 1px #dddddd;
+				background-color: #eeeeee;
+				border-radius: 5px;
+				cursor: pointer;
+			}
+			
+			.btn_gray:hover,
+			.btn_blue {
+				background-color: #0099ff;
+				border: solid 1px #0099ff;
+				color: #fff!important;
+				border-radius: 5px;
+				cursor: pointer;
+			}
+			.para{
+				padding-top:20px;
+			}
+			
+			.duanluo{
+				padding-left:20px;
+				
+				padding-bottom: 5px;
+			}
+			.duanluo span{
+				display: inline-block;
+				padding-left:5px;
+				padding-right: 5px;
+				border: solid 1px #999;
+				color:#999;
+			}
+			.l{
+				line-height: 20px;
+				padding-bottom: 5px;
+			}
+			.l span{
+				color:#333;
+			}
+			.mymodify{
+				font-size:12px;
+			}
+			.mymodify textarea{
+				width:98%;
+				height:100px;
+				color:#333;
+				clear:both;
+			}
+			textarea{
+				padding:10px;
+				line-height: 20px;
+			}
+		</style>
+		<script type="text/javascript">
+
+        var isstorage=false;
+        var danhao;
+        var result= new Array();
+         function trimStr(str) {
+
+            if ((typeof (str) != "string") || !str) {
+
+                return "";
+
+            }
+
+            return str.replace(/(^\s*)|(\s*$)/g, "");
+
+        }
+          
+        function myclick() {
+            window.parent.parent.ViewMain.window.location.href = "../../htmls/jianchong_.htm";
+        }
+        function submitPart(obj, target) {
+            var parent = target.parentNode;
+            if(parent.getAttribute("data")=="add"){
+              var mynext = parent.nextSibling;
+              parent.setAttribute("data","remove");
+              parent.parentNode.removeChild(mynext);
+            }
+            else{
+            	parent.setAttribute("data","add");
+            	var temphtml = document.createElement("div");
+                temphtml.innerHTML = "<input type=\"hidden\" value=\""+ parent.getAttribute("paraseq") +"\"><div name=\"mymodify\" class=\"mymodify\" >"
+					+"<div class=\"a999\">改重内容（请对本句修改之后，点击“临时保存”，然后进入报告左侧“修改文档”页面中获取修改后的内容）：</div>"
+					+"<div><textarea>"+obj
+					+"</textarea>"
+					+"</div>"
+					+"<div align=\"right\" class=\"a999\" style=\"margin-top:14px;\">（注意：改完请及时到“修改文档”复制到原文）<span class=\"btn-gray btn a333\" onclick=\"mysave(this)\">临时保存</span></div>"
+				+"</div>";
+            	   parent.parentNode.insertBefore(temphtml, null);
+            }
+
+        }
+
+		function myNavigate(){
+		 document.getElementById("a_url").click();
+		}
+       
+        function mysave(target) {
+            var tempsen = trimStr(target.parentNode.previousSibling.lastChild.value.replace(/\"/g,"\\\"").replace(/\'/g,"\\\'"));
+            var paraseq = target.parentNode.parentNode.parentNode.firstChild.value;            
+            var mydiv = target.parentNode.parentNode.parentNode.previousSibling;
+             if (mydiv.nodeName == "#text") {
+                mydiv = mydiv.previousSibling;
+            }
+             
+            mydiv.lastChild.setAttribute("onclick", "submitPart('" + tempsen + "',this)");
+           mydiv.setAttribute("data","remove");
+           if (mydiv.firstChild.innerHTML != "已修改") {
+                var xiugai = document.createElement("span");
+                xiugai.setAttribute("style", "font-size:12px;color:#00AEAE;margin-right:10px;");
+                xiugai.innerHTML = "已修改";
+                mydiv.insertBefore(xiugai, mydiv.lastChild);
+               }
+            
+            var parent = target.parentNode.parentNode.parentNode;
+            parent.parentNode.removeChild(parent);
+            if(!isstorage)
+            {
+            window.parent.parent.parent.myset(paraseq, tempsen);
+            }
+            else
+            {
+            myset(paraseq, tempsen);
+            }
+        }
+        window.onload = function() {
+            danhao = document.getElementById("danhao").value;
+            if (window.localStorage) {
+                isstorage = true;
+            }
+            if (!isstorage) {
+                result = window.parent.parent.parent.modifyPara;
+                
+            }
+            else {
+                var temp = localStorage.getItem(danhao);
+                if (temp) {
+                    result = eval("(" + temp + ")");
+                }
+            }
+            if (result) {
+            	
+                for (var i = 0; i < result.length; i++) {
+                	
+                    //var all = $(":hidden");
+                    var all = getClass("div","modify");
+                   
+                    for (var j = 0; j < all.length; j++) {
+                        if (all[j].getAttribute("paraseq") == result[i].para) {
+                        	
+                            var xiugai = document.createElement("span");
+                            xiugai.setAttribute("style", "font-size:12px;color:#00AEAE;margin-right:10px;");
+                            xiugai.innerHTML = "已修改";
+                            all[j].insertBefore(xiugai, all[j].lastChild);
+                            all[j].lastChild.setAttribute("onclick", "submitPart('" + result[i].text.replace(/\"/g,"\\\"").replace(/\'/g,"\\\'") + "',this)");
+                        }
+                    }
+
+                }
+            }  
+        }
+
+
+        function mydivclick(e,obj) {
+            if (e.target.tagName.toUpperCase() != "INPUT") {
+                obj.lastChild.previousSibling.click();
+            }
+        }
+
+        function getClass(tagname, className) { //tagname指元素，className指class的值
+            var tagname = document.getElementsByTagName(tagname);  //获取指定元素
+            var tagnameAll = [];     //这个数组用于存储所有符合条件的元素
+            for (var i = 0; i < tagname.length; i++) {     //遍历获得的元素
+                if (tagname[i].className == className) {     //如果获得的元素中的class的值等于指定的类名，就赋值给tagnameAll
+                    tagnameAll[tagnameAll.length] = tagname[i];
+                }
+            }
+            return tagnameAll;
+
+        }
+
+       
+        
+        
+         function myset(paraseq, sen) {
+         	
+            var reg = new RegExp("\"", "g")
+            var model = "{\"para\":\"" + paraseq + "\",\"text\": \"" + sen + "\"}";
+            var mo = eval("(" + model + ")");
+            var exist = false;
+            for (var i = 0; i < result.length; i++) {
+                if (mo.para == result[i].para) {
+                    exist = true;
+                    result[i].text = mo.text;
+                }
+            }
+            if (!exist) {
+                result.push(mo);
+            }
+            localStorage.removeItem(danhao);
+            localStorage.setItem(danhao, json_encode(result));
+        }
+        
+        function json_decode(str_json) {
+            // Decodes the JSON representation into a PHP value  
+            //  
+            // version: 906.1806  
+            // discuss at: http://phpjs.org/functions/json_decode  
+            // +      original by: Public Domain (http://www.json.org/json2.js)  
+            // + reimplemented by: Kevin van Zonneveld (http://kevin.vanzonneveld.net)  
+            // + improved by: T.J. Leahy  
+            // *     example 1: json_decode('[\n    "e",\n    {\n    "pluribus": "unum"\n}\n]');  
+            // *     returns 1: ['e', {pluribus: 'unum'}]  
+            /* 
+            http://www.JSON.org/json2.js 
+            2008-11-19 
+            Public Domain. 
+            NO WARRANTY EXPRESSED OR IMPLIED. USE AT YOUR OWN RISK. 
+            See http://www.JSON.org/js.html 
+            */
+
+            var json = this.window.JSON;
+            if (typeof json === 'object' && typeof json.parse === 'function') {
+                return json.parse(str_json);
+            }
+
+            var cx = /[\u0000\u00ad\u0600-\u0604\u070f\u17b4\u17b5\u200c-\u200f\u2028-\u202f\u2060-\u206f\ufeff\ufff0-\uffff]/g;
+            var j;
+            var text = str_json;
+
+            // Parsing happens in four stages. In the first stage, we replace certain  
+            // Unicode characters with escape sequences. JavaScript handles many characters  
+            // incorrectly, either silently deleting them, or treating them as line endings.  
+            cx.lastIndex = 0;
+            if (cx.test(text)) {
+                text = text.replace(cx, function(a) {
+                    return '\\u' +
+            ('0000' + a.charCodeAt(0).toString(16)).slice(-4);
+                });
+            }
+
+            // In the second stage, we run the text against regular expressions that look  
+            // for non-JSON patterns. We are especially concerned with '()' and 'new'  
+            // because they can cause invocation, and '=' because it can cause mutation.  
+            // But just to be safe, we want to reject all unexpected forms.  
+
+            // We split the second stage into 4 regexp operations in order to work around  
+            // crippling inefficiencies in IE's and Safari's regexp engines. First we  
+            // replace the JSON backslash pairs with '@' (a non-JSON character). Second, we  
+            // replace all simple value tokens with ']' characters. Third, we delete all  
+            // open brackets that follow a colon or comma or that begin the text. Finally,  
+            // we look to see that the remaining characters are only whitespace or ']' or  
+            // ',' or ':' or '{' or '}'. If that is so, then the text is safe for eval.  
+            if (/^[\],:{}\s]*$/.
+        test(text.replace(/\\(?:["\\\/bfnrt]|u[0-9a-fA-F]{4})/g, '@').
+            replace(/"[^"\\\n\r]*"|true|false|null|-?\d+(?:\.\d*)?(?:[eE][+\-]?\d+)?/g, ']').
+            replace(/(?:^|:|,)(?:\s*\[)+/g, ''))) {
+
+                // In the third stage we use the eval function to compile the text into a  
+                // JavaScript structure. The '{' operator is subject to a syntactic ambiguity  
+                // in JavaScript: it can begin a block or an object literal. We wrap the text  
+                // in parens to eliminate the ambiguity.  
+
+                j = eval('(' + text + ')');
+
+                return j;
+            }
+
+            // If the text is not JSON parseable, then a SyntaxError is thrown.  
+            throw new SyntaxError('json_decode');
+        }
+
+        function json_encode(mixed_val) {
+            // Returns the JSON representation of a value  
+            //  
+            // version: 906.1806  
+            // discuss at: http://phpjs.org/functions/json_encode  
+            // +      original by: Public Domain (http://www.json.org/json2.js)  
+            // + reimplemented by: Kevin van Zonneveld (http://kevin.vanzonneveld.net)  
+            // + improved by: T.J. Leahy  
+            // *     example 1: json_encode(['e', {pluribus: 'unum'}]);  
+            // *     returns 1: '[\n    "e",\n    {\n    "pluribus": "unum"\n}\n]'  
+            /* 
+            http://www.JSON.org/json2.js 
+            2008-11-19 
+            Public Domain. 
+            NO WARRANTY EXPRESSED OR IMPLIED. USE AT YOUR OWN RISK. 
+            See http://www.JSON.org/js.html 
+            */
+            var json = this.window.JSON;
+            if (typeof json === 'object' && typeof json.stringify === 'function') {
+                return json.stringify(mixed_val);
+            }
+
+            var value = mixed_val;
+
+            var quote = function(string) {
+                var escapable = /[\\\"\u0000-\u001f\u007f-\u009f\u00ad\u0600-\u0604\u070f\u17b4\u17b5\u200c-\u200f\u2028-\u202f\u2060-\u206f\ufeff\ufff0-\uffff]/g;
+                var meta = {    // table of character substitutions  
+                    '\b': '\\b',
+                    '\t': '\\t',
+                    '\n': '\\n',
+                    '\f': '\\f',
+                    '\r': '\\r',
+                    '"': '\\"',
+                    '\\': '\\\\'
+                };
+
+                escapable.lastIndex = 0;
+                return escapable.test(string) ?
+        '"' + string.replace(escapable, function(a) {
+            var c = meta[a];
+            return typeof c === 'string' ? c :
+            '\\u' + ('0000' + a.charCodeAt(0).toString(16)).slice(-4);
+        }) + '"' :
+        '"' + string + '"';
+            };
+
+            var str = function(key, holder) {
+                var gap = '';
+                var indent = '    ';
+                var i = 0;          // The loop counter.  
+                var k = '';          // The member key.  
+                var v = '';          // The member value.  
+                var length = 0;
+                var mind = gap;
+                var partial = [];
+                var value = holder[key];
+
+                // If the value has a toJSON method, call it to obtain a replacement value.  
+                if (value && typeof value === 'object' &&
+            typeof value.toJSON === 'function') {
+                    value = value.toJSON(key);
+                }
+
+                // What happens next depends on the value's type.  
+                switch (typeof value) {
+                    case 'string':
+                        return quote(value);
+
+                    case 'number':
+                        // JSON numbers must be finite. Encode non-finite numbers as null.  
+                        return isFinite(value) ? String(value) : 'null';
+
+                    case 'boolean':
+                    case 'null':
+                        // If the value is a boolean or null, convert it to a string. Note:  
+                        // typeof null does not produce 'null'. The case is included here in  
+                        // the remote chance that this gets fixed someday.  
+
+                        return String(value);
+
+                    case 'object':
+                        // If the type is 'object', we might be dealing with an object or an array or  
+                        // null.  
+                        // Due to a specification blunder in ECMAScript, typeof null is 'object',  
+                        // so watch out for that case.  
+                        if (!value) {
+                            return 'null';
+                        }
+
+                        // Make an array to hold the partial results of stringifying this object value.  
+                        gap += indent;
+                        partial = [];
+
+                        // Is the value an array?  
+                        if (Object.prototype.toString.apply(value) === '[object Array]') {
+                            // The value is an array. Stringify every element. Use null as a placeholder  
+                            // for non-JSON values.  
+
+                            length = value.length;
+                            for (i = 0; i < length; i += 1) {
+                                partial[i] = str(i, value) || 'null';
+                            }
+
+                            // Join all of the elements together, separated with commas, and wrap them in  
+                            // brackets.  
+                            v = partial.length === 0 ? '[]' :
+                    gap ? '[\n' + gap +
+                    partial.join(',\n' + gap) + '\n' +
+                    mind + ']' :
+                    '[' + partial.join(',') + ']';
+                            gap = mind;
+                            return v;
+                        }
+
+                        // Iterate through all of the keys in the object.  
+                        for (k in value) {
+                            if (Object.hasOwnProperty.call(value, k)) {
+                                v = str(k, value);
+                                if (v) {
+                                    partial.push(quote(k) + (gap ? ': ' : ':') + v);
+                                }
+                            }
+                        }
+
+                        // Join all of the member texts together, separated with commas,  
+                        // and wrap them in braces.  
+                        v = partial.length === 0 ? '{}' :
+                gap ? '{\n' + gap + partial.join(',\n' + gap) + '\n' +
+                mind + '}' : '{' + partial.join(',') + '}';
+                        gap = mind;
+                        return v;
+                }
+            };
+
+            // Make a fake root object containing our value under the key of ''.  
+            // Return the result of stringifying the value.  
+            return str('', {
+                '': value
+            });
+        } 
+       
+    </script>
+	</head>
+
+	<body><a href="http://www.ptcheck.com/jack/segment.aspx" target="_blank" id="a_url" style="display:none;" ></a> <input type="hidden" id="danhao" value="2285731800810302" /><div class="mainContainer"><div align="center" class="navigation"><a href="paper_1.htm"><span class="btn_gray">首页</span></a><a  href="paper_1.htm"><span class="btn_gray">上一页</span></a><a href="paper_3.htm"><span class="btn_gray">下一页</span></a><a href="paper_5.htm">	<span class="btn_gray">尾页</span></a><span>页码：2/5页</span></div><div class="zhengwen"><div class="para"><div class="duanluo"><span>102</span></div><div class="l"><span style="margin-left:25px"></span><span >Tab. </span><span > 2.2  Allocation of education level </span></div><div class="modify" align="right" paraseq="101"><span class="btn btn-blue" onclick="submitPart('Tab.2.2  Allocation of education level',this)" class="modify">段落修改</div></div><div class="para"><div class="duanluo"><span>103</span></div><div class="l"><span style="margin-left:25px"></span><span >类别	员工数量（人）	占总人数比例（%） </span></div></div><div class="para"><div class="duanluo"><span>104</span></div><div class="l"><span style="margin-left:25px"></span><span >博士	2	0．5 </span></div></div><div class="para"><div class="duanluo"><span>105</span></div><div class="l"><span style="margin-left:25px"></span><span >硕士	139	32．7 </span></div></div><div class="para"><div class="duanluo"><span>106</span></div><div class="l"><span style="margin-left:25px"></span><span >本科	282	66．3 </span></div></div><div class="para"><div class="duanluo"><span>107</span></div><div class="l"><span style="margin-left:25px"></span><span >专科及以下	2	0．5 </span></div></div><div class="para"><div class="duanluo"><span>108</span></div><div class="l"><span style="margin-left:25px"></span><span >合计	425	100．0 </span></div></div><div class="para"><div class="duanluo"><span>109</span></div><div class="l"><span style="margin-left:25px"></span><span >③	按年龄分布如表2.3表述： </span></div></div><div class="para"><div class="duanluo"><span>110</span></div><div class="l"><span style="margin-left:25px"></span><span >表2.3  年龄分布统计表 </span></div></div><div class="para"><div class="duanluo"><span>111</span></div><div class="l"><span style="margin-left:25px"></span><span >Tab. </span><span > 2.3  Allocation of employee age </span></div><div class="modify" align="right" paraseq="110"><span class="btn btn-blue" onclick="submitPart('Tab.2.3  Allocation of employee age',this)" class="modify">段落修改</div></div><div class="para"><div class="duanluo"><span>112</span></div><div class="l"><span style="margin-left:25px"></span><span >年龄	员工数量（人）	占总人数比例（%） </span></div></div><div class="para"><div class="duanluo"><span>113</span></div><div class="l"><span style="margin-left:25px"></span><span >25及以下	74	17．4 </span></div></div><div class="para"><div class="duanluo"><span>114</span></div><div class="l"><span style="margin-left:25px"></span><span >26-30	112	26．4 </span></div></div><div class="para"><div class="duanluo"><span>115</span></div><div class="l"><span style="margin-left:25px"></span><span >31-35	125	29．4 </span></div></div><div class="para"><div class="duanluo"><span>116</span></div><div class="l"><span style="margin-left:25px"></span><span >36-40	93	21．9 </span></div></div><div class="para"><div class="duanluo"><span>117</span></div><div class="l"><span style="margin-left:25px"></span><span >40以上	21	4．9 </span></div></div><div class="para"><div class="duanluo"><span>118</span></div><div class="l"><span style="margin-left:25px"></span><span >合计	425	100．0 </span></div></div><div class="para"><div class="duanluo"><span>119</span></div><div class="l"><span style="margin-left:25px"></span><span >从上述统计可以看出，F公司产品开发部员工年龄组成较为成熟，技术经验相对丰富，受教育程度也普遍本科以上，硕士比例较高，是一只整体素质非常高的队伍。 </span><span >同时从另一个角度来看，大部分员工都处于成家立业的年龄，需要兼顾工作和家庭。 </span></div><div class="modify" align="right" paraseq="118"><span class="btn btn-blue" onclick="submitPart('从上述统计可以看出，F公司产品开发部员工年龄组成较为成熟，技术经验相对丰富，受教育程度也普遍本科以上，硕士比例较高，是一只整体素质非常高的队伍。同时从另一个角度来看，大部分员工都处于成家立业的年龄，需要兼顾工作和家庭。',this)" class="modify">段落修改</div></div><div class="para"><div class="duanluo"><span>120</span></div><div class="l"><span style="margin-left:25px"></span><span >（3）	实习生招聘概况 </span></div></div><div class="para"><div class="duanluo"><span>121</span></div><div class="l"><span style="margin-left:25px"></span><span >和大多数IT公司一样，每年F公司都会在高校毕业季时招收一定数量的应届毕业生，经过数个月的培训后安排到不同的岗位上，成为公司的新鲜血液。 </span><span >历年实习生招聘概况如表2.4表述： </span></div><div class="modify" align="right" paraseq="120"><span class="btn btn-blue" onclick="submitPart('和大多数IT公司一样，每年F公司都会在高校毕业季时招收一定数量的应届毕业生，经过数个月的培训后安排到不同的岗位上，成为公司的新鲜血液。历年实习生招聘概况如表2.4表述：',this)" class="modify">段落修改</div></div><div class="para"><div class="duanluo"><span>122</span></div><div class="l"><span style="margin-left:25px"></span><span >表2.4  实习生招聘统计表 </span></div></div><div class="para"><div class="duanluo"><span>123</span></div><div class="l"><span style="margin-left:25px"></span><span >Tab. </span><span > 2.4  Allocation of intern employment </span></div><div class="modify" align="right" paraseq="122"><span class="btn btn-blue" onclick="submitPart('Tab.2.4  Allocation of intern employment',this)" class="modify">段落修改</div></div><div class="para"><div class="duanluo"><span>124</span></div><div class="l"><span style="margin-left:25px"></span><span >年份	实习生总数（人）	含硕士数量（人）	    硕士所占比例（%） </span></div></div><div class="para"><div class="duanluo"><span>125</span></div><div class="l"><span style="margin-left:25px"></span><span >2012	22	1	4．5 </span></div></div><div class="para"><div class="duanluo"><span>126</span></div><div class="l"><span style="margin-left:25px"></span><span >2013	17	2	11．7 </span></div></div><div class="para"><div class="duanluo"><span>127</span></div><div class="l"><span style="margin-left:25px"></span><span >2014	20	3	15．0 </span></div></div><div class="para"><div class="duanluo"><span>128</span></div><div class="l"><span style="margin-left:25px"></span><span >2015	9	8	88．9 </span></div></div><div class="para"><div class="duanluo"><span>129</span></div><div class="l"><span style="margin-left:25px"></span><span >合计	68	14	20．6 </span></div></div><div class="para"><div class="duanluo"><span>130</span></div><div class="l"><span style="margin-left:25px"></span><span >由上表可见，实习生招聘前三年以大量本科毕业生为主，2015年时公司实施了高精尖人才战略，转而以一流高校的计算机专业硕士毕业生为招聘目标。 </span></div><div class="modify" align="right" paraseq="129"><span class="btn btn-blue" onclick="submitPart('由上表可见，实习生招聘前三年以大量本科毕业生为主，2015年时公司实施了高精尖人才战略，转而以一流高校的计算机专业硕士毕业生为招聘目标。',this)" class="modify">段落修改</div></div><div class="para"><div class="duanluo"><span>131</span></div><div class="l"><span style="margin-left:25px"></span><span >2.2  案例描述 </span></div></div><div class="para"><div class="duanluo"><span>132</span></div><div class="l"><span style="margin-left:25px"></span><span >2.2.1  资深员工的离职申请 </span></div></div><div class="para"><div class="duanluo"><span>133</span></div><div class="l"><span style="margin-left:25px"></span><span >资深开发工程师王鹏飞在软件行业已经有十余个年头了，自北京某高校计算机系毕业以后，他在北京换了几家软件公司工作，常年拥挤的地铁和高昂的房价让他感到疲惫， </span><span >终于他在2012年从北京回到大连，用了小半年完成了结婚买房这两件人生大事之后，经朋友介绍加入了F公司。 </span></div><div class="modify" align="right" paraseq="132"><span class="btn btn-blue" onclick="submitPart('资深开发工程师王鹏飞在软件行业已经有十余个年头了，自北京某高校计算机系毕业以后，他在北京换了几家软件公司工作，常年拥挤的地铁和高昂的房价让他感到疲惫，终于他在2012年从北京回到大连，用了小半年完成了结婚买房这两件人生大事之后，经朋友介绍加入了F公司。',this)" class="modify">段落修改</div></div><div class="para"><div class="duanluo"><span>134</span></div><div class="l"><span style="margin-left:25px"></span><span >刚加入公司的那两年，由于大连研发中心刚刚成立，美国还没有放太多的项目过来，王鹏飞便凭着丰富的研发经验，在团队内站稳了脚跟。 </span><span >凭着与生俱来的钻研精神以及勤奋上进的个人意志，随着一个个项目顺利完成的同时，王鹏飞的职位也升到了资深软件开发工程师。 </span><span >2014年底，在拿到一笔不菲的奖金之后，公司交给他了一个新的大型开发项目，并指定了一个团队由他带领。 </span><span >项目伊始，王鹏飞便被派到美国总部出差一个月， 以和美国的产品负责人及系统分析师充分沟通，了解需求和制定计划。 </span><span >这是王鹏飞第一次去美国，公司的这一安排也让他感动不已，发誓要全心全意投入到项目中去回报公司对他的器重。 </span><span >然而这样的一个大型项目，一个月的时间只够讨论个轮廓和框架，内容模块的诸多细节和不断增加及改动的需求必须要整个团队参与到会议中来，于是从美国回来后， </span><span >介于时差的缘故，整个团队每周二和周四施行夜班制，即下午两点上班，夜里十一点下班，这样坚持了又有小半年，需求与设计算是基本明确了，可以开始干活了， </span><span >然而团队却因为之前的夜班过于频繁而出现了不满情绪，王鹏飞只得安抚大家情绪并将团队会议减到了只有周二晚上，而周四的会只有他和另一个资深工程师参加。 </span></div><div class="modify" align="right" paraseq="133"><span class="btn btn-blue" onclick="submitPart('刚加入公司的那两年，由于大连研发中心刚刚成立，美国还没有放太多的项目过来，王鹏飞便凭着丰富的研发经验，在团队内站稳了脚跟。凭着与生俱来的钻研精神以及勤奋上进的个人意志，随着一个个项目顺利完成的同时，王鹏飞的职位也升到了资深软件开发工程师。2014年底，在拿到一笔不菲的奖金之后，公司交给他了一个新的大型开发项目，并指定了一个团队由他带领。项目伊始，王鹏飞便被派到美国总部出差一个月， 以和美国的产品负责人及系统分析师充分沟通，了解需求和制定计划。这是王鹏飞第一次去美国，公司的这一安排也让他感动不已，发誓要全心全意投入到项目中去回报公司对他的器重。然而这样的一个大型项目，一个月的时间只够讨论个轮廓和框架，内容模块的诸多细节和不断增加及改动的需求必须要整个团队参与到会议中来，于是从美国回来后，介于时差的缘故，整个团队每周二和周四施行夜班制，即下午两点上班，夜里十一点下班，这样坚持了又有小半年，需求与设计算是基本明确了，可以开始干活了，然而团队却因为之前的夜班过于频繁而出现了不满情绪，王鹏飞只得安抚大家情绪并将团队会议减到了只有周二晚上，而周四的会只有他和另一个资深工程师参加。',this)" class="modify">段落修改</div></div><div class="para"><div class="duanluo"><span>135</span></div><div class="l"><span style="margin-left:25px"></span><span >2016年，王鹏飞的妻子怀孕了，原本规律的生活一下子多了幸福的插曲，随着妻子的肚子越来越大，王鹏飞意识到自己的角色不再仅仅是一个好员工， </span><span >更多的要承担起好丈夫和即将到来的好父亲的职责。 </span><span >偏偏在这个时候，美国那边的系统分析师换人了，新的分析师为了尽快完成项目的交接与合作，建议周三再增加一次和王鹏飞的一对一会议，王鹏飞勉强答应下来，这样， </span><span >一周有三天晚上不在家，妻子也有了怨言，就连岳父岳母也打电话来问怎么回事。 </span><span >家人的抱怨让王鹏飞逐渐意识到，工作和薪水已经不再是这个年龄的他的全部，更多的时间应该留给家人和自己。 </span></div><div class="modify" align="right" paraseq="134"><span class="btn btn-blue" onclick="submitPart('2016年，王鹏飞的妻子怀孕了，原本规律的生活一下子多了幸福的插曲，随着妻子的肚子越来越大，王鹏飞意识到自己的角色不再仅仅是一个好员工，更多的要承担起好丈夫和即将到来的好父亲的职责。偏偏在这个时候，美国那边的系统分析师换人了，新的分析师为了尽快完成项目的交接与合作，建议周三再增加一次和王鹏飞的一对一会议，王鹏飞勉强答应下来，这样，一周有三天晚上不在家，妻子也有了怨言，就连岳父岳母也打电话来问怎么回事。家人的抱怨让王鹏飞逐渐意识到，工作和薪水已经不再是这个年龄的他的全部，更多的时间应该留给家人和自己。',this)" class="modify">段落修改</div></div><div class="para"><div class="duanluo"><span>136</span></div><div class="l"><span style="margin-left:25px"></span><span >一个周一早上，王鹏飞敲开了开发总监的办公室门，&quot;张总我想跟您谈谈。&rdquo;他谨慎又坚定地说。 </span><span > &quot;我最近压力实在有点大，美国那边持续安排晚上的沟通会议，我身体上觉得有点吃不消了，毕竟年纪也大了，做不到天天晚上撑着，您看能不能给我调个项目， </span><span >如果继续这样下去，我说不定会考虑换个清闲的工作。 </span><span >&rdquo;王鹏飞不好意思直接说出自己家庭的原因，毕竟男人以事业为重，但他也并没有撒谎，他的身体确实不如以前不上夜班时硬朗了，毕竟三十多了， </span><span >不再是刚毕业时的小伙子了。 </span><span >&quot;老王啊，我理解你，你也是公司的老兵了，美国那边那么器重你，你的付出也获得了薪水上的回报了呀。 </span><span >&rdquo;&quot;钱是一方面，但是我也要考虑家庭和健康啊，我现在陪我怀孕老婆的时候都很少，回到家就想睡觉，等孩子出生就更需要我了， </span><span >我实在无法像前几年刚来公司时那么拼命加班了。 </span><span >&rdquo;张总叹了口气陷入了沉思，老王说的确实是实情，究竟该怎么留住老王呢？ </span></div><div class="modify" align="right" paraseq="135"><span class="btn btn-blue" onclick="submitPart('一个周一早上，王鹏飞敲开了开发总监的办公室门，&quot;张总我想跟您谈谈。&rdquo;他谨慎又坚定地说。&quot;我最近压力实在有点大，美国那边持续安排晚上的沟通会议，我身体上觉得有点吃不消了，毕竟年纪也大了，做不到天天晚上撑着，您看能不能给我调个项目，如果继续这样下去，我说不定会考虑换个清闲的工作。&rdquo;王鹏飞不好意思直接说出自己家庭的原因，毕竟男人以事业为重，但他也并没有撒谎，他的身体确实不如以前不上夜班时硬朗了，毕竟三十多了，不再是刚毕业时的小伙子了。&quot;老王啊，我理解你，你也是公司的老兵了，美国那边那么器重你，你的付出也获得了薪水上的回报了呀。&rdquo;&quot;钱是一方面，但是我也要考虑家庭和健康啊，我现在陪我怀孕老婆的时候都很少，回到家就想睡觉，等孩子出生就更需要我了，我实在无法像前几年刚来公司时那么拼命加班了。&rdquo;张总叹了口气陷入了沉思，老王说的确实是实情，究竟该怎么留住老王呢？',this)" class="modify">段落修改</div></div><div class="para"><div class="duanluo"><span>137</span></div><div class="l"><span style="margin-left:25px"></span><span >2.2.2  新员工的迷茫与困惑 </span></div></div><div class="para"><div class="duanluo"><span>138</span></div><div class="l"><span style="margin-left:25px"></span><span >张怡是2013年7月正式入职公司的毕业生，事实上，从3月份起她就开始在公司实习了，作为大连外国语大学计算机专业的本科毕业生， </span><span >她充分满足了公司对应届本科毕业生的基本要求: 有一定计算机基础，英语读写流利，而公司给她们的月薪只有3700元。 </span><span >而这批20个实习生中仅有的两位研究生也不过月薪4000而已。 </span></div><div class="modify" align="right" paraseq="137"><span class="btn btn-blue" onclick="submitPart('张怡是2013年7月正式入职公司的毕业生，事实上，从3月份起她就开始在公司实习了，作为大连外国语大学计算机专业的本科毕业生，她充分满足了公司对应届本科毕业生的基本要求: 有一定计算机基础，英语读写流利，而公司给她们的月薪只有3700元。而这批20个实习生中仅有的两位研究生也不过月薪4000而已。',this)" class="modify">段落修改</div></div><div class="para"><div class="duanluo"><span>139</span></div><div class="l"><span style="margin-left:25px"></span><span >这是公司第二年招聘实习生了，公司的实习生招聘策略一向可谓是追求&quot;物美价廉&rdquo;，其原因主要是在大连公司成立初期，尽管公司寻求急速扩张， </span><span >但美国总部提供的资金有限，所以只能以较好的福利来吸引毕业生，薪水方面并不具有任何竞争力。 </span><span >可想而知，这样的条件无法招聘到一流高校的优秀毕业生，所以每年的20多名实习生多是来自普通高校的本科生。 </span></div><div class="modify" align="right" paraseq="138"><span class="btn btn-blue" onclick="submitPart('这是公司第二年招聘实习生了，公司的实习生招聘策略一向可谓是追求&quot;物美价廉&rdquo;，其原因主要是在大连公司成立初期，尽管公司寻求急速扩张，但美国总部提供的资金有限，所以只能以较好的福利来吸引毕业生，薪水方面并不具有任何竞争力。可想而知，这样的条件无法招聘到一流高校的优秀毕业生，所以每年的20多名实习生多是来自普通高校的本科生。',this)" class="modify">段落修改</div></div><div class="para"><div class="duanluo"><span>140</span></div><div class="l"><span style="margin-left:25px"></span><span >2012年时，公司招聘的实习生以工科院校计算机和信息相关专业为主，但是入职后发现他们的英语水平无法达到和美国同事顺畅沟通的水平。 </span><span >于是2013年公司改变了策略，大量从外国院校招聘实习生，但工作中又发现部分实习生的计算机技能素养达不到要求。 </span><span >而张怡在这批员工中算是佼佼者了。 </span></div><div class="modify" align="right" paraseq="139"><span class="btn btn-blue" onclick="submitPart('2012年时，公司招聘的实习生以工科院校计算机和信息相关专业为主，但是入职后发现他们的英语水平无法达到和美国同事顺畅沟通的水平。于是2013年公司改变了策略，大量从外国院校招聘实习生，但工作中又发现部分实习生的计算机技能素养达不到要求。而张怡在这批员工中算是佼佼者了。',this)" class="modify">段落修改</div></div><div class="para"><div class="duanluo"><span>141</span></div><div class="l"><span style="margin-left:25px"></span><span >自从转正加入项目组以来，张怡作为一名助理测试工程师，不仅在技术上下功夫钻研和学习，业务知识上也积极参加培训，工作之余还买了很多金融相关的书籍在啃， </span><span >功夫不负有心人，加入公司一年来她成长的很快，做出的成绩也被所有人看到，组长也放心交给她独立的任务了，领导路过时，也会友善的关怀她几句，旁人都羡慕不已。 </span><span >张怡对自己在公司的未来有着美好的期望，并时刻提醒自己，薪水不是最重要的，好的平台和机会比什么都强。 </span></div><div class="modify" align="right" paraseq="140"><span class="btn btn-blue" onclick="submitPart('自从转正加入项目组以来，张怡作为一名助理测试工程师，不仅在技术上下功夫钻研和学习，业务知识上也积极参加培训，工作之余还买了很多金融相关的书籍在啃，功夫不负有心人，加入公司一年来她成长的很快，做出的成绩也被所有人看到，组长也放心交给她独立的任务了，领导路过时，也会友善的关怀她几句，旁人都羡慕不已。张怡对自己在公司的未来有着美好的期望，并时刻提醒自己，薪水不是最重要的，好的平台和机会比什么都强。',this)" class="modify">段落修改</div></div><div class="para"><div class="duanluo"><span>142</span></div><div class="l"><span style="margin-left:25px"></span><span >幸福总是来得快去得也快，正当张怡一边努力工作一边沉浸在对明天的憧憬时，同事传来的小道消息让她有点不敢相信自己的耳朵，&quot;听说了吗？ </span><span >今年这批实习生要走高精尖战略，就招10个，都是理工大学，哈工大的计算机研究生，一个月开7，8千，刚来还先去爱尔兰培训三个月呢！ </span><span >&rdquo;&quot;真的假的？不可能吧，那不比一些干了几年的员工都高了？凭什么呀？好多人都还没出过国呢！ </span><span >&rdquo;当小张听到公司给新实习生的待遇之后，嘴上虽然极力质疑，心里却又惊又恼，就差拍桌子站起来了。 </span><span >自己辛辛苦苦一年多，也得到了领导的认可，可是人家一来就赚到将近我两倍的薪水，还能立马出国玩三个月， </span><span >而自己的期望是五年内能有机会出国就很满意了&hellip;&hellip;小张越想越来气，她对自己一直以来的职业信条也开始产生了怀疑，也不打算再像以前那么积极学习和勤奋工作了， </span><span >她脑中一直在想的是：公司这么做真的公平吗？ </span></div><div class="modify" align="right" paraseq="141"><span class="btn btn-blue" onclick="submitPart('幸福总是来得快去得也快，正当张怡一边努力工作一边沉浸在对明天的憧憬时，同事传来的小道消息让她有点不敢相信自己的耳朵，&quot;听说了吗？今年这批实习生要走高精尖战略，就招10个，都是理工大学，哈工大的计算机研究生，一个月开7，8千，刚来还先去爱尔兰培训三个月呢！&rdquo;&quot;真的假的？不可能吧，那不比一些干了几年的员工都高了？凭什么呀？好多人都还没出过国呢！&rdquo;当小张听到公司给新实习生的待遇之后，嘴上虽然极力质疑，心里却又惊又恼，就差拍桌子站起来了。自己辛辛苦苦一年多，也得到了领导的认可，可是人家一来就赚到将近我两倍的薪水，还能立马出国玩三个月，而自己的期望是五年内能有机会出国就很满意了&hellip;&hellip;小张越想越来气，她对自己一直以来的职业信条也开始产生了怀疑，也不打算再像以前那么积极学习和勤奋工作了，她脑中一直在想的是：公司这么做真的公平吗？',this)" class="modify">段落修改</div></div><div class="para"><div class="duanluo"><span>143</span></div><div class="l"><span style="margin-left:25px"></span><span >2.2.3  老员工的日渐懈怠 </span></div></div><div class="para"><div class="duanluo"><span>144</span></div><div class="l"><span style="margin-left:25px"></span><span >高级开发工程师陈剑是2013年加入公司的，当时公司刚刚从美国拿到一个IBM大型机的项目，却一时招不到合适的人来带领这个项目。 </span><span >大型机的技术也比较古老了，其主要用于企业级产品的大数据量交换、存储交易信息、实时处理等，拥有计算速度快等优点， </span><span >虽然现在其技术优势已经可以被云计算等新技术取代，但由于其成本相对较高，开发维护难等特点，即使企业有心淘汰大型机，但却最终无法淘汰或很难下决心淘汰， </span><span >因为其重构的难度和风险都很高，可能会给企业带来难以承担的损失。 </span></div><div class="modify" align="right" paraseq="143"><span class="btn btn-blue" onclick="submitPart('高级开发工程师陈剑是2013年加入公司的，当时公司刚刚从美国拿到一个IBM大型机的项目，却一时招不到合适的人来带领这个项目。大型机的技术也比较古老了，其主要用于企业级产品的大数据量交换、存储交易信息、实时处理等，拥有计算速度快等优点，虽然现在其技术优势已经可以被云计算等新技术取代，但由于其成本相对较高，开发维护难等特点，即使企业有心淘汰大型机，但却最终无法淘汰或很难下决心淘汰，因为其重构的难度和风险都很高，可能会给企业带来难以承担的损失。',this)" class="modify">段落修改</div></div><div class="para"><div class="duanluo"><span>145</span></div><div class="l"><span style="margin-left:25px"></span><span >陈剑之前在一家外包软件公司做大型机项目有五六年了，他一直觉得外包公司作为乙方要事事听命于甲方，于是一心想跳槽到一家甲方企业。 </span><span >通过猎头介绍，他抓住这个机会来到了F公司，带领着团队开始了大型机项目的开发与维护工作。 </span><span >项目初期还是比较辛苦的，但由于陈剑凭着刚进公司的热情和丰富的经验，项目做得顺风顺水，效率很高，得到了美国的认可和嘉奖。 </span></div><div class="modify" align="right" paraseq="144"><span class="btn btn-blue" onclick="submitPart('陈剑之前在一家外包软件公司做大型机项目有五六年了，他一直觉得外包公司作为乙方要事事听命于甲方，于是一心想跳槽到一家甲方企业。通过猎头介绍，他抓住这个机会来到了F公司，带领着团队开始了大型机项目的开发与维护工作。项目初期还是比较辛苦的，但由于陈剑凭着刚进公司的热情和丰富的经验，项目做得顺风顺水，效率很高，得到了美国的认可和嘉奖。',this)" class="modify">段落修改</div></div><div class="para"><div class="duanluo"><span>146</span></div><div class="l"><span style="margin-left:25px"></span><span >随着时间的推移，陈剑对于公司安排的数个大型机项目已经驾轻就熟了，因为已经进入了维护阶段，所以基本上开会和加班都很少， </span><span >平时的工作主要是拿到客户提交的问题单进行数据维护和bug修正。 </span><span >年轻的团队人员也逐渐撤出，加入到其他项目组。 </span><span >最后只剩下陈剑和其他两个工程师，他的困惑也随之而来。 </span></div><div class="modify" align="right" paraseq="145"><span class="btn btn-blue" onclick="submitPart('随着时间的推移，陈剑对于公司安排的数个大型机项目已经驾轻就熟了，因为已经进入了维护阶段，所以基本上开会和加班都很少，平时的工作主要是拿到客户提交的问题单进行数据维护和bug修正。年轻的团队人员也逐渐撤出，加入到其他项目组。最后只剩下陈剑和其他两个工程师，他的困惑也随之而来。',this)" class="modify">段落修改</div></div><div class="para"><div class="duanluo"><span>147</span></div><div class="l"><span style="margin-left:25px"></span><span >陈剑原本以为，作为大型金融企业，大型机项目一定是稳定长久的，他应该能够通过这个项目稳定的升职到开发经理，这也是他一直以来努力的目标。 </span><span >但他所忽略的一点是，大连研发中心的主要意义是开发，而不是维护，几乎全部的维护项目都要最终放到印度去。 </span><span >陈剑为了实现自己升职的目标，参加了很多沟通和管理方面的培训，却对项目逐渐失去了热情，也没了学习新技术的动力。 </span><span >私下里聊天时，他会说：&quot;当初需要我们就招来，不需要了就要我们换，凭什么啊。 </span><span >新技术让小年轻的干吧，等我混到经理了就不用写代码了，带啥项目都可以了。 </span><span >咱又不是干外包的，那么辛苦干嘛啊。&rdquo; </span></div><div class="modify" align="right" paraseq="146"><span class="btn btn-blue" onclick="submitPart('陈剑原本以为，作为大型金融企业，大型机项目一定是稳定长久的，他应该能够通过这个项目稳定的升职到开发经理，这也是他一直以来努力的目标。但他所忽略的一点是，大连研发中心的主要意义是开发，而不是维护，几乎全部的维护项目都要最终放到印度去。陈剑为了实现自己升职的目标，参加了很多沟通和管理方面的培训，却对项目逐渐失去了热情，也没了学习新技术的动力。私下里聊天时，他会说：&quot;当初需要我们就招来，不需要了就要我们换，凭什么啊。新技术让小年轻的干吧，等我混到经理了就不用写代码了，带啥项目都可以了。咱又不是干外包的，那么辛苦干嘛啊。&rdquo;',this)" class="modify">段落修改</div></div><div class="para"><div class="duanluo"><span>148</span></div><div class="l"><span style="margin-left:25px"></span><span >然而，事情并非总是遂人意，公司的管理职位已经饱和了有一年多了，美国不加新的业务团队过来就不会有新的开发经理职位空缺， </span><span >更何况现在已经有的经理空闲很久没有团队可以带领。 </span><span >陈剑看不到管理路线晋升的希望，他又已经习惯了工作懈怠的状态，然而在别人眼里他还是曾经那个技术大牛，只不过无用武之地而已，某天， </span><span >当美国对应部门又提出引入新技术的项目升级需求时，经理果断找到老陈希望他能担起这个任务，该如何说服老陈重新扬起斗志投入新工作呢？ </span><span >&hellip;&hellip; </span></div><div class="modify" align="right" paraseq="147"><span class="btn btn-blue" onclick="submitPart('然而，事情并非总是遂人意，公司的管理职位已经饱和了有一年多了，美国不加新的业务团队过来就不会有新的开发经理职位空缺，更何况现在已经有的经理空闲很久没有团队可以带领。陈剑看不到管理路线晋升的希望，他又已经习惯了工作懈怠的状态，然而在别人眼里他还是曾经那个技术大牛，只不过无用武之地而已，某天，当美国对应部门又提出引入新技术的项目升级需求时，经理果断找到老陈希望他能担起这个任务，该如何说服老陈重新扬起斗志投入新工作呢？&hellip;&hellip;',this)" class="modify">段落修改</div></div><div class="para"><div class="duanluo"><span>149</span></div><div class="l"><span style="margin-left:25px"></span><span >3  案例分析 </span></div></div><div class="para"><div class="duanluo"><span>150</span></div><div class="l"><span style="margin-left:25px"></span><span >3.1  相关理论概述 </span></div></div><div class="para"><div class="duanluo"><span>151</span></div><div class="l"><span style="margin-left:25px"></span><span >3.1.1  概念界定 </span></div></div><div class="para"><div class="duanluo"><span>152</span></div><div class="l"><span style="margin-left:25px"></span><span >（1）	激励的概念 </span></div></div><div class="para"><div class="duanluo"><span>153</span></div><div class="l"><span style="margin-left:25px"></span><a href="../sentence_detail/302.htm" target="right" class="red">激励，从字面上看是激发和鼓励的意思，通常指持续地激发人的动机和内在动力，使其心理过程始终保持在激奋的状态中，鼓励人朝着所期望的目标采取行动的心理过程。</a><a href="../sentence_detail/303.htm" target="right" class="red">美国管理学家贝雷尔森（Berelson）和斯坦尼尔（Steiner）给激励下了如下定义：&quot;一切内心要争取的条件、希望、愿望、动力都构成了对人的激励。</a><span >——它是人类活动的一种内心状态。&rdquo; </span></div><div class="modify" align="right" paraseq="152"><span class="btn btn-blue" onclick="submitPart('激励，从字面上看是激发和鼓励的意思，通常指持续地激发人的动机和内在动力，使其心理过程始终保持在激奋的状态中，鼓励人朝着所期望的目标采取行动的心理过程。美国管理学家贝雷尔森（Berelson）和斯坦尼尔（Steiner）给激励下了如下定义：&quot;一切内心要争取的条件、希望、愿望、动力都构成了对人的激励。——它是人类活动的一种内心状态。&rdquo;',this)" class="modify">段落修改</div></div><div class="para"><div class="duanluo"><span>154</span></div><div class="l"><span style="margin-left:25px"></span><a href="../sentence_detail/305.htm" target="right" class="red">心理学家指出，人类的行为基本上都是动机性的行为，也就是说，人的行为都是有一定的目的和目标的。</a><span >而这种动机又起源于人的需求欲望。有需求欲望，就产生动机，有动机就有行为。 </span><a href="../sentence_detail/307.htm" target="right" class="red">当需要未被满足时就会产生紧张，造成人的生理或心里失去平衡而感到舒服，进而激发个体的内驱力，这种内驱力将导致寻求特定目标的行为。</a><a href="../sentence_detail/308.htm" target="right" class="red">当目标达到之后，原有的需求和动机也就消失了。</a><a href="../sentence_detail/309.htm" target="right" class="red">因此，激励过程就是人的需求满足过程，它以未能得到满足的需求开始，以需要得到满足而告终，如图3.1所示：</a></div><div class="modify" align="right" paraseq="153"><span class="btn btn-blue" onclick="submitPart('心理学家指出，人类的行为基本上都是动机性的行为，也就是说，人的行为都是有一定的目的和目标的。而这种动机又起源于人的需求欲望。有需求欲望，就产生动机，有动机就有行为。当需要未被满足时就会产生紧张，造成人的生理或心里失去平衡而感到舒服，进而激发个体的内驱力，这种内驱力将导致寻求特定目标的行为。当目标达到之后，原有的需求和动机也就消失了。因此，激励过程就是人的需求满足过程，它以未能得到满足的需求开始，以需要得到满足而告终，如图3.1所示：',this)" class="modify">段落修改</div></div><div class="para"><div class="duanluo"><span>155</span></div><div class="l"><span style="margin-left:25px"></span><span >图3.1  激励过程 </span></div></div><div class="para"><div class="duanluo"><span>156</span></div><div class="l"><span style="margin-left:25px"></span><span >Fig 3.1  The process of motivation  </span></div></div><div class="para"><div class="duanluo"><span>157</span></div><div class="l"><span style="margin-left:25px"></span><span >（2）	激励管理的概念 </span></div></div><div class="para"><div class="duanluo"><span>158</span></div><div class="l"><span style="margin-left:25px"></span><a href="../sentence_detail/313.htm" target="right" class="orange">激励这个概念用在人力资源管理中，是指激发员工的工作动机，调动人们积极性的过程。</a><a href="../sentence_detail/314.htm" target="right" class="red">即指使用各种有效的方法去调动员工的积极性和创造性，使员工努力去完成组织的任务，实现组织的目标。</a><a href="../sentence_detail/315.htm" target="right" class="red">有效的激励会点燃员工的激情，促使他们的工作动机更加强烈，让他们产生超越自我和他人的欲望，并将潜在的巨大的内驱力释放出来，</a><span >为企业的远景目标奉献自己的热情。 </span></div><div class="modify" align="right" paraseq="157"><span class="btn btn-blue" onclick="submitPart('激励这个概念用在人力资源管理中，是指激发员工的工作动机，调动人们积极性的过程。即指使用各种有效的方法去调动员工的积极性和创造性，使员工努力去完成组织的任务，实现组织的目标。有效的激励会点燃员工的激情，促使他们的工作动机更加强烈，让他们产生超越自我和他人的欲望，并将潜在的巨大的内驱力释放出来，为企业的远景目标奉献自己的热情。',this)" class="modify">段落修改</div></div><div class="para"><div class="duanluo"><span>159</span></div><div class="l"><span style="margin-left:25px"></span><a href="../sentence_detail/317.htm" target="right" class="orange">激励作为管理的一项重要职能，是人力资源开发与管理的一个重要内容。</a><a href="../sentence_detail/318.htm" target="right" class="red">人力资源管理的基本目的有四，即吸引、保留、激励与开发企业的人力资源，其中激励显然是其核心所在，因为如果能够激发员工的干劲，就必能吸引并留住他们，</a><span >而开发本身则是重要的激励手段。 </span><span >具体说来，企业中的激励管理具有如下作用： </span></div><div class="modify" align="right" paraseq="158"><span class="btn btn-blue" onclick="submitPart('激励作为管理的一项重要职能，是人力资源开发与管理的一个重要内容。人力资源管理的基本目的有四，即吸引、保留、激励与开发企业的人力资源，其中激励显然是其核心所在，因为如果能够激发员工的干劲，就必能吸引并留住他们，而开发本身则是重要的激励手段。具体说来，企业中的激励管理具有如下作用：',this)" class="modify">段落修改</div></div><div class="para"><div class="duanluo"><span>160</span></div><div class="l"><span style="margin-left:25px"></span><a href="../sentence_detail/321.htm" target="right" class="red">①	激励有助于企业将员工的个人目标导向企业的轨道。</a><a href="../sentence_detail/322.htm" target="right" class="red">个人目标和个人需要是员工行为的基本动力，它们与企业的目标和总体利益之间，既有一致性又存在着诸多差异。</a><a href="../sentence_detail/323.htm" target="right" class="red">激励的重要功能是以个人利益和需要的满足为基本作用力，引导员工把个人目标统一于企业的整体目标，推动员工努力完成工作，</a><a href="../sentence_detail/324.htm" target="right" class="orange">从而促进个人目标与企业目标达成一致并共同实现。</a></div><div class="modify" align="right" paraseq="159"><span class="btn btn-blue" onclick="submitPart('①	激励有助于企业将员工的个人目标导向企业的轨道。个人目标和个人需要是员工行为的基本动力，它们与企业的目标和总体利益之间，既有一致性又存在着诸多差异。激励的重要功能是以个人利益和需要的满足为基本作用力，引导员工把个人目标统一于企业的整体目标，推动员工努力完成工作，从而促进个人目标与企业目标达成一致并共同实现。',this)" class="modify">段落修改</div></div><div class="para"><div class="duanluo"><span>161</span></div><div class="l"><span style="margin-left:25px"></span><a href="../sentence_detail/325.htm" target="right" class="red">②	激励能最大限度地激发员工的动机，使其充分发挥内在的积极性、主动性和创造，卓有成效地提高岗位工作效率。</a></div><div class="modify" align="right" paraseq="160"><span class="btn btn-blue" onclick="submitPart('②	激励能最大限度地激发员工的动机，使其充分发挥内在的积极性、主动性和创造，卓有成效地提高岗位工作效率。',this)" class="modify">段落修改</div></div><div class="para"><div class="duanluo"><span>162</span></div><div class="l"><span style="margin-left:25px"></span><a href="../sentence_detail/326.htm" target="right" class="red">③	激励有助于提高员工的社会责任感和心理素质。</a><a href="../sentence_detail/327.htm" target="right" class="red">激励本身就是一种示范，通过对先进任务和事件的表扬和奖励，或通过对不良行为的批评和惩罚，提高员工对社会要求和企业要求的认识，监督和约束自己的思想和行为。</a></div><div class="modify" align="right" paraseq="161"><span class="btn btn-blue" onclick="submitPart('③	激励有助于提高员工的社会责任感和心理素质。激励本身就是一种示范，通过对先进任务和事件的表扬和奖励，或通过对不良行为的批评和惩罚，提高员工对社会要求和企业要求的认识，监督和约束自己的思想和行为。',this)" class="modify">段落修改</div></div><div class="para"><div class="duanluo"><span>163</span></div><div class="l"><span style="margin-left:25px"></span><span >3.1.2  激励相关理论 </span></div></div><div class="para"><div class="duanluo"><span>164</span></div><div class="l"><span style="margin-left:25px"></span><span >激励理论主要可分为需要型激励理论和过程型激励理论。 </span><a href="../sentence_detail/330.htm" target="right" class="orange">前者着重研究工作动机的因素，以马斯洛的需要层次理论为代表；</a><a href="../sentence_detail/331.htm" target="right" class="orange">后者则重点研究从动机的产生到采取行动的心理过程，代表理论有亚当斯公平理论等。</a></div><div class="modify" align="right" paraseq="163"><span class="btn btn-blue" onclick="submitPart('激励理论主要可分为需要型激励理论和过程型激励理论。前者着重研究工作动机的因素，以马斯洛的需要层次理论为代表；后者则重点研究从动机的产生到采取行动的心理过程，代表理论有亚当斯公平理论等。',this)" class="modify">段落修改</div></div><div class="para"><div class="duanluo"><span>165</span></div><div class="l"><span style="margin-left:25px"></span><span >（1）	需要层次理论  </span></div></div><div class="para"><div class="duanluo"><span>166</span></div><div class="l"><span style="margin-left:25px"></span><a href="../sentence_detail/333.htm" target="right" class="red">美国心理学家马斯洛的需要层次理论分别讲的是生理需求，安全需求，社会需求，尊重需求和自我实现需求五个方面。</a></div><div class="modify" align="right" paraseq="165"><span class="btn btn-blue" onclick="submitPart('美国心理学家马斯洛的需要层次理论分别讲的是生理需求，安全需求，社会需求，尊重需求和自我实现需求五个方面。',this)" class="modify">段落修改</div></div><div class="para"><div class="duanluo"><span>167</span></div><div class="l"><span style="margin-left:25px"></span><span >①	生理需求 </span></div></div><div class="para"><div class="duanluo"><span>168</span></div><div class="l"><span style="margin-left:25px"></span><a href="../sentence_detail/335.htm" target="right" class="red">生理需求（Physiological needs），也称级别最低、最具优势的需求，如：食物、水、空气、性欲、健康。</a></div><div class="modify" align="right" paraseq="167"><span class="btn btn-blue" onclick="submitPart('生理需求（Physiological needs），也称级别最低、最具优势的需求，如：食物、水、空气、性欲、健康。',this)" class="modify">段落修改</div></div><div class="para"><div class="duanluo"><span>169</span></div><div class="l"><span style="margin-left:25px"></span><a href="../sentence_detail/336.htm" target="right" class="red">未满足生理需求的特征：什么都不想，只想让自己活下去，思考能力、道德观明显变得脆弱。</a><a href="../sentence_detail/337.htm" target="right" class="red">例如：当一个人极需要食物时，会不择手段地抢夺食物。人民在战乱时，是不会排队领面包的。</a><a href="../sentence_detail/338.htm" target="right" class="red"> 假设人为报酬而工作，以生理需求来激励下属。</a></div><div class="modify" align="right" paraseq="168"><span class="btn btn-blue" onclick="submitPart('未满足生理需求的特征：什么都不想，只想让自己活下去，思考能力、道德观明显变得脆弱。例如：当一个人极需要食物时，会不择手段地抢夺食物。人民在战乱时，是不会排队领面包的。假设人为报酬而工作，以生理需求来激励下属。',this)" class="modify">段落修改</div></div><div class="para"><div class="duanluo"><span>170</span></div><div class="l"><span style="margin-left:25px"></span><a href="../sentence_detail/339.htm" target="right" class="red">激励措施：增加工资、改善劳动条件、给予更多的业余时间和工间休息、提高福利待遇。</a></div><div class="modify" align="right" paraseq="169"><span class="btn btn-blue" onclick="submitPart('激励措施：增加工资、改善劳动条件、给予更多的业余时间和工间休息、提高福利待遇。',this)" class="modify">段落修改</div></div><div class="para"><div class="duanluo"><span>171</span></div><div class="l"><span style="margin-left:25px"></span><span >②	安全需求 </span></div></div><div class="para"><div class="duanluo"><span>172</span></div><div class="l"><span style="margin-left:25px"></span><a href="../sentence_detail/341.htm" target="right" class="red">安全需求（Safety needs），同样属于低级别的需求，其中包括对人身安全、生活稳定以及免遭痛苦、威胁或疾病等。</a></div><div class="modify" align="right" paraseq="171"><span class="btn btn-blue" onclick="submitPart('安全需求（Safety needs），同样属于低级别的需求，其中包括对人身安全、生活稳定以及免遭痛苦、威胁或疾病等。',this)" class="modify">段落修改</div></div><div class="para"><div class="duanluo"><span>173</span></div><div class="l"><span style="margin-left:25px"></span><a href="../sentence_detail/342.htm" target="right" class="red">缺乏安全感的特征：感到自己对身边的事物受到威胁，觉得这世界是不公平或是危险的。</a><a href="../sentence_detail/343.htm" target="right" class="red">认为一切事物都是危险的、而变的紧张、彷徨不安、认为一切事物都是&quot;恶&rdquo;的。</a><a href="../sentence_detail/344.htm" target="right" class="red">例如：一个孩子，在学校被同学欺负、受到老师不公平的对待，而开始变得不相信这社会，变得不敢表现自己、不敢拥有社交生活（因为他认为社交是危险的），</a><span >而借此来保护自身安全。 </span><a href="../sentence_detail/346.htm" target="right" class="red">一个成人，工作不顺利，薪水微薄，养不起家人，而变的自暴自弃，每天利用喝酒，吸烟来寻找短暂的安逸感。</a></div><div class="modify" align="right" paraseq="172"><span class="btn btn-blue" onclick="submitPart('缺乏安全感的特征：感到自己对身边的事物受到威胁，觉得这世界是不公平或是危险的。认为一切事物都是危险的、而变的紧张、彷徨不安、认为一切事物都是&quot;恶&rdquo;的。例如：一个孩子，在学校被同学欺负、受到老师不公平的对待，而开始变得不相信这社会，变得不敢表现自己、不敢拥有社交生活（因为他认为社交是危险的），而借此来保护自身安全。一个成人，工作不顺利，薪水微薄，养不起家人，而变的自暴自弃，每天利用喝酒，吸烟来寻找短暂的安逸感。',this)" class="modify">段落修改</div></div><div class="para"><div class="duanluo"><span>174</span></div><div class="l"><span style="margin-left:25px"></span><a href="../sentence_detail/347.htm" target="right" class="red">激励措施：强调规章制度、职业保障、福利待遇，并保护员工不致失业，提供医疗保险、失业保险和退休福利、避免员工收到双重的指令而混乱。</a><span >  </span></div><div class="modify" align="right" paraseq="173"><span class="btn btn-blue" onclick="submitPart('激励措施：强调规章制度、职业保障、福利待遇，并保护员工不致失业，提供医疗保险、失业保险和退休福利、避免员工收到双重的指令而混乱。',this)" class="modify">段落修改</div></div><div class="para"><div class="duanluo"><span>175</span></div><div class="l"><span style="margin-left:25px"></span><span >③	社交需求 </span></div></div><div class="para"><div class="duanluo"><span>176</span></div><div class="l"><span style="margin-left:25px"></span><a href="../sentence_detail/350.htm" target="right" class="red">社交需求（Love and belonging needs），属于较高层次的需求，如：对友谊、爱情以及隶属关系的需求。</a></div><div class="modify" align="right" paraseq="175"><span class="btn btn-blue" onclick="submitPart('社交需求（Love and belonging needs），属于较高层次的需求，如：对友谊、爱情以及隶属关系的需求。',this)" class="modify">段落修改</div></div><div class="para"><div class="duanluo"><span>177</span></div><div class="l"><span style="margin-left:25px"></span><a href="../sentence_detail/351.htm" target="right" class="red">缺乏社交需求的特征：因为没有感受到身边人的关怀，而认为自己没有价值活在这世界上。</a><a href="../sentence_detail/352.htm" target="right" class="red">例如：一个没有受到父母关怀的青少年，认为自己在家庭中没有价值，所以在学校交朋友，无视道德观和理性地积极地寻找朋友或是同类。</a><a href="../sentence_detail/353.htm" target="right" class="red">譬如说：青少年为了让自己融入社交圈中，帮别人做牛做马，甚至吸烟，恶作剧等。</a></div><div class="modify" align="right" paraseq="176"><span class="btn btn-blue" onclick="submitPart('缺乏社交需求的特征：因为没有感受到身边人的关怀，而认为自己没有价值活在这世界上。例如：一个没有受到父母关怀的青少年，认为自己在家庭中没有价值，所以在学校交朋友，无视道德观和理性地积极地寻找朋友或是同类。譬如说：青少年为了让自己融入社交圈中，帮别人做牛做马，甚至吸烟，恶作剧等。',this)" class="modify">段落修改</div></div><div class="para"><div class="duanluo"><span>178</span></div><div class="l"><span style="margin-left:25px"></span><a href="../sentence_detail/354.htm" target="right" class="red">激励措施：提供同事间社交往来机会，支持与赞许员工寻找及建立和谐温馨的人际关系，开展有组织的体育比赛和集体聚会。</a></div><div class="modify" align="right" paraseq="177"><span class="btn btn-blue" onclick="submitPart('激励措施：提供同事间社交往来机会，支持与赞许员工寻找及建立和谐温馨的人际关系，开展有组织的体育比赛和集体聚会。',this)" class="modify">段落修改</div></div><div class="para"><div class="duanluo"><span>179</span></div><div class="l"><span style="margin-left:25px"></span><span >④	尊重需求 </span></div></div><div class="para"><div class="duanluo"><span>180</span></div><div class="l"><span style="margin-left:25px"></span><a href="../sentence_detail/356.htm" target="right" class="red">尊重需求（Esteem needs），属于较高层次的需求，如：成就、名声、地位和晋升机会等。</a><span >尊重需求既包括对成就或自我价值的个人感觉，也包括他人对自己的认可与尊重。 </span></div><div class="modify" align="right" paraseq="179"><span class="btn btn-blue" onclick="submitPart('尊重需求（Esteem needs），属于较高层次的需求，如：成就、名声、地位和晋升机会等。尊重需求既包括对成就或自我价值的个人感觉，也包括他人对自己的认可与尊重。',this)" class="modify">段落修改</div></div><div class="para"><div class="duanluo"><span>181</span></div><div class="l"><span style="margin-left:25px"></span><a href="../sentence_detail/358.htm" target="right" class="red">无法满足尊重需求的特征：变的很爱面子，或是很积极地用行动来让别人认同自己，也很容易被虚荣所吸引。</a><a href="../sentence_detail/359.htm" target="right" class="red">例如：利用暴力来证明自己的强悍、努力读书让自己成为医生、律师来证明自己在这社会的存在和价值、富豪为了自己名利而赚钱，或是捐款。</a></div><div class="modify" align="right" paraseq="180"><span class="btn btn-blue" onclick="submitPart('无法满足尊重需求的特征：变的很爱面子，或是很积极地用行动来让别人认同自己，也很容易被虚荣所吸引。例如：利用暴力来证明自己的强悍、努力读书让自己成为医生、律师来证明自己在这社会的存在和价值、富豪为了自己名利而赚钱，或是捐款。',this)" class="modify">段落修改</div></div><div class="para"><div class="duanluo"><span>182</span></div><div class="l"><span style="margin-left:25px"></span><a href="../sentence_detail/360.htm" target="right" class="red">激励措施：公开奖励和表扬，强调工作任务的艰巨性以及成功所需要的高超技巧，颁发荣誉奖章、在公司刊物发表文章表扬、优秀员工光荣榜。</a></div><div class="modify" align="right" paraseq="181"><span class="btn btn-blue" onclick="submitPart('激励措施：公开奖励和表扬，强调工作任务的艰巨性以及成功所需要的高超技巧，颁发荣誉奖章、在公司刊物发表文章表扬、优秀员工光荣榜。',this)" class="modify">段落修改</div></div><div class="para"><div class="duanluo"><span>183</span></div><div class="l"><span style="margin-left:25px"></span><span >⑤	自我实现需求 </span></div></div><div class="para"><div class="duanluo"><span>184</span></div><div class="l"><span style="margin-left:25px"></span><a href="../sentence_detail/362.htm" target="right" class="red">自我实现需求（Self-actualization），是最高层次的需求，包括针对于真善美至高人生境界获得的需求，因此前面四项需求都能满足，</a><a href="../sentence_detail/363.htm" target="right" class="red">最高层次的需求方能相继产生，是一种衍生性需求，如：自我实现，发挥潜能等。</a></div><div class="modify" align="right" paraseq="183"><span class="btn btn-blue" onclick="submitPart('自我实现需求（Self-actualization），是最高层次的需求，包括针对于真善美至高人生境界获得的需求，因此前面四项需求都能满足，最高层次的需求方能相继产生，是一种衍生性需求，如：自我实现，发挥潜能等。',this)" class="modify">段落修改</div></div><div class="para"><div class="duanluo"><span>185</span></div><div class="l"><span style="margin-left:25px"></span><a href="../sentence_detail/364.htm" target="right" class="red">缺乏自我实现需求的特征：觉得自己的生活被空虚感给推动着，要自己去做一些身为一个&quot;人&rdquo;应该在这世上做的事，</a><a href="../sentence_detail/365.htm" target="right" class="red">极需要有让他能更充实自己的事物、尤其是让一个人深刻的体验到自己没有白活在这世界上的事物。</a><a href="../sentence_detail/366.htm" target="right" class="red">也开始认为，价值观、道德观胜过金钱、爱人、尊重和社会的偏见。</a><a href="../sentence_detail/367.htm" target="right" class="red">例如：一个真心为了帮助他人而捐款的人。</a><a href="../sentence_detail/368.htm" target="right" class="red">一位武术家、运动家把自己的体能练到极致，让自己成为世界一流或是单纯只为了超越自己。</a><a href="../sentence_detail/369.htm" target="right" class="red">一位企业家，真心认为自己所经营的事业能为这社会带来价值，而为了比昨天更好而工作。</a></div><div class="modify" align="right" paraseq="184"><span class="btn btn-blue" onclick="submitPart('缺乏自我实现需求的特征：觉得自己的生活被空虚感给推动着，要自己去做一些身为一个&quot;人&rdquo;应该在这世上做的事，极需要有让他能更充实自己的事物、尤其是让一个人深刻的体验到自己没有白活在这世界上的事物。也开始认为，价值观、道德观胜过金钱、爱人、尊重和社会的偏见。例如：一个真心为了帮助他人而捐款的人。一位武术家、运动家把自己的体能练到极致，让自己成为世界一流或是单纯只为了超越自己。一位企业家，真心认为自己所经营的事业能为这社会带来价值，而为了比昨天更好而工作。',this)" class="modify">段落修改</div></div><div class="para"><div class="duanluo"><span>186</span></div><div class="l"><span style="margin-left:25px"></span><a href="../sentence_detail/370.htm" target="right" class="red">激励措施：设计工作时运用复杂情况的适应策略，给有特长的人委派特别任务，在设计工作和执行计划时为下级留有余地。</a></div><div class="modify" align="right" paraseq="185"><span class="btn btn-blue" onclick="submitPart('激励措施：设计工作时运用复杂情况的适应策略，给有特长的人委派特别任务，在设计工作和执行计划时为下级留有余地。',this)" class="modify">段落修改</div></div><div class="para"><div class="duanluo"><span>187</span></div><div class="l"><span style="margin-left:25px"></span><span >不同层次的需求是人作为一种有主观能动性且有思考性的高级动物在生存中本能的人性体现。 </span><span >有人说人的需求是无止境的，那是因为当人满足了底层的需求后就会有新的、更高层的需求产生。 </span><span >而通过不断地满足人的各种需求来推动员工工作和业绩奉献，这也是激励的内在因素之一。 </span><a href="../sentence_detail/374.htm" target="right" class="red">而任意一种新的需求的产生，并不代表旧的需求没有了，只是得到满足和保障后已经退居其后，首当其冲的就是新产生的需求了，而且满足了低层次的需求，</a><span >才能更好地在新需求上产生动力，所以不能只考虑某一种需求时就忽略了其他需求的满足。 </span><span >同样，要注意在旧需求满足后产生的新需求应该怎么样去满足或如何使之成为新的激励因素。 </span></div><div class="modify" align="right" paraseq="186"><span class="btn btn-blue" onclick="submitPart('不同层次的需求是人作为一种有主观能动性且有思考性的高级动物在生存中本能的人性体现。有人说人的需求是无止境的，那是因为当人满足了底层的需求后就会有新的、更高层的需求产生。而通过不断地满足人的各种需求来推动员工工作和业绩奉献，这也是激励的内在因素之一。而任意一种新的需求的产生，并不代表旧的需求没有了，只是得到满足和保障后已经退居其后，首当其冲的就是新产生的需求了，而且满足了低层次的需求，才能更好地在新需求上产生动力，所以不能只考虑某一种需求时就忽略了其他需求的满足。同样，要注意在旧需求满足后产生的新需求应该怎么样去满足或如何使之成为新的激励因素。',this)" class="modify">段落修改</div></div><div class="para"><div class="duanluo"><span>188</span></div><div class="l"><span style="margin-left:25px"></span><span >（2）	亚当斯公平理论 </span></div></div><div class="para"><div class="duanluo"><span>189</span></div><div class="l"><span style="margin-left:25px"></span><span >亚当斯的公平理论是由美国学者亚当斯在1965年提出的，又被称为社会比较理论。 </span><span >这个理论用一个简单而清晰的公式来表达，这个公式是： Op/Ip = Or/Ir。 </span><a href="../sentence_detail/380.htm" target="right" class="red"> 其中Op指的是自己对所获得报酬的感受：Or则是指对他人所获得报酬的感受：相应地，Ip表示对自己所获得贡献的感受，而Ir是指自己对他人所做贡献的感受。</a><span >从这个公式我们不难发现，人的公平感受不仅仅因自己所得到报酬的总额绝对值所影响，更多是受到与参照者相比较之下所获得相对报酬的影响。 </span><a href="../sentence_detail/382.htm" target="right" class="orange">当员工将自己获得的报酬与自己的贡献的比值与组织内其他人做比较，只有其主观认为两者相等时他才认为满足了公平的需要。</a></div><div class="modify" align="right" paraseq="188"><span class="btn btn-blue" onclick="submitPart('亚当斯的公平理论是由美国学者亚当斯在1965年提出的，又被称为社会比较理论。这个理论用一个简单而清晰的公式来表达，这个公式是： Op/Ip = Or/Ir。其中Op指的是自己对所获得报酬的感受：Or则是指对他人所获得报酬的感受：相应地，Ip表示对自己所获得贡献的感受，而Ir是指自己对他人所做贡献的感受。从这个公式我们不难发现，人的公平感受不仅仅因自己所得到报酬的总额绝对值所影响，更多是受到与参照者相比较之下所获得相对报酬的影响。当员工将自己获得的报酬与自己的贡献的比值与组织内其他人做比较，只有其主观认为两者相等时他才认为满足了公平的需要。',this)" class="modify">段落修改</div></div><div class="para"><div class="duanluo"><span>190</span></div><div class="l"><span style="margin-left:25px"></span><a href="../sentence_detail/383.htm" target="right" class="orange">当这个等式变为不等式： Op/Ip &lt; Or/Ir 时，员工会有不公平的感觉，他会要求提高自己的报酬，如果不能实现，</a><span >则减少自己的努力程度甚至消极怠工从而使这个不等式向着等式的方向转变。 </span><a href="../sentence_detail/385.htm" target="right" class="red">如果员工继续感到不满意，最终则会离开组织，但是如果当这个不等式的方向改变的话，即员工感到自己的报酬贡献比大于其他人的报酬贡献比时，</a><a href="../sentence_detail/386.htm" target="right" class="orange">他却不会因此而产生不公平的感觉，也不会因为感觉自己从组织中多拿了报酬从而主动去多做贡献。</a></div><div class="modify" align="right" paraseq="189"><span class="btn btn-blue" onclick="submitPart('当这个等式变为不等式： Op/Ip &lt; Or/Ir 时，员工会有不公平的感觉，他会要求提高自己的报酬，如果不能实现，则减少自己的努力程度甚至消极怠工从而使这个不等式向着等式的方向转变。如果员工继续感到不满意，最终则会离开组织，但是如果当这个不等式的方向改变的话，即员工感到自己的报酬贡献比大于其他人的报酬贡献比时，他却不会因此而产生不公平的感觉，也不会因为感觉自己从组织中多拿了报酬从而主动去多做贡献。',this)" class="modify">段落修改</div></div><div class="para"><div class="duanluo"><span>191</span></div><div class="l"><span style="margin-left:25px"></span><a href="../sentence_detail/387.htm" target="right" class="red">从亚当斯的公平理论中我们能得到的启示是：首先，企业在考虑对员工的激励效果的时候不仅要注意付给员工报酬的绝对值，更要注意报酬相对值，</a><span >一个组织中员工之间的报酬差异如果悬殊，则会引起低收入群体的强烈不满， </span><span >具有一定工作经验的外来&quot;空降兵&rdquo;进入企业或者从企业跳出又被高薪聘回的员工的收入如果远高于在企业里默默奉献的老员工，也会引起老员工们的强烈不满， </span><span >虽然没有绝对的公平，但是也要讲求相对公平，否则，公司在用工问题上会造成由于员工的严重不公平感而引发恶性循环。 </span><a href="../sentence_detail/391.htm" target="right" class="red">其次，为了避免让员工产生不公平的感觉，企业要在员工中营造一种公平合理的氛围，使员工产生一种主观上的公平感。</a><span >如果可以使用团队建设法以提高团队中各个成员的技能和团队整体的效率及&quot;战斗力&rdquo;。 </span><a href="../sentence_detail/393.htm" target="right" class="orange">最后，在对组织中的成员激励的过程中企业应注意对员工公平心理的引导，使其树立正确的公平观：一是要让所有的员工认识到绝对的公平是不存在的，</a><a href="../sentence_detail/394.htm" target="right" class="red">但要让员工看到企业在努力地营造相对的公平；</a><a href="../sentence_detail/395.htm" target="right" class="red">二是要防止在员工群体中盲目攀比现象的出现。</a></div><div class="modify" align="right" paraseq="190"><span class="btn btn-blue" onclick="submitPart('从亚当斯的公平理论中我们能得到的启示是：首先，企业在考虑对员工的激励效果的时候不仅要注意付给员工报酬的绝对值，更要注意报酬相对值，一个组织中员工之间的报酬差异如果悬殊，则会引起低收入群体的强烈不满，具有一定工作经验的外来&quot;空降兵&rdquo;进入企业或者从企业跳出又被高薪聘回的员工的收入如果远高于在企业里默默奉献的老员工，也会引起老员工们的强烈不满，虽然没有绝对的公平，但是也要讲求相对公平，否则，公司在用工问题上会造成由于员工的严重不公平感而引发恶性循环。其次，为了避免让员工产生不公平的感觉，企业要在员工中营造一种公平合理的氛围，使员工产生一种主观上的公平感。如果可以使用团队建设法以提高团队中各个成员的技能和团队整体的效率及&quot;战斗力&rdquo;。最后，在对组织中的成员激励的过程中企业应注意对员工公平心理的引导，使其树立正确的公平观：一是要让所有的员工认识到绝对的公平是不存在的，但要让员工看到企业在努力地营造相对的公平；二是要防止在员工群体中盲目攀比现象的出现。',this)" class="modify">段落修改</div></div><div class="para"><div class="duanluo"><span>192</span></div><div class="l"><span style="margin-left:25px"></span><span >3.1.3  薪酬理论 </span></div></div><div class="para"><div class="duanluo"><span>193</span></div><div class="l"><span style="margin-left:25px"></span><span >薪酬激励是激励管理中最重要的也是最有效的激励手段。 </span><a href="../sentence_detail/398.htm" target="right" class="red">薪酬是企业对它的员工为企业所做的贡献、包括他们实现的绩效、付出的努力与占用的时间、以及他们的学识、技能、经验与创造，所付给的相应的回报和答谢，</a><a href="../sentence_detail/399.htm" target="right" class="red">是一种公平交换，是员工在向企业让渡其劳动或劳务使用权后获得的报偿。</a><span >狭义地讲，薪酬是员工获得的工资、奖金、以及金钱或实物形式支付的劳动回报； </span><a href="../sentence_detail/401.htm" target="right" class="red">广义上讲，薪酬包括经济性薪酬和非经济性薪酬，经济性薪酬指工资、奖金、福利待遇和假期等，非经济性薪酬指个人对企业工作本身在心理上的一种感受。</a></div><div class="modify" align="right" paraseq="192"><span class="btn btn-blue" onclick="submitPart('薪酬激励是激励管理中最重要的也是最有效的激励手段。薪酬是企业对它的员工为企业所做的贡献、包括他们实现的绩效、付出的努力与占用的时间、以及他们的学识、技能、经验与创造，所付给的相应的回报和答谢，是一种公平交换，是员工在向企业让渡其劳动或劳务使用权后获得的报偿。狭义地讲，薪酬是员工获得的工资、奖金、以及金钱或实物形式支付的劳动回报；广义上讲，薪酬包括经济性薪酬和非经济性薪酬，经济性薪酬指工资、奖金、福利待遇和假期等，非经济性薪酬指个人对企业工作本身在心理上的一种感受。',this)" class="modify">段落修改</div></div><div class="para"><div class="duanluo"><span>194</span></div><div class="l"><span style="margin-left:25px"></span><a href="../sentence_detail/402.htm" target="right" class="red">对大多数企业而言，薪酬是企业总成本的重要组成部分。</a><a href="../sentence_detail/403.htm" target="right" class="red">薪酬是能够为企业带来预期收益的资本，是用来交换劳动者劳动的一种手段，薪酬作为企业生产成本，是资本的投入，企业期望获得一定的资本回报。</a><a href="../sentence_detail/404.htm" target="right" class="orange">对员工而言，薪酬是他们从企业获得相对满足的过程，薪酬是维持生活、提高生活质量的重要前提。</a><a href="../sentence_detail/405.htm" target="right" class="red">因此，薪酬能极大地影响员工的行为和工作绩效。</a><a href="../sentence_detail/406.htm" target="right" class="red">经济性报酬会在中短期内激励员工并调动员工积极性，但是经济性报酬不是万能的，非经济性报酬对员工的中长期激励，才是最根本的。</a><a href="../sentence_detail/407.htm" target="right" class="red">企业应当把经济性报酬和非经济性报酬结合起来激励员工，让员工感受到自己的价值并看到自己的发展前景，为企业努力工作。</a><a href="../sentence_detail/408.htm" target="right" class="orange">经济性薪酬构成的基本要素有基本薪酬、可变薪酬和间接薪酬。</a><a href="../sentence_detail/409.htm" target="right" class="red">①基本薪酬是员工从企业获得的较为稳定的经济报酬，它为员工提供了基本生活保障和稳定收入来源，同时也为企业确定可变薪酬提供依据，</a><a href="../sentence_detail/410.htm" target="right" class="red">基本薪酬的变动主要取决于社会生活水平、其他企业基本薪酬的变化、员工自身素质变化所产生的绩效变化以及企业所在行业、区域等因素；</a><a href="../sentence_detail/411.htm" target="right" class="orange">②可变薪酬是指直接与绩效挂钩的那部分薪酬，通常称为浮动工资或奖金。</a><a href="../sentence_detail/412.htm" target="right" class="orange">可变薪酬具有很强的激励性，有助于促进员工提高业绩的积极性，从而实现企业的绩效目标；</a><a href="../sentence_detail/413.htm" target="right" class="red">③间接薪酬是指员工福利与服务，它不是以员工向企业提供的工作时间来计算的薪酬组成部分</a></div><div class="modify" align="right" paraseq="193"><span class="btn btn-blue" onclick="submitPart('对大多数企业而言，薪酬是企业总成本的重要组成部分。薪酬是能够为企业带来预期收益的资本，是用来交换劳动者劳动的一种手段，薪酬作为企业生产成本，是资本的投入，企业期望获得一定的资本回报。对员工而言，薪酬是他们从企业获得相对满足的过程，薪酬是维持生活、提高生活质量的重要前提。因此，薪酬能极大地影响员工的行为和工作绩效。经济性报酬会在中短期内激励员工并调动员工积极性，但是经济性报酬不是万能的，非经济性报酬对员工的中长期激励，才是最根本的。企业应当把经济性报酬和非经济性报酬结合起来激励员工，让员工感受到自己的价值并看到自己的发展前景，为企业努力工作。经济性薪酬构成的基本要素有基本薪酬、可变薪酬和间接薪酬。①基本薪酬是员工从企业获得的较为稳定的经济报酬，它为员工提供了基本生活保障和稳定收入来源，同时也为企业确定可变薪酬提供依据，基本薪酬的变动主要取决于社会生活水平、其他企业基本薪酬的变化、员工自身素质变化所产生的绩效变化以及企业所在行业、区域等因素；②可变薪酬是指直接与绩效挂钩的那部分薪酬，通常称为浮动工资或奖金。可变薪酬具有很强的激励性，有助于促进员工提高业绩的积极性，从而实现企业的绩效目标；③间接薪酬是指员工福利与服务，它不是以员工向企业提供的工作时间来计算的薪酬组成部分',this)" class="modify">段落修改</div></div><div class="para"><div class="duanluo"><span>195</span></div><div class="l"><span style="margin-left:25px"></span><span >一般说来，薪酬由以下几部分构成：①工资，工资是薪酬的最基本部分，属基本薪酬； </span><span >我国大多数企业目前实行的是结构工资制，其构成为基本工资、岗位技能工资等。 </span><a href="../sentence_detail/416.htm" target="right" class="red">②奖金，奖金是企业对员工超额劳动部分或绩效突出部分所支付的奖励性报酬，常见形式有计件奖金、计时奖金、佣金等。</a><span >③津补贴， </span><a href="../sentence_detail/418.htm" target="right" class="red">津贴和补贴是对工资或薪水等难以全面、准确反映劳动条件、劳动环境、社会评价等对员工身心造成的某种不利影响，</a><a href="../sentence_detail/419.htm" target="right" class="red">或者为了保证员工工资水平不受物价影响而支付给员工的一种补偿。</a><span >如：高温补贴、物价补贴等。 </span><span >④福利，从本质上讲，福利属劳动报酬范畴，但它不是按劳付酬，而是根据企业工作和员工的需要支付，它不属于工资：其支付方式有带薪休假、保险等。 </span></div><div class="modify" align="right" paraseq="194"><span class="btn btn-blue" onclick="submitPart('一般说来，薪酬由以下几部分构成：①工资，工资是薪酬的最基本部分，属基本薪酬；我国大多数企业目前实行的是结构工资制，其构成为基本工资、岗位技能工资等。②奖金，奖金是企业对员工超额劳动部分或绩效突出部分所支付的奖励性报酬，常见形式有计件奖金、计时奖金、佣金等。③津补贴，津贴和补贴是对工资或薪水等难以全面、准确反映劳动条件、劳动环境、社会评价等对员工身心造成的某种不利影响，或者为了保证员工工资水平不受物价影响而支付给员工的一种补偿。如：高温补贴、物价补贴等。④福利，从本质上讲，福利属劳动报酬范畴，但它不是按劳付酬，而是根据企业工作和员工的需要支付，它不属于工资：其支付方式有带薪休假、保险等。',this)" class="modify">段落修改</div></div><div class="para"><div class="duanluo"><span>196</span></div><div class="l"><span style="margin-left:25px"></span><span >在现代人力资源管理， </span><span >&quot;薪酬&rdquo;概念是关于组织战略性的一个关键变量．涉及到人力资源战略管理工作的焦点问题和核心内容。 </span><a href="../sentence_detail/424.htm" target="right" class="orange">按照广义薪酬的概念．薪酬项目可分为非货币薪酬与货币薪酬两大类。</a><a href="../sentence_detail/425.htm" target="right" class="red">前者指员工直接从组织劳动或工作过程本身所获得的好处，</a><a href="../sentence_detail/426.htm" target="right" class="red">后者是指员工从组织劳动或工作之外间接获得的货币或物质性报酬．而内货币薪酬各自又可分为直接薪酬与间接薪酬．这样形成一个完整的薪酬项目分类体系。</a></div><div class="modify" align="right" paraseq="195"><span class="btn btn-blue" onclick="submitPart('在现代人力资源管理，&quot;薪酬&rdquo;概念是关于组织战略性的一个关键变量．涉及到人力资源战略管理工作的焦点问题和核心内容。按照广义薪酬的概念．薪酬项目可分为非货币薪酬与货币薪酬两大类。前者指员工直接从组织劳动或工作过程本身所获得的好处，后者是指员工从组织劳动或工作之外间接获得的货币或物质性报酬．而内货币薪酬各自又可分为直接薪酬与间接薪酬．这样形成一个完整的薪酬项目分类体系。',this)" class="modify">段落修改</div></div><div class="para"><div class="duanluo"><span>197</span></div><div class="l"><span style="margin-left:25px"></span><span >3.1.4  工作倦怠理论 </span></div></div><div class="para"><div class="duanluo"><span>198</span></div><div class="l"><span style="margin-left:25px"></span><a href="../sentence_detail/428.htm" target="right" class="red">工作倦怠这一现象最早是由Bradley（1969）在一篇研究办公见习生的论文中提出的，</a><a href="../sentence_detail/429.htm" target="right" class="red">随后美国临床心理学家Freudenberger（1974）通过研究护士、警察、社会工作者和学校教师等服务行业人员的极度的心理压力，</a><a href="../sentence_detail/430.htm" target="right" class="red">首次用这一词语来描述包括自己在内的医务工作者所体验到的一组症状，如身体、情绪和精神上的衰竭、缺乏工作投入、人格解体以及低成就感等。</a><a href="../sentence_detail/431.htm" target="right" class="red">Freudenberger的研究加深了对这一概念的认识，从而引起了大量针对工作倦怠的研究。</a><a href="../sentence_detail/432.htm" target="right" class="red">在过去的30多年里，虽然与工作倦怠相关的新闻报道和研究文献不断增多，但到目前为止，学者们仍未能就工作倦怠的概念界定达成一致性意见。</a></div><div class="modify" align="right" paraseq="197"><span class="btn btn-blue" onclick="submitPart('工作倦怠这一现象最早是由Bradley（1969）在一篇研究办公见习生的论文中提出的，随后美国临床心理学家Freudenberger（1974）通过研究护士、警察、社会工作者和学校教师等服务行业人员的极度的心理压力，首次用这一词语来描述包括自己在内的医务工作者所体验到的一组症状，如身体、情绪和精神上的衰竭、缺乏工作投入、人格解体以及低成就感等。Freudenberger的研究加深了对这一概念的认识，从而引起了大量针对工作倦怠的研究。在过去的30多年里，虽然与工作倦怠相关的新闻报道和研究文献不断增多，但到目前为止，学者们仍未能就工作倦怠的概念界定达成一致性意见。',this)" class="modify">段落修改</div></div><div class="para"><div class="duanluo"><span>199</span></div><div class="l"><span style="margin-left:25px"></span><a href="../sentence_detail/433.htm" target="right" class="red">早期研究中，研究者主要通过对工作倦怠症状的描述来对其进行定义。</a><a href="../sentence_detail/434.htm" target="right" class="red">这不仅带有一定的选择性，而且忽略了工作倦怠症状形成和发展的动态过程。</a><a href="../sentence_detail/435.htm" target="right" class="red">为了克服这种不足，后来的研究主要采用了静态定义和动态定义两种方法：</a></div><div class="modify" align="right" paraseq="198"><span class="btn btn-blue" onclick="submitPart('早期研究中，研究者主要通过对工作倦怠症状的描述来对其进行定义。这不仅带有一定的选择性，而且忽略了工作倦怠症状形成和发展的动态过程。为了克服这种不足，后来的研究主要采用了静态定义和动态定义两种方法：',this)" class="modify">段落修改</div></div><div class="para"><div class="duanluo"><span>200</span></div><div class="l"><span style="margin-left:25px"></span><span >（1）	工作倦怠的静态定义 </span></div></div><div class="para"><div class="duanluo"><span>201</span></div><div class="l"><span style="margin-left:25px"></span><a href="../sentence_detail/437.htm" target="right" class="red">静态定义即选取工作倦怠中最为典型和核心的那些症状如情感衰竭来进行定义。</a><a href="../sentence_detail/438.htm" target="right" class="red">例如，Brill（1984）认为&quot;工作倦怠是在没有精神病理学原因的前提下，个体的一种由期望所调节的、与工作相关的、烦躁不安的、机能失调的状态。</a><a href="../sentence_detail/439.htm" target="right" class="red">它有两方面的特征：一是在相同的工作情境中，个体曾有过良好的工作绩效和较高的情感水平；</a><a href="../sentence_detail/440.htm" target="right" class="red">二是在没有外来帮助或环境改变的情况下，个体难以恢复到原来的状态&rdquo;。</a><a href="../sentence_detail/441.htm" target="right" class="red">Pines和Aronson（1988）将工作倦怠定义为&quot;由于长期卷入于有情感要求的情境，而导致的一种身体、情感和心理的衰竭状态&rdquo;。</a><span >身体衰竭的特征为精力不足、长期疲劳、虚弱、身体和心理上的抱怨； </span><a href="../sentence_detail/443.htm" target="right" class="red">情感衰竭涉及到个体的无助感和无望感等；心理衰竭则指对于自身、工作和生活的消极态度的形成。</a></div><div class="modify" align="right" paraseq="200"><span class="btn btn-blue" onclick="submitPart('静态定义即选取工作倦怠中最为典型和核心的那些症状如情感衰竭来进行定义。例如，Brill（1984）认为&quot;工作倦怠是在没有精神病理学原因的前提下，个体的一种由期望所调节的、与工作相关的、烦躁不安的、机能失调的状态。它有两方面的特征：一是在相同的工作情境中，个体曾有过良好的工作绩效和较高的情感水平；二是在没有外来帮助或环境改变的情况下，个体难以恢复到原来的状态&rdquo;。Pines和Aronson（1988）将工作倦怠定义为&quot;由于长期卷入于有情感要求的情境，而导致的一种身体、情感和心理的衰竭状态&rdquo;。身体衰竭的特征为精力不足、长期疲劳、虚弱、身体和心理上的抱怨；情感衰竭涉及到个体的无助感和无望感等；心理衰竭则指对于自身、工作和生活的消极态度的形成。',this)" class="modify">段落修改</div></div><div class="para"><div class="duanluo"><span>202</span></div><div class="l"><span style="margin-left:25px"></span><span >总的来说，工作倦怠的静态定义具有五个方面的共同特征： </span></div></div><div align="center" class="navigation"><a href="paper_1.htm"><span class="btn_gray">首页</span></a><a  href="paper_1.htm"><span class="btn_gray">上一页</span></a><a href="paper_3.htm"><span class="btn_gray">下一页</span></a><a href="paper_5.htm">	<span class="btn_gray">尾页</span></a><span>页码：2/5页</span></div><div class="footer"><div align="center" class="a666" style="font-size:14px;padding-top:50px;padding-bottom:30px;"><div>检测报告由 <a class="nounderline" href="http://www.ptcheck.com" target="_blank">PTcheck</a>文献相似度检测系统生成 </div><div>Copyright © 2007-2016 PTcheck </div></div></div></div></body></html>

@@ -1,0 +1,446 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01//EN"
+"http://www.w3.org/TR/html4/strict.dtd">
+
+<html xmlns="http://www.w3.org/1999/xhtml" lang="en">
+
+	<head>
+		<meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+		<title>PTcheck论文检测报告</title>
+		<link rel="stylesheet" href="../css/base.css" />
+		<style type="text/css">
+		a {
+    color: #0796fe;
+}
+a:hover{
+    color:#0796fe!important;
+}
+			.mainContainer {
+				padding: 20px;
+	
+			}
+			
+			.navigation span {
+				display: inline-block;
+				padding-left: 5px;
+				padding-right: 5px;
+				color: #666;
+			}
+			
+			.btn_gray {
+				border: solid 1px #dddddd;
+				background-color: #eeeeee;
+				border-radius: 5px;
+				cursor: pointer;
+			}
+			
+			.btn_gray:hover,
+			.btn_blue {
+				background-color: #0099ff;
+				border: solid 1px #0099ff;
+				color: #fff!important;
+				border-radius: 5px;
+				cursor: pointer;
+			}
+			.para{
+				padding-top:20px;
+			}
+			
+			.duanluo{
+				padding-left:20px;
+				
+				padding-bottom: 5px;
+			}
+			.duanluo span{
+				display: inline-block;
+				padding-left:5px;
+				padding-right: 5px;
+				border: solid 1px #999;
+				color:#999;
+			}
+			.l{
+				line-height: 20px;
+				padding-bottom: 5px;
+			}
+			.l span{
+				color:#333;
+			}
+			.mymodify{
+				font-size:12px;
+			}
+			.mymodify textarea{
+				width:98%;
+				height:100px;
+				color:#333;
+				clear:both;
+			}
+			textarea{
+				padding:10px;
+				line-height: 20px;
+			}
+		</style>
+		<script type="text/javascript">
+
+        var isstorage=false;
+        var danhao;
+        var result= new Array();
+         function trimStr(str) {
+
+            if ((typeof (str) != "string") || !str) {
+
+                return "";
+
+            }
+
+            return str.replace(/(^\s*)|(\s*$)/g, "");
+
+        }
+          
+        function myclick() {
+            window.parent.parent.ViewMain.window.location.href = "../../htmls/jianchong_.htm";
+        }
+        function submitPart(obj, target) {
+            var parent = target.parentNode;
+            if(parent.getAttribute("data")=="add"){
+              var mynext = parent.nextSibling;
+              parent.setAttribute("data","remove");
+              parent.parentNode.removeChild(mynext);
+            }
+            else{
+            	parent.setAttribute("data","add");
+            	var temphtml = document.createElement("div");
+                temphtml.innerHTML = "<input type=\"hidden\" value=\""+ parent.getAttribute("paraseq") +"\"><div name=\"mymodify\" class=\"mymodify\" >"
+					+"<div class=\"a999\">改重内容（请对本句修改之后，点击“临时保存”，然后进入报告左侧“修改文档”页面中获取修改后的内容）：</div>"
+					+"<div><textarea>"+obj
+					+"</textarea>"
+					+"</div>"
+					+"<div align=\"right\" class=\"a999\" style=\"margin-top:14px;\">（注意：改完请及时到“修改文档”复制到原文）<span class=\"btn-gray btn a333\" onclick=\"mysave(this)\">临时保存</span></div>"
+				+"</div>";
+            	   parent.parentNode.insertBefore(temphtml, null);
+            }
+
+        }
+
+		function myNavigate(){
+		 document.getElementById("a_url").click();
+		}
+       
+        function mysave(target) {
+            var tempsen = trimStr(target.parentNode.previousSibling.lastChild.value.replace(/\"/g,"\\\"").replace(/\'/g,"\\\'"));
+            var paraseq = target.parentNode.parentNode.parentNode.firstChild.value;            
+            var mydiv = target.parentNode.parentNode.parentNode.previousSibling;
+             if (mydiv.nodeName == "#text") {
+                mydiv = mydiv.previousSibling;
+            }
+             
+            mydiv.lastChild.setAttribute("onclick", "submitPart('" + tempsen + "',this)");
+           mydiv.setAttribute("data","remove");
+           if (mydiv.firstChild.innerHTML != "已修改") {
+                var xiugai = document.createElement("span");
+                xiugai.setAttribute("style", "font-size:12px;color:#00AEAE;margin-right:10px;");
+                xiugai.innerHTML = "已修改";
+                mydiv.insertBefore(xiugai, mydiv.lastChild);
+               }
+            
+            var parent = target.parentNode.parentNode.parentNode;
+            parent.parentNode.removeChild(parent);
+            if(!isstorage)
+            {
+            window.parent.parent.parent.myset(paraseq, tempsen);
+            }
+            else
+            {
+            myset(paraseq, tempsen);
+            }
+        }
+        window.onload = function() {
+            danhao = document.getElementById("danhao").value;
+            if (window.localStorage) {
+                isstorage = true;
+            }
+            if (!isstorage) {
+                result = window.parent.parent.parent.modifyPara;
+                
+            }
+            else {
+                var temp = localStorage.getItem(danhao);
+                if (temp) {
+                    result = eval("(" + temp + ")");
+                }
+            }
+            if (result) {
+            	
+                for (var i = 0; i < result.length; i++) {
+                	
+                    //var all = $(":hidden");
+                    var all = getClass("div","modify");
+                   
+                    for (var j = 0; j < all.length; j++) {
+                        if (all[j].getAttribute("paraseq") == result[i].para) {
+                        	
+                            var xiugai = document.createElement("span");
+                            xiugai.setAttribute("style", "font-size:12px;color:#00AEAE;margin-right:10px;");
+                            xiugai.innerHTML = "已修改";
+                            all[j].insertBefore(xiugai, all[j].lastChild);
+                            all[j].lastChild.setAttribute("onclick", "submitPart('" + result[i].text.replace(/\"/g,"\\\"").replace(/\'/g,"\\\'") + "',this)");
+                        }
+                    }
+
+                }
+            }  
+        }
+
+
+        function mydivclick(e,obj) {
+            if (e.target.tagName.toUpperCase() != "INPUT") {
+                obj.lastChild.previousSibling.click();
+            }
+        }
+
+        function getClass(tagname, className) { //tagname指元素，className指class的值
+            var tagname = document.getElementsByTagName(tagname);  //获取指定元素
+            var tagnameAll = [];     //这个数组用于存储所有符合条件的元素
+            for (var i = 0; i < tagname.length; i++) {     //遍历获得的元素
+                if (tagname[i].className == className) {     //如果获得的元素中的class的值等于指定的类名，就赋值给tagnameAll
+                    tagnameAll[tagnameAll.length] = tagname[i];
+                }
+            }
+            return tagnameAll;
+
+        }
+
+       
+        
+        
+         function myset(paraseq, sen) {
+         	
+            var reg = new RegExp("\"", "g")
+            var model = "{\"para\":\"" + paraseq + "\",\"text\": \"" + sen + "\"}";
+            var mo = eval("(" + model + ")");
+            var exist = false;
+            for (var i = 0; i < result.length; i++) {
+                if (mo.para == result[i].para) {
+                    exist = true;
+                    result[i].text = mo.text;
+                }
+            }
+            if (!exist) {
+                result.push(mo);
+            }
+            localStorage.removeItem(danhao);
+            localStorage.setItem(danhao, json_encode(result));
+        }
+        
+        function json_decode(str_json) {
+            // Decodes the JSON representation into a PHP value  
+            //  
+            // version: 906.1806  
+            // discuss at: http://phpjs.org/functions/json_decode  
+            // +      original by: Public Domain (http://www.json.org/json2.js)  
+            // + reimplemented by: Kevin van Zonneveld (http://kevin.vanzonneveld.net)  
+            // + improved by: T.J. Leahy  
+            // *     example 1: json_decode('[\n    "e",\n    {\n    "pluribus": "unum"\n}\n]');  
+            // *     returns 1: ['e', {pluribus: 'unum'}]  
+            /* 
+            http://www.JSON.org/json2.js 
+            2008-11-19 
+            Public Domain. 
+            NO WARRANTY EXPRESSED OR IMPLIED. USE AT YOUR OWN RISK. 
+            See http://www.JSON.org/js.html 
+            */
+
+            var json = this.window.JSON;
+            if (typeof json === 'object' && typeof json.parse === 'function') {
+                return json.parse(str_json);
+            }
+
+            var cx = /[\u0000\u00ad\u0600-\u0604\u070f\u17b4\u17b5\u200c-\u200f\u2028-\u202f\u2060-\u206f\ufeff\ufff0-\uffff]/g;
+            var j;
+            var text = str_json;
+
+            // Parsing happens in four stages. In the first stage, we replace certain  
+            // Unicode characters with escape sequences. JavaScript handles many characters  
+            // incorrectly, either silently deleting them, or treating them as line endings.  
+            cx.lastIndex = 0;
+            if (cx.test(text)) {
+                text = text.replace(cx, function(a) {
+                    return '\\u' +
+            ('0000' + a.charCodeAt(0).toString(16)).slice(-4);
+                });
+            }
+
+            // In the second stage, we run the text against regular expressions that look  
+            // for non-JSON patterns. We are especially concerned with '()' and 'new'  
+            // because they can cause invocation, and '=' because it can cause mutation.  
+            // But just to be safe, we want to reject all unexpected forms.  
+
+            // We split the second stage into 4 regexp operations in order to work around  
+            // crippling inefficiencies in IE's and Safari's regexp engines. First we  
+            // replace the JSON backslash pairs with '@' (a non-JSON character). Second, we  
+            // replace all simple value tokens with ']' characters. Third, we delete all  
+            // open brackets that follow a colon or comma or that begin the text. Finally,  
+            // we look to see that the remaining characters are only whitespace or ']' or  
+            // ',' or ':' or '{' or '}'. If that is so, then the text is safe for eval.  
+            if (/^[\],:{}\s]*$/.
+        test(text.replace(/\\(?:["\\\/bfnrt]|u[0-9a-fA-F]{4})/g, '@').
+            replace(/"[^"\\\n\r]*"|true|false|null|-?\d+(?:\.\d*)?(?:[eE][+\-]?\d+)?/g, ']').
+            replace(/(?:^|:|,)(?:\s*\[)+/g, ''))) {
+
+                // In the third stage we use the eval function to compile the text into a  
+                // JavaScript structure. The '{' operator is subject to a syntactic ambiguity  
+                // in JavaScript: it can begin a block or an object literal. We wrap the text  
+                // in parens to eliminate the ambiguity.  
+
+                j = eval('(' + text + ')');
+
+                return j;
+            }
+
+            // If the text is not JSON parseable, then a SyntaxError is thrown.  
+            throw new SyntaxError('json_decode');
+        }
+
+        function json_encode(mixed_val) {
+            // Returns the JSON representation of a value  
+            //  
+            // version: 906.1806  
+            // discuss at: http://phpjs.org/functions/json_encode  
+            // +      original by: Public Domain (http://www.json.org/json2.js)  
+            // + reimplemented by: Kevin van Zonneveld (http://kevin.vanzonneveld.net)  
+            // + improved by: T.J. Leahy  
+            // *     example 1: json_encode(['e', {pluribus: 'unum'}]);  
+            // *     returns 1: '[\n    "e",\n    {\n    "pluribus": "unum"\n}\n]'  
+            /* 
+            http://www.JSON.org/json2.js 
+            2008-11-19 
+            Public Domain. 
+            NO WARRANTY EXPRESSED OR IMPLIED. USE AT YOUR OWN RISK. 
+            See http://www.JSON.org/js.html 
+            */
+            var json = this.window.JSON;
+            if (typeof json === 'object' && typeof json.stringify === 'function') {
+                return json.stringify(mixed_val);
+            }
+
+            var value = mixed_val;
+
+            var quote = function(string) {
+                var escapable = /[\\\"\u0000-\u001f\u007f-\u009f\u00ad\u0600-\u0604\u070f\u17b4\u17b5\u200c-\u200f\u2028-\u202f\u2060-\u206f\ufeff\ufff0-\uffff]/g;
+                var meta = {    // table of character substitutions  
+                    '\b': '\\b',
+                    '\t': '\\t',
+                    '\n': '\\n',
+                    '\f': '\\f',
+                    '\r': '\\r',
+                    '"': '\\"',
+                    '\\': '\\\\'
+                };
+
+                escapable.lastIndex = 0;
+                return escapable.test(string) ?
+        '"' + string.replace(escapable, function(a) {
+            var c = meta[a];
+            return typeof c === 'string' ? c :
+            '\\u' + ('0000' + a.charCodeAt(0).toString(16)).slice(-4);
+        }) + '"' :
+        '"' + string + '"';
+            };
+
+            var str = function(key, holder) {
+                var gap = '';
+                var indent = '    ';
+                var i = 0;          // The loop counter.  
+                var k = '';          // The member key.  
+                var v = '';          // The member value.  
+                var length = 0;
+                var mind = gap;
+                var partial = [];
+                var value = holder[key];
+
+                // If the value has a toJSON method, call it to obtain a replacement value.  
+                if (value && typeof value === 'object' &&
+            typeof value.toJSON === 'function') {
+                    value = value.toJSON(key);
+                }
+
+                // What happens next depends on the value's type.  
+                switch (typeof value) {
+                    case 'string':
+                        return quote(value);
+
+                    case 'number':
+                        // JSON numbers must be finite. Encode non-finite numbers as null.  
+                        return isFinite(value) ? String(value) : 'null';
+
+                    case 'boolean':
+                    case 'null':
+                        // If the value is a boolean or null, convert it to a string. Note:  
+                        // typeof null does not produce 'null'. The case is included here in  
+                        // the remote chance that this gets fixed someday.  
+
+                        return String(value);
+
+                    case 'object':
+                        // If the type is 'object', we might be dealing with an object or an array or  
+                        // null.  
+                        // Due to a specification blunder in ECMAScript, typeof null is 'object',  
+                        // so watch out for that case.  
+                        if (!value) {
+                            return 'null';
+                        }
+
+                        // Make an array to hold the partial results of stringifying this object value.  
+                        gap += indent;
+                        partial = [];
+
+                        // Is the value an array?  
+                        if (Object.prototype.toString.apply(value) === '[object Array]') {
+                            // The value is an array. Stringify every element. Use null as a placeholder  
+                            // for non-JSON values.  
+
+                            length = value.length;
+                            for (i = 0; i < length; i += 1) {
+                                partial[i] = str(i, value) || 'null';
+                            }
+
+                            // Join all of the elements together, separated with commas, and wrap them in  
+                            // brackets.  
+                            v = partial.length === 0 ? '[]' :
+                    gap ? '[\n' + gap +
+                    partial.join(',\n' + gap) + '\n' +
+                    mind + ']' :
+                    '[' + partial.join(',') + ']';
+                            gap = mind;
+                            return v;
+                        }
+
+                        // Iterate through all of the keys in the object.  
+                        for (k in value) {
+                            if (Object.hasOwnProperty.call(value, k)) {
+                                v = str(k, value);
+                                if (v) {
+                                    partial.push(quote(k) + (gap ? ': ' : ':') + v);
+                                }
+                            }
+                        }
+
+                        // Join all of the member texts together, separated with commas,  
+                        // and wrap them in braces.  
+                        v = partial.length === 0 ? '{}' :
+                gap ? '{\n' + gap + partial.join(',\n' + gap) + '\n' +
+                mind + '}' : '{' + partial.join(',') + '}';
+                        gap = mind;
+                        return v;
+                }
+            };
+
+            // Make a fake root object containing our value under the key of ''.  
+            // Return the result of stringifying the value.  
+            return str('', {
+                '': value
+            });
+        } 
+       
+    </script>
+	</head>
+
+	<body><a href="http://www.ptcheck.com/jack/segment.aspx" target="_blank" id="a_url" style="display:none;" ></a> <input type="hidden" id="danhao" value="2285731800810302" /><div class="mainContainer"><div align="center" class="navigation"><a href="paper_1.htm"><span class="btn_gray">首页</span></a><a  href="paper_4.htm"><span class="btn_gray">上一页</span></a><a href="#"><span class="btn_gray">下一页</span></a><a href="paper_5.htm">	<span class="btn_gray">尾页</span></a><span>页码：5/5页</span></div><div class="zhengwen"><div class="para"><div class="duanluo"><span>405</span></div><div class="l"><span style="margin-left:25px"></span><span >	38	3.73	5	1	 </span></div></div><div class="para"><div class="duanluo"><span>406</span></div><div class="l"><span style="margin-left:25px"></span><span >	39	3.83	5	1	 </span></div></div><div class="para"><div class="duanluo"><span>407</span></div><div class="l"><span style="margin-left:25px"></span><span >	40	3.76	5	1	 </span></div></div><div class="para"><div class="duanluo"><span>408</span></div><div class="l"><span style="margin-left:25px"></span><span >总体均值					3.75 </span></div></div><div class="para"><div class="duanluo"><span>409</span></div><div class="l"><span style="margin-left:25px"></span><a href="../sentence_detail/795.htm" target="right" class="red">以上量表中的平均值显示以上可能影响工作满意度的十个维度的均值之间存在差异，</a><span >其中平均值较高的前五项依次为：4.01、3.89、3.87、3.86、3.85。 </span><a href="../sentence_detail/797.htm" target="right" class="red">分值最高的第2l项&quot;对工作程度及工作量是否满意&rdquo;的分数为4.01分，说明目前员工对于本职工作的内容和工作量比较满意；</a><a href="../sentence_detail/798.htm" target="right" class="orange">第6项&quot;对目前公司内部信息的公开是否满意&rdquo;的分数为3.89，说明在公司内部员工对于公司发展策略、经营方向、人事信息等具有较好知情权；</a><span >第31项&quot;对工作环境和工作条件是否满意&rdquo;的分数为3.87，说明员工对于目前办公环境、办公设施、办公条件的状况比较认可； </span><span >第27项&quot;对你的管理者完成工作的能力是否满意&rdquo;的分数为3.86，说明员工比较认可公司管理者的工作能力； </span><span >第34项&quot;个人目标与公司目标保持一致&rdquo;的分数为3.85，说明员工在工作中对公司的目标还是比较认可的，认为所从事的工作能够实现自我价值。 </span><span >平均值较低的五项依次为：3.56、3.59、3.60、3.63、3.64。 </span><span >分值最低的第23项&quot;对公司的授权程度和实效性是否满意&rdquo;的分数为3.56，说明目前公司管理者并没有在条件允许情况下及时有效的给予员工更多的自主决策权， </span><a href="../sentence_detail/804.htm" target="right" class="red">所有的事情依旧要听从管理层的决策，导致员工失去创新意识；</a><a href="../sentence_detail/805.htm" target="right" class="red">第22项&quot;对休假时间是否满意&rdquo;的分数为3.59，说明员工认为目前休假的时间不合理，由于长期的工作任务，员工不得不放弃休假的权力，</a><span >尤其对于公司内部外方员工和中方员工休假时间的差别存在意见； </span><a href="../sentence_detail/807.htm" target="right" class="orange">第25项&quot;对员工工作创新的鼓励与支持是否满意&rdquo;的分数为3.60，表明目前在公司内部公司管理层对于员工的精神鼓励与支持力度不够；</a><a href="../sentence_detail/808.htm" target="right" class="orange">第12项&quot;对目前福利待遇分配的公平性是否满意&rdquo;的分数为3.63，说明企业提供的福利待遇、薪酬水平在公司内外存在公平性不足，造成员工的不满意；</a><a href="../sentence_detail/809.htm" target="right" class="red">第15项&quot;对公司内部职位晋升实效性和公平性是否满意&rdquo;的分数为3.64，说明员工对于目前职位晋升的时间跨度和公平性并不满意。</a><a href="../sentence_detail/810.htm" target="right" class="red"> 对于工作满意度的具体问题的评价是为了了解哪些方面时亟需解决和改善的。</a><span >而如果要总结出哪些方面的因素更需要改善时，则必须要对量表进行维度方面的均值分析。 </span><span >对于工作满意度各维度的均值数据进行分析，结果如表3.9表述： </span></div><div class="modify" align="right" paraseq="408"><span class="btn btn-blue" onclick="submitPart('以上量表中的平均值显示以上可能影响工作满意度的十个维度的均值之间存在差异，其中平均值较高的前五项依次为：4.01、3.89、3.87、3.86、3.85。分值最高的第2l项&quot;对工作程度及工作量是否满意&rdquo;的分数为4.01分，说明目前员工对于本职工作的内容和工作量比较满意；第6项&quot;对目前公司内部信息的公开是否满意&rdquo;的分数为3.89，说明在公司内部员工对于公司发展策略、经营方向、人事信息等具有较好知情权；第31项&quot;对工作环境和工作条件是否满意&rdquo;的分数为3.87，说明员工对于目前办公环境、办公设施、办公条件的状况比较认可；第27项&quot;对你的管理者完成工作的能力是否满意&rdquo;的分数为3.86，说明员工比较认可公司管理者的工作能力；第34项&quot;个人目标与公司目标保持一致&rdquo;的分数为3.85，说明员工在工作中对公司的目标还是比较认可的，认为所从事的工作能够实现自我价值。平均值较低的五项依次为：3.56、3.59、3.60、3.63、3.64。分值最低的第23项&quot;对公司的授权程度和实效性是否满意&rdquo;的分数为3.56，说明目前公司管理者并没有在条件允许情况下及时有效的给予员工更多的自主决策权，所有的事情依旧要听从管理层的决策，导致员工失去创新意识；第22项&quot;对休假时间是否满意&rdquo;的分数为3.59，说明员工认为目前休假的时间不合理，由于长期的工作任务，员工不得不放弃休假的权力，尤其对于公司内部外方员工和中方员工休假时间的差别存在意见；第25项&quot;对员工工作创新的鼓励与支持是否满意&rdquo;的分数为3.60，表明目前在公司内部公司管理层对于员工的精神鼓励与支持力度不够；第12项&quot;对目前福利待遇分配的公平性是否满意&rdquo;的分数为3.63，说明企业提供的福利待遇、薪酬水平在公司内外存在公平性不足，造成员工的不满意；第15项&quot;对公司内部职位晋升实效性和公平性是否满意&rdquo;的分数为3.64，说明员工对于目前职位晋升的时间跨度和公平性并不满意。对于工作满意度的具体问题的评价是为了了解哪些方面时亟需解决和改善的。而如果要总结出哪些方面的因素更需要改善时，则必须要对量表进行维度方面的均值分析。对于工作满意度各维度的均值数据进行分析，结果如表3.9表述：',this)" class="modify">段落修改</div></div><div class="para"><div class="duanluo"><span>410</span></div><div class="l"><span style="margin-left:25px"></span><span >表3.9  工作满意维度均值分析表 </span></div></div><div class="para"><div class="duanluo"><span>411</span></div><div class="l"><span style="margin-left:25px"></span><span >Tab. </span><span > 3.9  Mean value analysis table of job satisfaction dimensions </span></div><div class="modify" align="right" paraseq="410"><span class="btn btn-blue" onclick="submitPart('Tab.3.9  Mean value analysis table of job satisfaction dimensions',this)" class="modify">段落修改</div></div><div class="para"><div class="duanluo"><span>412</span></div><div class="l"><span style="margin-left:25px"></span><span >项目	培训发展	内部沟通	薪酬福利	晋升机制	工作吸引力	授权	管理者能力	组织环境能力匹配	企业文化	团队协作 </span></div><div class="modify" align="right" paraseq="411"><span class="btn btn-blue" onclick="submitPart('项目	培训发展	内部沟通	薪酬福利	晋升机制	工作吸引力	授权	管理者能力	组织环境能力匹配	企业文化	团队协作',this)" class="modify">段落修改</div></div><div class="para"><div class="duanluo"><span>413</span></div><div class="l"><span style="margin-left:25px"></span><span >均值	3.736	3.784	3.695	3.67	3.748	3.622	3.817	3.85	3.807	3.775 </span></div><div class="modify" align="right" paraseq="412"><span class="btn btn-blue" onclick="submitPart('均值	3.736	3.784	3.695	3.67	3.748	3.622	3.817	3.85	3.807	3.775',this)" class="modify">段落修改</div></div><div class="para"><div class="duanluo"><span>414</span></div><div class="l"><span style="margin-left:25px"></span><span >如上表可见， </span><a href="../sentence_detail/819.htm" target="right" class="red">排在最后四个维度的分别为授权3.622、晋升机制3.67、 薪酬福利3.695、培训发展3.736。</a><a href="../sentence_detail/820.htm" target="right" class="orange">则说明外资企业的中方员工对于&quot;授权&rdquo;、&quot;晋升机制&rdquo;、&quot;薪酬福利&rdquo;、&quot;培训发展&rdquo;的满意度较低，</a><a href="../sentence_detail/821.htm" target="right" class="red">表明被调查的中方员工对于公司内部薪酬制度、晋升机制、职业培训、权力下放不是很满意，一方面说明，</a><span >外企可能更加看重企业的战略目标而忽视了员工的个人能力的发挥； </span><span >另一方面表明员工是希望改变这种现状的，但是由于自身的不受重视会可能会消极怠工，从而降低整个企业的运行效率。 </span><a href="../sentence_detail/824.htm" target="right" class="orange">员工对&quot;工作吸引力&rdquo;、&quot;企业文化&rdquo; 和&quot;团队协作&rdquo;的满意度一般，</a><a href="../sentence_detail/825.htm" target="right" class="orange">表明被调查的中方员工对于工作内容及强度、组织内成员合作和企业文化环境的满意度一般，主要是由于文化差异和工作压力使得员工容易产生孤立感，</a><span >感觉不被领导重视，缺乏组织归属感和企业凝聚力； </span><span >员工对&quot;组织环境与能力匹配&rdquo;和&quot;管理者能力&rdquo;比较满意，说明员工对于公司提供舒适轻松的工作环境，管理者的领导、组织、沟通、协调、执行能力比较认可。 </span><span >  </span></div><div class="modify" align="right" paraseq="413"><span class="btn btn-blue" onclick="submitPart('如上表可见，排在最后四个维度的分别为授权3.622、晋升机制3.67、 薪酬福利3.695、培训发展3.736。则说明外资企业的中方员工对于&quot;授权&rdquo;、&quot;晋升机制&rdquo;、&quot;薪酬福利&rdquo;、&quot;培训发展&rdquo;的满意度较低，表明被调查的中方员工对于公司内部薪酬制度、晋升机制、职业培训、权力下放不是很满意，一方面说明，外企可能更加看重企业的战略目标而忽视了员工的个人能力的发挥；另一方面表明员工是希望改变这种现状的，但是由于自身的不受重视会可能会消极怠工，从而降低整个企业的运行效率。员工对&quot;工作吸引力&rdquo;、&quot;企业文化&rdquo; 和&quot;团队协作&rdquo;的满意度一般，表明被调查的中方员工对于工作内容及强度、组织内成员合作和企业文化环境的满意度一般，主要是由于文化差异和工作压力使得员工容易产生孤立感，感觉不被领导重视，缺乏组织归属感和企业凝聚力；员工对&quot;组织环境与能力匹配&rdquo;和&quot;管理者能力&rdquo;比较满意，说明员工对于公司提供舒适轻松的工作环境，管理者的领导、组织、沟通、协调、执行能力比较认可。',this)" class="modify">段落修改</div></div><div class="para"><div class="duanluo"><span>415</span></div><div class="l"><span style="margin-left:25px"></span><a href="../sentence_detail/829.htm" target="right" class="orange">整体来看，&quot;工作满意度&rdquo;的总体均值为3.75，说明受测者员工样本工作满意度一般，仍然存在提升的空间。</a><span >员工对于公司现阶段各类制度与状况的不满意之处主要在于公司提供的薪酬与福利方面以及晋升与培训相关的职业发展方面， </span><span >基本上涵盖和印证了案例中所发现的不同类型的激励管理问题，下文中我们将结合前文案例和公司具体情况对各个方面逐一展开分析。 </span></div><div class="modify" align="right" paraseq="414"><span class="btn btn-blue" onclick="submitPart('整体来看，&quot;工作满意度&rdquo;的总体均值为3.75，说明受测者员工样本工作满意度一般，仍然存在提升的空间。员工对于公司现阶段各类制度与状况的不满意之处主要在于公司提供的薪酬与福利方面以及晋升与培训相关的职业发展方面，基本上涵盖和印证了案例中所发现的不同类型的激励管理问题，下文中我们将结合前文案例和公司具体情况对各个方面逐一展开分析。',this)" class="modify">段落修改</div></div><div class="para"><div class="duanluo"><span>416</span></div><div class="l"><span style="margin-left:25px"></span><span >3.4  F公司激励问题原因分析 </span></div></div><div class="para"><div class="duanluo"><span>417</span></div><div class="l"><span style="margin-left:25px"></span><span >3.4.1  广义薪酬需求问题 </span></div></div><div class="para"><div class="duanluo"><span>418</span></div><div class="l"><span style="margin-left:25px"></span><span >在第一个案例中我们不难发现，作为一名资深开发工程师，王鹏飞已经达到了TB-2的薪资等级，相对于其他员工已经拥有较为丰厚的薪资回报。 </span><span >然而，单纯的薪资回报并不是薪酬激励的全部，无法满足员工因自身条件变化而产生的需求变化。 </span><span >由马斯洛需求层次理论可知，当人在充分满足了底层的生理和安全需求之后，将转而追求情感上的社会需求和尊重需求，并最终追求其自我实现的需求。 </span><span >而后三种需求反映在薪酬上则恰好对应了广义薪酬的概念。 </span></div><div class="modify" align="right" paraseq="417"><span class="btn btn-blue" onclick="submitPart('在第一个案例中我们不难发现，作为一名资深开发工程师，王鹏飞已经达到了TB-2的薪资等级，相对于其他员工已经拥有较为丰厚的薪资回报。然而，单纯的薪资回报并不是薪酬激励的全部，无法满足员工因自身条件变化而产生的需求变化。由马斯洛需求层次理论可知，当人在充分满足了底层的生理和安全需求之后，将转而追求情感上的社会需求和尊重需求，并最终追求其自我实现的需求。而后三种需求反映在薪酬上则恰好对应了广义薪酬的概念。',this)" class="modify">段落修改</div></div><div class="para"><div class="duanluo"><span>419</span></div><div class="l"><span style="margin-left:25px"></span><span >从广义薪酬的角度来看，薪酬概念包含了经济性薪酬与非经济性薪酬：经济性薪酬也被称为货币薪酬，通常指工资、奖金、各种津贴和福利等外在的报酬； </span><span >非经济性薪酬也叫非货币薪酬，通常指无法用货币手段衡量的所有补偿性或者激励性的收获， </span><span >通常包括公司安排的培训、休假、社交活动、职业发展指导以及工作带来的满足感和成就感等，表现形式大多跟企业文化与组织价值息息相关。 </span></div><div class="modify" align="right" paraseq="418"><span class="btn btn-blue" onclick="submitPart('从广义薪酬的角度来看，薪酬概念包含了经济性薪酬与非经济性薪酬：经济性薪酬也被称为货币薪酬，通常指工资、奖金、各种津贴和福利等外在的报酬；非经济性薪酬也叫非货币薪酬，通常指无法用货币手段衡量的所有补偿性或者激励性的收获，通常包括公司安排的培训、休假、社交活动、职业发展指导以及工作带来的满足感和成就感等，表现形式大多跟企业文化与组织价值息息相关。',this)" class="modify">段落修改</div></div><div class="para"><div class="duanluo"><span>420</span></div><div class="l"><span style="margin-left:25px"></span><span >案例中的王鹏飞，作为带领着研发团队的资深工程师，代表着公司中的核心技术骨干和未来的中层领导者。 </span><span >作为研发型IT企业，同时具备优秀的技术能力和团队管理经验的员工，是企业的中流砥柱，是决策和执行的桥梁。 </span><span >企业的效率如何，很大程度取决于王鹏飞这样的核心骨干的能力和表现，其重要性并不亚于高层领导。 </span><span >因此，公司对于这样的核心技术骨干采取的激励手段是否有效便显得尤为关键。 </span></div><div class="modify" align="right" paraseq="419"><span class="btn btn-blue" onclick="submitPart('案例中的王鹏飞，作为带领着研发团队的资深工程师，代表着公司中的核心技术骨干和未来的中层领导者。作为研发型IT企业，同时具备优秀的技术能力和团队管理经验的员工，是企业的中流砥柱，是决策和执行的桥梁。企业的效率如何，很大程度取决于王鹏飞这样的核心骨干的能力和表现，其重要性并不亚于高层领导。因此，公司对于这样的核心技术骨干采取的激励手段是否有效便显得尤为关键。',this)" class="modify">段落修改</div></div><div class="para"><div class="duanluo"><span>421</span></div><div class="l"><span style="margin-left:25px"></span><span >很多企业的高层管理者通常狭隘地理解薪酬的概念，认为对员工的薪酬激励仅需要考虑货币形式即薪资的支付。 </span><span >不可否认，公司在经济性薪酬方面已经提供给了王鹏飞较丰厚的薪资待遇，包括基本工资、年终奖金，加班补助，以及每年20天的假期。 </span><span >同样享有远程登录权限和弹性工作制。 </span><span >虽然王鹏飞比大部分员工获得更高的薪水，显得相对富有，但他自己也知道自己在企业中有着重要的地位，因此，高额工资和多种福利项目多被他们视为应得的待遇， </span><span >难以起到激励作用。 </span><span >这就是为什么有的企业明明为核心骨干和中层管理者支付了高额的薪水，仍然留不住人才的重要原因。 </span><span >事实上，这是单纯的货币薪酬不能解决的问题。 </span></div><div class="modify" align="right" paraseq="420"><span class="btn btn-blue" onclick="submitPart('很多企业的高层管理者通常狭隘地理解薪酬的概念，认为对员工的薪酬激励仅需要考虑货币形式即薪资的支付。不可否认，公司在经济性薪酬方面已经提供给了王鹏飞较丰厚的薪资待遇，包括基本工资、年终奖金，加班补助，以及每年20天的假期。同样享有远程登录权限和弹性工作制。虽然王鹏飞比大部分员工获得更高的薪水，显得相对富有，但他自己也知道自己在企业中有着重要的地位，因此，高额工资和多种福利项目多被他们视为应得的待遇，难以起到激励作用。这就是为什么有的企业明明为核心骨干和中层管理者支付了高额的薪水，仍然留不住人才的重要原因。事实上，这是单纯的货币薪酬不能解决的问题。',this)" class="modify">段落修改</div></div><div class="para"><div class="duanluo"><span>422</span></div><div class="l"><span style="margin-left:25px"></span><span >王鹏飞作为已工作多年，成家立业的核心骨干员工，其对经济性薪酬的看法不仅限于工资的增加，而工作时间及工作强度也需要达到令人满意的程度。 </span><span >但是作为团队重要角色，又无法避开项目需求。 </span></div><div class="modify" align="right" paraseq="421"><span class="btn btn-blue" onclick="submitPart('王鹏飞作为已工作多年，成家立业的核心骨干员工，其对经济性薪酬的看法不仅限于工资的增加，而工作时间及工作强度也需要达到令人满意的程度。但是作为团队重要角色，又无法避开项目需求。',this)" class="modify">段落修改</div></div><div class="para"><div class="duanluo"><span>423</span></div><div class="l"><span style="margin-left:25px"></span><span >而同时，从非经济性薪酬的角度，王鹏飞的心理需求也和刚进入公司时发生了变化，由最初想要在公司站稳脚跟的安全需求，变为了想要稳定的在公司发展， </span><span >同时建设好家庭的社会需求，尊重需求及自我实现的需求。 </span></div><div class="modify" align="right" paraseq="422"><span class="btn btn-blue" onclick="submitPart('而同时，从非经济性薪酬的角度，王鹏飞的心理需求也和刚进入公司时发生了变化，由最初想要在公司站稳脚跟的安全需求，变为了想要稳定的在公司发展，同时建设好家庭的社会需求，尊重需求及自我实现的需求。',this)" class="modify">段落修改</div></div><div class="para"><div class="duanluo"><span>424</span></div><div class="l"><span style="margin-left:25px"></span><span >通常，这样的核心骨干或中层管理者在公司中的职业发展道路就两条：不是晋升到高级管理层，就是被新人所淘汰。 </span><span >有趣的是，他们中的很多人在家中也是处在 &quot;中层&rdquo;的位置。 </span><span >为了负担一家生计，要想稳定现在的收入，只有体现出&quot;狼性&rdquo;，卖力加班干活才能不被公司抛弃，而这样的做法常常会侵占本该属于家庭的下班时间。 </span><span >长此以往就会造成家庭关系的不和谐。当工作和生活发生了冲突时就会引发压力。 </span><span >因此对他们而言，缓解工作与生活的矛盾是尤为重要的。 </span><span >所以才会产生对于经济性薪酬与非经济性薪酬的平衡的索取。 </span></div><div class="modify" align="right" paraseq="423"><span class="btn btn-blue" onclick="submitPart('通常，这样的核心骨干或中层管理者在公司中的职业发展道路就两条：不是晋升到高级管理层，就是被新人所淘汰。有趣的是，他们中的很多人在家中也是处在 &quot;中层&rdquo;的位置。为了负担一家生计，要想稳定现在的收入，只有体现出&quot;狼性&rdquo;，卖力加班干活才能不被公司抛弃，而这样的做法常常会侵占本该属于家庭的下班时间。长此以往就会造成家庭关系的不和谐。当工作和生活发生了冲突时就会引发压力。因此对他们而言，缓解工作与生活的矛盾是尤为重要的。所以才会产生对于经济性薪酬与非经济性薪酬的平衡的索取。',this)" class="modify">段落修改</div></div><div class="para"><div class="duanluo"><span>425</span></div><div class="l"><span style="margin-left:25px"></span><span >通常来说，经济性薪酬与非经济性薪酬的平衡设计是最为核心和关键的，对公司来说也是相对有难度的。 </span><span >因为二者中前者具有主观内臆性，较难用货币衡量，而后者则具有客观外显性，若忽视了两者的差异性并试图用一样的标准进行设计必然出现偏差和矛盾， </span><span >导致员工的不满意： </span></div><div class="modify" align="right" paraseq="424"><span class="btn btn-blue" onclick="submitPart('通常来说，经济性薪酬与非经济性薪酬的平衡设计是最为核心和关键的，对公司来说也是相对有难度的。因为二者中前者具有主观内臆性，较难用货币衡量，而后者则具有客观外显性，若忽视了两者的差异性并试图用一样的标准进行设计必然出现偏差和矛盾，导致员工的不满意：',this)" class="modify">段落修改</div></div><div class="para"><div class="duanluo"><span>426</span></div><div class="l"><span style="margin-left:25px"></span><a href="../sentence_detail/865.htm" target="right" class="orange">（1）	在薪酬激励目标设置上没有做到经济性薪酬与非经济性薪酬两者相统一。</a></div><div class="modify" align="right" paraseq="425"><span class="btn btn-blue" onclick="submitPart('（1）	在薪酬激励目标设置上没有做到经济性薪酬与非经济性薪酬两者相统一。',this)" class="modify">段落修改</div></div><div class="para"><div class="duanluo"><span>427</span></div><div class="l"><span style="margin-left:25px"></span><span >结合马斯洛需要层次论及双因素理论可知，经济性薪酬目标设置应立足于&quot;市场基础、保健功能&rdquo;，而非经济性薪酬目标设置则应聚焦于&quot;工作本位、价值激励&rdquo;。 </span><span >将二者有机的整合起来方可形成一个完整的薪酬体系架构。 </span><span >而公司在进行薪酬激励目标设置时，仅仅高度重视经济性薪酬的市场竞争基准意义，以及其所具有的基础保健功能，却忽视了工作本身的内隐价值和外显条件， </span><span >导致未达成非经济性薪酬概念下的工作生活平衡与自我实现的目标，而这恰恰是保证薪酬激励战略性目标顺利实现的关键。 </span><span >  </span></div><div class="modify" align="right" paraseq="426"><span class="btn btn-blue" onclick="submitPart('结合马斯洛需要层次论及双因素理论可知，经济性薪酬目标设置应立足于&quot;市场基础、保健功能&rdquo;，而非经济性薪酬目标设置则应聚焦于&quot;工作本位、价值激励&rdquo;。将二者有机的整合起来方可形成一个完整的薪酬体系架构。而公司在进行薪酬激励目标设置时，仅仅高度重视经济性薪酬的市场竞争基准意义，以及其所具有的基础保健功能，却忽视了工作本身的内隐价值和外显条件，导致未达成非经济性薪酬概念下的工作生活平衡与自我实现的目标，而这恰恰是保证薪酬激励战略性目标顺利实现的关键。',this)" class="modify">段落修改</div></div><div class="para"><div class="duanluo"><span>428</span></div><div class="l"><span style="margin-left:25px"></span><span >（2）	在薪酬激励量度方法上未做到经济性薪酬指标与非经济性薪酬指标相衔接。 </span></div><div class="modify" align="right" paraseq="427"><span class="btn btn-blue" onclick="submitPart('（2）	在薪酬激励量度方法上未做到经济性薪酬指标与非经济性薪酬指标相衔接。',this)" class="modify">段落修改</div></div><div class="para"><div class="duanluo"><span>429</span></div><div class="l"><span style="margin-left:25px"></span><span >非经济性薪酬是指工作或企业本身从多方面给员工带来的心理满足感，无法用货币指标进行度量。 </span><span >但是近年来随着心理学的发展， </span><span >工作本身与工作环境所带来的内在价值可以采用先进的心理测量技术转化为客观描述性因素，从而进行衡量。 </span><a href="../sentence_detail/875.htm" target="right" class="red">举例来说，工作内涵性意义可转化为内容丰富性、任务完整性和价值重要性等几个维度；</a><a href="../sentence_detail/876.htm" target="right" class="red">工作主体性意义可转化为决策自主性、过程挑战性和结果成就性等几个维度：工作职业性意义可以转化为成长空间、晋升机会和发展潜力等几个维度。</a><span >（文献吧! </span><span >）然后企业可以基于以上维度分类设计出相应的价值评价量表来考察员工对工作内在价值的主观感受，最后将其转化为货币价值，以方便与经济性薪酬进行平衡与比较。 </span><span >而F公司在进行薪酬项目度量时，绝大多数度量内容均以经济性薪酬为主，仅有的少数非经济性薪酬内容并未采用量化准则，无法将薪酬在可量化的前提下进行衡量把握， </span><span >缺少统一的衡量尺度和方法。 </span><span >  </span></div><div class="modify" align="right" paraseq="428"><span class="btn btn-blue" onclick="submitPart('非经济性薪酬是指工作或企业本身从多方面给员工带来的心理满足感，无法用货币指标进行度量。但是近年来随着心理学的发展，工作本身与工作环境所带来的内在价值可以采用先进的心理测量技术转化为客观描述性因素，从而进行衡量。举例来说，工作内涵性意义可转化为内容丰富性、任务完整性和价值重要性等几个维度；工作主体性意义可转化为决策自主性、过程挑战性和结果成就性等几个维度：工作职业性意义可以转化为成长空间、晋升机会和发展潜力等几个维度。（文献吧!）然后企业可以基于以上维度分类设计出相应的价值评价量表来考察员工对工作内在价值的主观感受，最后将其转化为货币价值，以方便与经济性薪酬进行平衡与比较。而F公司在进行薪酬项目度量时，绝大多数度量内容均以经济性薪酬为主，仅有的少数非经济性薪酬内容并未采用量化准则，无法将薪酬在可量化的前提下进行衡量把握，缺少统一的衡量尺度和方法。',this)" class="modify">段落修改</div></div><div class="para"><div class="duanluo"><span>430</span></div><div class="l"><span style="margin-left:25px"></span><span >（3）	在薪酬激励项目设计安排上未做到经济性薪酬与非经济性薪酬相平衡。 </span></div><div class="modify" align="right" paraseq="429"><span class="btn btn-blue" onclick="submitPart('（3）	在薪酬激励项目设计安排上未做到经济性薪酬与非经济性薪酬相平衡。',this)" class="modify">段落修改</div></div><div class="para"><div class="duanluo"><span>431</span></div><div class="l"><span style="margin-left:25px"></span><span >进行薪酬激励项目设计时， </span><span >应当按照组织性质、价值导向、发展阶段和战略要求来设定经济性或非经济性薪酬项目所占权重， </span><span >应在长期短期、有形无形、物质精神、宏观微观、大小规模等维度上对经济性薪酬与非经济性薪酬激励项目进行分类、并明确其相对应的平衡设计。 </span><span >而公司目前的薪酬激励项目设计过于偏向经济性薪酬，而非经济性薪酬设计维度过于单一，内容较少，无法起到有效的全面激励作用。 </span></div><div class="modify" align="right" paraseq="430"><span class="btn btn-blue" onclick="submitPart('进行薪酬激励项目设计时，应当按照组织性质、价值导向、发展阶段和战略要求来设定经济性或非经济性薪酬项目所占权重，应在长期短期、有形无形、物质精神、宏观微观、大小规模等维度上对经济性薪酬与非经济性薪酬激励项目进行分类、并明确其相对应的平衡设计。而公司目前的薪酬激励项目设计过于偏向经济性薪酬，而非经济性薪酬设计维度过于单一，内容较少，无法起到有效的全面激励作用。',this)" class="modify">段落修改</div></div><div class="para"><div class="duanluo"><span>432</span></div><div class="l"><span style="margin-left:25px"></span><span >3.4.2  薪资制度内外部公平问题 </span></div></div><div class="para"><div class="duanluo"><span>433</span></div><div class="l"><span style="margin-left:25px"></span><span >在第二个案例中张怡所面临的是公司薪酬制度的公平问题，主要体现在经济性薪酬中的薪资制度中没有充分考虑到相对公平。 </span><span >尽管公司实行工资保密制，但是由于薪资相关的话题非常敏感，无法阻止员工私下的讨论，所以公司高管以下级别的薪资水平早已是公开的秘密。 </span><span >公司目前的货币薪酬制度存在不合理不公平之处，主要从三方面体现：一是内部缺乏公平，二是外部缺乏公平，三是受制于美国总部提供的资金有限， </span><span >公司的薪资体系不能充分反应员工的绩效。 </span></div><div class="modify" align="right" paraseq="432"><span class="btn btn-blue" onclick="submitPart('在第二个案例中张怡所面临的是公司薪酬制度的公平问题，主要体现在经济性薪酬中的薪资制度中没有充分考虑到相对公平。尽管公司实行工资保密制，但是由于薪资相关的话题非常敏感，无法阻止员工私下的讨论，所以公司高管以下级别的薪资水平早已是公开的秘密。公司目前的货币薪酬制度存在不合理不公平之处，主要从三方面体现：一是内部缺乏公平，二是外部缺乏公平，三是受制于美国总部提供的资金有限，公司的薪资体系不能充分反应员工的绩效。',this)" class="modify">段落修改</div></div><div class="para"><div class="duanluo"><span>434</span></div><div class="l"><span style="margin-left:25px"></span><span >1)	薪资制度的内部公平性 </span></div></div><div class="para"><div class="duanluo"><span>435</span></div><div class="l"><span style="margin-left:25px"></span><span >在公司内部，员工之间存在收入差距大的情况，主要表现为以下几个方面： </span></div><div class="modify" align="right" paraseq="434"><span class="btn btn-blue" onclick="submitPart('在公司内部，员工之间存在收入差距大的情况，主要表现为以下几个方面：',this)" class="modify">段落修改</div></div><div class="para"><div class="duanluo"><span>436</span></div><div class="l"><span style="margin-left:25px"></span><span >第一，	公司比较崇尚外来的和尚会念经这个信条。 </span><span >在招聘新员工时候，具有特定技术经验的新员工的工资往往比在公司内有着相同工龄的员工工资要高不少，以同等级别具有五年左右工作经验的普通员工为例， </span><span >少则相差一两千，多则甚至能相差近一倍。 </span><span >这样问题就产生了同工不同酬的问题，老员工会产生明显的抵触情绪，不仅极大的降低了对企业的忠诚度， </span><span >并且在引导新员工熟悉业务和项目内容时一般会采用较为消极的态度对待比自己工资高的新员工，并掺杂着对公司的抱怨。 </span><span >导致新员工在刚进公司时也会因此感到很有压力，其中一些便因压力或者对公司感到失望而当即选择离开。 </span><span >公司无形中遭受了多方面的损失。 </span></div><div class="modify" align="right" paraseq="435"><span class="btn btn-blue" onclick="submitPart('第一，	公司比较崇尚外来的和尚会念经这个信条。在招聘新员工时候，具有特定技术经验的新员工的工资往往比在公司内有着相同工龄的员工工资要高不少，以同等级别具有五年左右工作经验的普通员工为例，少则相差一两千，多则甚至能相差近一倍。这样问题就产生了同工不同酬的问题，老员工会产生明显的抵触情绪，不仅极大的降低了对企业的忠诚度，并且在引导新员工熟悉业务和项目内容时一般会采用较为消极的态度对待比自己工资高的新员工，并掺杂着对公司的抱怨。导致新员工在刚进公司时也会因此感到很有压力，其中一些便因压力或者对公司感到失望而当即选择离开。公司无形中遭受了多方面的损失。',this)" class="modify">段落修改</div></div><div class="para"><div class="duanluo"><span>437</span></div><div class="l"><span style="margin-left:25px"></span><span >第二，	管理层和非管理层之间的薪资差异显著。 </span><span >经理级别的员工是资深工程师工资的1.5 - 3倍，总监是经理的2倍以上，这样的薪资差距不但引发了包含一些核心精英在内的技术员工的不满， </span><span >同时间接导致了管理层对员工的管理及沟通困难，以至于有的员工无法专心投入到工作中去，时时刻刻都在寻觅更高薪资的工作，随时跳槽。 </span></div><div class="modify" align="right" paraseq="436"><span class="btn btn-blue" onclick="submitPart('第二，	管理层和非管理层之间的薪资差异显著。经理级别的员工是资深工程师工资的1.5 - 3倍，总监是经理的2倍以上，这样的薪资差距不但引发了包含一些核心精英在内的技术员工的不满，同时间接导致了管理层对员工的管理及沟通困难，以至于有的员工无法专心投入到工作中去，时时刻刻都在寻觅更高薪资的工作，随时跳槽。',this)" class="modify">段落修改</div></div><div class="para"><div class="duanluo"><span>438</span></div><div class="l"><span style="margin-left:25px"></span><span >第三，	新晋实习生的薪资显著高于往届实习生。 </span><span >公司刚成立初期由于资金不足，前两批实习生试图追求&quot;价廉物美&rdquo;，以3500至3700元左右的月薪招募一般院校的本科毕业生， </span><span >唯一的一两个研究生也仅仅有4000元每月。 </span><span >然而发现&quot;物&rdquo;并没有想象中&quot;美&rdquo;。 </span><span >这些毕业生需要很长的时间来学习和适应才能够投入工作中达到可以工作的状态，公司不仅付出了时间还需要付出很多培训成本。 </span><span >公司在发现这个问题后转而在第三年毅然采用高精尖人才战略，从一流高校招募计算机专业研究生，薪水一下子给到了7000至8000之多， </span><span >这样巨大的差距可能是前两届毕业生连续涨薪数年都无法达到的。 </span><span >这种薪资制度不仅影响了前两届实习生的工作态度，其他老员工也对公司略有微词。 </span></div><div class="modify" align="right" paraseq="437"><span class="btn btn-blue" onclick="submitPart('第三，	新晋实习生的薪资显著高于往届实习生。公司刚成立初期由于资金不足，前两批实习生试图追求&quot;价廉物美&rdquo;，以3500至3700元左右的月薪招募一般院校的本科毕业生，唯一的一两个研究生也仅仅有4000元每月。然而发现&quot;物&rdquo;并没有想象中&quot;美&rdquo;。这些毕业生需要很长的时间来学习和适应才能够投入工作中达到可以工作的状态，公司不仅付出了时间还需要付出很多培训成本。公司在发现这个问题后转而在第三年毅然采用高精尖人才战略，从一流高校招募计算机专业研究生，薪水一下子给到了7000至8000之多，这样巨大的差距可能是前两届毕业生连续涨薪数年都无法达到的。这种薪资制度不仅影响了前两届实习生的工作态度，其他老员工也对公司略有微词。',this)" class="modify">段落修改</div></div><div class="para"><div class="duanluo"><span>439</span></div><div class="l"><span style="margin-left:25px"></span><span >2)	薪资制度的外部公平性 </span></div></div><div class="para"><div class="duanluo"><span>440</span></div><div class="l"><span style="margin-left:25px"></span><span >公司在薪资制度上定义为要向市场平均水平看齐，具有一定的市场竞争力。 </span><span >而实际上，除了高层和部分中层管理人员以及一些近年来招聘的有一定特殊技术经验的新员工之外，大部分员工的收入水平处在市场的中游偏下。 </span><span >与同等规模的几家IT外企研发类员工收入相比，可知公司整体薪资较缺乏市场竞争力，主要存在着以下一些问题： </span></div><div class="modify" align="right" paraseq="439"><span class="btn btn-blue" onclick="submitPart('公司在薪资制度上定义为要向市场平均水平看齐，具有一定的市场竞争力。而实际上，除了高层和部分中层管理人员以及一些近年来招聘的有一定特殊技术经验的新员工之外，大部分员工的收入水平处在市场的中游偏下。与同等规模的几家IT外企研发类员工收入相比，可知公司整体薪资较缺乏市场竞争力，主要存在着以下一些问题：',this)" class="modify">段落修改</div></div><div class="para"><div class="duanluo"><span>441</span></div><div class="l"><span style="margin-left:25px"></span><span >首先，新入职大学生的起薪比较低。 </span><span >对于研发部门而言， </span><span >税前3500- 4000的起薪政策对于新入职本科毕业生这一群体来说仅仅能在现在的物价条件下满足除了租房以外的温饱而已。 </span><span >对其中一些社交活动比较频繁的人来讲，他们只能通过继续借助父母家庭的力量来维持现有的生活状态。 </span></div><div class="modify" align="right" paraseq="440"><span class="btn btn-blue" onclick="submitPart('首先，新入职大学生的起薪比较低。对于研发部门而言，税前3500- 4000的起薪政策对于新入职本科毕业生这一群体来说仅仅能在现在的物价条件下满足除了租房以外的温饱而已。对其中一些社交活动比较频繁的人来讲，他们只能通过继续借助父母家庭的力量来维持现有的生活状态。',this)" class="modify">段落修改</div></div><div class="para"><div class="duanluo"><span>442</span></div><div class="l"><span style="margin-left:25px"></span><span >其次，对大部分低级别员工和毕业生来讲，他们每年的薪资涨幅较低，有时候甚至出现年均工资的上涨幅度达不到当年物价的上升水平， </span><span >造成了收入水平实际上的不升反降。 </span></div><div class="modify" align="right" paraseq="441"><span class="btn btn-blue" onclick="submitPart('其次，对大部分低级别员工和毕业生来讲，他们每年的薪资涨幅较低，有时候甚至出现年均工资的上涨幅度达不到当年物价的上升水平，造成了收入水平实际上的不升反降。',this)" class="modify">段落修改</div></div><div class="para"><div class="duanluo"><span>443</span></div><div class="l"><span style="margin-left:25px"></span><span >最后，相对与外部竞争者，公司的薪资水平确实存在很大差距，公司近几年也做出了一些相应的调整，例如以高工资招聘有特殊技术技能的外部员工， </span><span >但是最终结果正像前文所分析的那样，加剧了薪资制度内部不公平现象，长期来看弊大于利。 </span></div><div class="modify" align="right" paraseq="442"><span class="btn btn-blue" onclick="submitPart('最后，相对与外部竞争者，公司的薪资水平确实存在很大差距，公司近几年也做出了一些相应的调整，例如以高工资招聘有特殊技术技能的外部员工，但是最终结果正像前文所分析的那样，加剧了薪资制度内部不公平现象，长期来看弊大于利。',this)" class="modify">段落修改</div></div><div class="para"><div class="duanluo"><span>444</span></div><div class="l"><span style="margin-left:25px"></span><span >3)	薪资体系不能充分反应员工的绩效 </span></div></div><div class="para"><div class="duanluo"><span>445</span></div><div class="l"><span style="margin-left:25px"></span><span >虽然公司强调工资与绩效挂钩，但是反观公司员工的薪酬构成：基础工资加年终奖加加班补贴等福利， </span><span >其中真正能落到实处能与绩效挂钩的只有薪资的年度上涨和年终绩效奖这两部分。 </span></div><div class="modify" align="right" paraseq="444"><span class="btn btn-blue" onclick="submitPart('虽然公司强调工资与绩效挂钩，但是反观公司员工的薪酬构成：基础工资加年终奖加加班补贴等福利，其中真正能落到实处能与绩效挂钩的只有薪资的年度上涨和年终绩效奖这两部分。',this)" class="modify">段落修改</div></div><div class="para"><div class="duanluo"><span>446</span></div><div class="l"><span style="margin-left:25px"></span><span >首先来看薪资的年度涨幅，因为最近几年公司设定的全员平均工资涨幅系数较低（一般为8%），故而对一般员工来说，干好干坏基本上都差不多， </span><span >到了涨工资的时候谁也不会涨太多，客观上制约了员工的积极性。 </span><span >而年终绩效奖，因为仅仅分为三个等级，其中达到期望（P）和超出期望（E）占绝大多数，又因为绩效系数起到的作用很小， </span><span >所以员工的年终奖基本上就是和月工资直接挂钩，并不能体现出绩效的显著区别。 </span><span >一个干的出色的工程师的年终绩效奖金通常不会超过级别比他高一级但是表现平平的高级工程师，无法起到有效的激励作用。 </span></div><div class="modify" align="right" paraseq="445"><span class="btn btn-blue" onclick="submitPart('首先来看薪资的年度涨幅，因为最近几年公司设定的全员平均工资涨幅系数较低（一般为8%），故而对一般员工来说，干好干坏基本上都差不多，到了涨工资的时候谁也不会涨太多，客观上制约了员工的积极性。而年终绩效奖，因为仅仅分为三个等级，其中达到期望（P）和超出期望（E）占绝大多数，又因为绩效系数起到的作用很小，所以员工的年终奖基本上就是和月工资直接挂钩，并不能体现出绩效的显著区别。一个干的出色的工程师的年终绩效奖金通常不会超过级别比他高一级但是表现平平的高级工程师，无法起到有效的激励作用。',this)" class="modify">段落修改</div></div><div class="para"><div class="duanluo"><span>447</span></div><div class="l"><span style="margin-left:25px"></span><span >因此，公司现行的薪资体系与实际操作方式并不能真正的与员工的绩效挂钩，它目前的实行方式反而使员工有了吃大锅饭的思想：干与不干一个样，干多干少一个样， </span><span >随着问题的日益加剧，薪资体系乃至整个薪酬制度改革也势在必行。 </span></div><div class="modify" align="right" paraseq="446"><span class="btn btn-blue" onclick="submitPart('因此，公司现行的薪资体系与实际操作方式并不能真正的与员工的绩效挂钩，它目前的实行方式反而使员工有了吃大锅饭的思想：干与不干一个样，干多干少一个样，随着问题的日益加剧，薪资体系乃至整个薪酬制度改革也势在必行。',this)" class="modify">段落修改</div></div><div class="para"><div class="duanluo"><span>448</span></div><div class="l"><span style="margin-left:25px"></span><span >3.4.3  职业生涯管理问题 </span></div></div><div class="para"><div class="duanluo"><span>449</span></div><div class="l"><span style="margin-left:25px"></span><span >F公司目前有一套借鉴美国总部的员工职业生涯管理体系，遗憾的是， </span><span >这套职业生涯管理体系并不能很好的和中国本土技术人员自己的职业生涯发展规划和目标相对应统一。 </span><span >因为公司提供的职业发展规划不够全面而清晰，员工又没有一个良好有效的沟通渠道去改变公司的策略， </span><span >所以造成了部分技术骨干员工或者准技术骨干员工对自己的前途迷茫，导致缺乏努力的动力和方向，产生了工作倦怠，最终选择&quot;混日子&rdquo;或者离职， </span><span >这就是案例三中陈剑所出现的问题，并具有普适性。 </span></div><div class="modify" align="right" paraseq="448"><span class="btn btn-blue" onclick="submitPart('F公司目前有一套借鉴美国总部的员工职业生涯管理体系，遗憾的是，这套职业生涯管理体系并不能很好的和中国本土技术人员自己的职业生涯发展规划和目标相对应统一。因为公司提供的职业发展规划不够全面而清晰，员工又没有一个良好有效的沟通渠道去改变公司的策略，所以造成了部分技术骨干员工或者准技术骨干员工对自己的前途迷茫，导致缺乏努力的动力和方向，产生了工作倦怠，最终选择&quot;混日子&rdquo;或者离职，这就是案例三中陈剑所出现的问题，并具有普适性。',this)" class="modify">段落修改</div></div><div class="para"><div class="duanluo"><span>450</span></div><div class="l"><span style="margin-left:25px"></span><span >首先， </span><span >一些技术人员在入职几年后发觉自己所干的工作内容和其原本所设定的职业目标相距越来越远，对工作开始逐渐失去了热情，一部分人选择安逸的&quot;混日子&rdquo;， </span><span >另一部分人选择了跳槽从而继续追逐自己的梦想。 </span><span >但是这种局面却是公司最不希望看到的，因为这部分员工有公司所需的经验跟能力，本以为可以为公司创造更多的价值，事实上公司也为其花费了很多的资源来培养， </span><span >但最终却因为没有和员工在职业发展方面所出足够好的沟通而造成技术人才的倦怠或流失。 </span></div><div class="modify" align="right" paraseq="449"><span class="btn btn-blue" onclick="submitPart('首先，一些技术人员在入职几年后发觉自己所干的工作内容和其原本所设定的职业目标相距越来越远，对工作开始逐渐失去了热情，一部分人选择安逸的&quot;混日子&rdquo;，另一部分人选择了跳槽从而继续追逐自己的梦想。但是这种局面却是公司最不希望看到的，因为这部分员工有公司所需的经验跟能力，本以为可以为公司创造更多的价值，事实上公司也为其花费了很多的资源来培养，但最终却因为没有和员工在职业发展方面所出足够好的沟通而造成技术人才的倦怠或流失。',this)" class="modify">段落修改</div></div><div class="para"><div class="duanluo"><span>451</span></div><div class="l"><span style="margin-left:25px"></span><span >其次，一些本来已经找到适应自己岗位的员工，由于业务需要而被迫换到另一岗位，从事并不喜欢甚至不擅长的技术的开发工作，这种转岗通常都不以个人意志为转移， </span><span >他们从一定程度上也受到了伤害，对工作投入度也可想而知。 </span><span >例如，一个前端开发的技术高手所在的项目结束后，团队领到的新项目却没有了前台应用的部分，他只能从事后台和数据库相关的开发工作， </span><span >一段时间后其感觉自己不适合干这项工作，要求转到其他项目时却因团队结构理由被多次拒绝，他只好委屈在现有项目中，工作态度和工作效率都大为下降。 </span></div><div class="modify" align="right" paraseq="450"><span class="btn btn-blue" onclick="submitPart('其次，一些本来已经找到适应自己岗位的员工，由于业务需要而被迫换到另一岗位，从事并不喜欢甚至不擅长的技术的开发工作，这种转岗通常都不以个人意志为转移，他们从一定程度上也受到了伤害，对工作投入度也可想而知。例如，一个前端开发的技术高手所在的项目结束后，团队领到的新项目却没有了前台应用的部分，他只能从事后台和数据库相关的开发工作，一段时间后其感觉自己不适合干这项工作，要求转到其他项目时却因团队结构理由被多次拒绝，他只好委屈在现有项目中，工作态度和工作效率都大为下降。',this)" class="modify">段落修改</div></div><div class="para"><div class="duanluo"><span>452</span></div><div class="l"><span style="margin-left:25px"></span><span >第三，还有一些从大学毕业就加入公司的员工，受外企品牌召唤而来，在经历了最初的培训之后，对未来拥有了美好的期望与梦想， </span><span >意气风发地想要在公司从一而终干出一番事业，然而由于缺乏正确的职业生涯指引，往往在公司安排的岗位上一干就是好几年，被动地成了一枚棋子， </span><span >慢慢也就习惯了这样的日子，最初的一腔热血化为了日复一日年复一年的碌碌无为，最终悔之晚矣。 </span></div><div class="modify" align="right" paraseq="451"><span class="btn btn-blue" onclick="submitPart('第三，还有一些从大学毕业就加入公司的员工，受外企品牌召唤而来，在经历了最初的培训之后，对未来拥有了美好的期望与梦想，意气风发地想要在公司从一而终干出一番事业，然而由于缺乏正确的职业生涯指引，往往在公司安排的岗位上一干就是好几年，被动地成了一枚棋子，慢慢也就习惯了这样的日子，最初的一腔热血化为了日复一日年复一年的碌碌无为，最终悔之晚矣。',this)" class="modify">段落修改</div></div><div class="para"><div class="duanluo"><span>453</span></div><div class="l"><span style="margin-left:25px"></span><span >最后，在员工晋升方面，F公司目前的晋升路径很窄，对技术人员而言，面前只有按照技术级别逐级的在研发或者测试两条路线之一晋升，缺乏多样性。 </span><span >到达资深工程师以后在选择继续技术路线还是管理路线上也同样会遇到问题。 </span><span >若选择技术路线成为架构师，公司中并没有足够的架构师职位需求，因为多数的团队中架构师一职都由美国员工担任。 </span><span >若选择走管理路线，虽然薪资待遇大大提升，但管理岗位毕竟有限，甚至一两年都都不会有管理职位的空缺，可想而知竞争有多激烈。 </span><span >这也导致一些优秀的技术人员在面临选择时往往放弃了技术方面的钻研，转而去研究如何晋升到管理岗位。 </span><span >这种现象的结果不仅使优秀的技术人员不能发挥其技术才能，而且是部门内部面临多重危机，包括可能选择不适合管理岗位的人做管理， </span><span >还可能失去大批优秀的技术型人才。 </span><span >所以从这个角度来讲， </span><span >如何拓宽员工的晋升路径和缩小管理者与优秀技术人员之间的待遇差距是摆在F公司面前亟待解决的问题。 </span></div><div class="modify" align="right" paraseq="452"><span class="btn btn-blue" onclick="submitPart('最后，在员工晋升方面，F公司目前的晋升路径很窄，对技术人员而言，面前只有按照技术级别逐级的在研发或者测试两条路线之一晋升，缺乏多样性。到达资深工程师以后在选择继续技术路线还是管理路线上也同样会遇到问题。若选择技术路线成为架构师，公司中并没有足够的架构师职位需求，因为多数的团队中架构师一职都由美国员工担任。若选择走管理路线，虽然薪资待遇大大提升，但管理岗位毕竟有限，甚至一两年都都不会有管理职位的空缺，可想而知竞争有多激烈。这也导致一些优秀的技术人员在面临选择时往往放弃了技术方面的钻研，转而去研究如何晋升到管理岗位。这种现象的结果不仅使优秀的技术人员不能发挥其技术才能，而且是部门内部面临多重危机，包括可能选择不适合管理岗位的人做管理，还可能失去大批优秀的技术型人才。所以从这个角度来讲，如何拓宽员工的晋升路径和缩小管理者与优秀技术人员之间的待遇差距是摆在F公司面前亟待解决的问题。',this)" class="modify">段落修改</div></div><div class="para"><div class="duanluo"><span>454</span></div><div class="l"><span style="margin-left:25px"></span><span >4  对策与建议 </span></div></div><div class="para"><div class="duanluo"><span>455</span></div><div class="l"><span style="margin-left:25px"></span><span >4.1  广义薪酬概念下的激励制度改进 </span></div></div><div class="para"><div class="duanluo"><span>456</span></div><div class="l"><span style="margin-left:25px"></span><span >对于任何一个公司而言，能够留住和吸引人才的最关键有效的途径便是拥有一套合理完善的激励制度。 </span><span >而一套完整的激励制度中，非经济性激励和经济性激励起到同样重要的作用。 </span><span >员工不仅需要绩效为核心考核内容的薪资制度来满足安全需求，同时需要非经济性薪酬激励来满足员工心理上的需求及实现工作和生活的平衡等， </span><a href="../sentence_detail/966.htm" target="right" class="orange">从而增强员工的工作热情和工作积极性，具体措施如下：</a></div><div class="modify" align="right" paraseq="455"><span class="btn btn-blue" onclick="submitPart('对于任何一个公司而言，能够留住和吸引人才的最关键有效的途径便是拥有一套合理完善的激励制度。而一套完整的激励制度中，非经济性激励和经济性激励起到同样重要的作用。员工不仅需要绩效为核心考核内容的薪资制度来满足安全需求，同时需要非经济性薪酬激励来满足员工心理上的需求及实现工作和生活的平衡等，从而增强员工的工作热情和工作积极性，具体措施如下：',this)" class="modify">段落修改</div></div><div class="para"><div class="duanluo"><span>457</span></div><div class="l"><span style="margin-left:25px"></span><span >1)	更灵活的实施弹性工作制。 </span></div></div><div class="para"><div class="duanluo"><span>458</span></div><div class="l"><span style="margin-left:25px"></span><a href="../sentence_detail/968.htm" target="right" class="orange">弹性工作制通常指在经由企业和员工协商后，员工可以灵活地选择工作的具体时间，只要每天或每周工作总时长满足即可。</a><span >目前公司已有的弹性工作制是仅仅在晚上需要在公司开会或者加班时才允许第二天稍晚些到公司，这样相对狭隘的弹性工作制看似弹性事实上还是固定的时间和模式。 </span><span >而更灵活的工作时间能够有效平衡员工的工作与生活，带给员工更好的身心满足感。 </span></div><div class="modify" align="right" paraseq="457"><span class="btn btn-blue" onclick="submitPart('弹性工作制通常指在经由企业和员工协商后，员工可以灵活地选择工作的具体时间，只要每天或每周工作总时长满足即可。目前公司已有的弹性工作制是仅仅在晚上需要在公司开会或者加班时才允许第二天稍晚些到公司，这样相对狭隘的弹性工作制看似弹性事实上还是固定的时间和模式。而更灵活的工作时间能够有效平衡员工的工作与生活，带给员工更好的身心满足感。',this)" class="modify">段落修改</div></div><div class="para"><div class="duanluo"><span>459</span></div><div class="l"><span style="margin-left:25px"></span><span >实施弹性工作制可以采取两种形式。 </span><span >一种形式是弹性上下班时间，即公司只要求每天工作的总时长，但员工上下班的时间可以自己掌握。 </span><span >另一种形式是弹性每周工作天数，即每周工作四天，每天十小时，相当于每周五天和每天八小时。 </span><span >在华外企中通常第一种比较常见，但是无论哪种，都需要员工有较好的自觉性和敬业的工作态度，公司亦可使用打卡考勤等制度予以辅助。 </span></div><div class="modify" align="right" paraseq="458"><span class="btn btn-blue" onclick="submitPart('实施弹性工作制可以采取两种形式。一种形式是弹性上下班时间，即公司只要求每天工作的总时长，但员工上下班的时间可以自己掌握。另一种形式是弹性每周工作天数，即每周工作四天，每天十小时，相当于每周五天和每天八小时。在华外企中通常第一种比较常见，但是无论哪种，都需要员工有较好的自觉性和敬业的工作态度，公司亦可使用打卡考勤等制度予以辅助。',this)" class="modify">段落修改</div></div><div class="para"><div class="duanluo"><span>460</span></div><div class="l"><span style="margin-left:25px"></span><span >2)	灵活的工作地点 </span></div></div><div class="para"><div class="duanluo"><span>461</span></div><div class="l"><span style="margin-left:25px"></span><span >作为美资企业，考虑到一些员工需要经常性甚至是每天跟美国总部的业务人员开会和加班，而过多的夜班又会对员工的工作状态或者身体状况造成损害， </span><span >公司可以采用工作地点灵活制： </span></div><div class="modify" align="right" paraseq="460"><span class="btn btn-blue" onclick="submitPart('作为美资企业，考虑到一些员工需要经常性甚至是每天跟美国总部的业务人员开会和加班，而过多的夜班又会对员工的工作状态或者身体状况造成损害，公司可以采用工作地点灵活制：',this)" class="modify">段落修改</div></div><div class="para"><div class="duanluo"><span>462</span></div><div class="l"><span style="margin-left:25px"></span><span >首先，对于一周超过三天晚班或者有特殊情况者可以选择晚班当天在家工作。 </span><span >同时改进公司远程登录系统，使网络连接和系统操作更顺畅，使员工在家办公如同在公司一样效率。 </span></div><div class="modify" align="right" paraseq="461"><span class="btn btn-blue" onclick="submitPart('首先，对于一周超过三天晚班或者有特殊情况者可以选择晚班当天在家工作。同时改进公司远程登录系统，使网络连接和系统操作更顺畅，使员工在家办公如同在公司一样效率。',this)" class="modify">段落修改</div></div><div class="para"><div class="duanluo"><span>463</span></div><div class="l"><span style="margin-left:25px"></span><span >其次， </span><span >如果像案例中王鹏飞的情况需要长期跟美国部门沟通了解需求的话可以提供长期出差国外的选择。 </span><span >员工配偶及子女可以选择跟随，并提供适龄子女国外教育机会。 </span></div><div class="modify" align="right" paraseq="462"><span class="btn btn-blue" onclick="submitPart('其次，如果像案例中王鹏飞的情况需要长期跟美国部门沟通了解需求的话可以提供长期出差国外的选择。员工配偶及子女可以选择跟随，并提供适龄子女国外教育机会。',this)" class="modify">段落修改</div></div><div class="para"><div class="duanluo"><span>464</span></div><div class="l"><span style="margin-left:25px"></span><span >最后，对于加班数量统计达到一定额度者，可以奖励额外年假作为补偿，给员工更多的时间和家人相处。 </span></div><div class="modify" align="right" paraseq="463"><span class="btn btn-blue" onclick="submitPart('最后，对于加班数量统计达到一定额度者，可以奖励额外年假作为补偿，给员工更多的时间和家人相处。',this)" class="modify">段落修改</div></div><div class="para"><div class="duanluo"><span>465</span></div><div class="l"><span style="margin-left:25px"></span><span >3)	开展培训，传递&quot;工作和生活平衡&rdquo;的观念。 </span></div></div><div class="para"><div class="duanluo"><span>466</span></div><div class="l"><span style="margin-left:25px"></span><span >在中国现代的社会观念里，往往工作在先，生活其次。 </span><span >但是，生活从来都有点&quot;难&rdquo;，现代白领人不仅要在上班面对繁忙的工作和复杂的职场，下班之后还要经历拥堵的交通和纷杂的生活。 </span><span >无论新入职的毕业生还是公司总裁，都需要在高速发展的现今社会找到工作与生活的平衡点。 </span><a href="../sentence_detail/988.htm" target="right" class="orange">经营好生活与家庭的人才能在工作时心无旁贷，以饱满的工作热情去经营职业生涯，使得事业有成，进而家庭和睦，形成一种良性循环。</a><span >因此作为企业管理者，需在企业内部植入更人性化的管理思想，需要适当关心员工正当的家庭和生活需要，培养起支持性的工作—生活文化， </span><a href="../sentence_detail/990.htm" target="right" class="orange">使得上司与下属之间、同事与同事之间营造一种支持性的文化氛围，也更好的体现组织的价值观并提高员工的组织价值认同程度。</a></div><div class="modify" align="right" paraseq="465"><span class="btn btn-blue" onclick="submitPart('在中国现代的社会观念里，往往工作在先，生活其次。但是，生活从来都有点&quot;难&rdquo;，现代白领人不仅要在上班面对繁忙的工作和复杂的职场，下班之后还要经历拥堵的交通和纷杂的生活。无论新入职的毕业生还是公司总裁，都需要在高速发展的现今社会找到工作与生活的平衡点。经营好生活与家庭的人才能在工作时心无旁贷，以饱满的工作热情去经营职业生涯，使得事业有成，进而家庭和睦，形成一种良性循环。因此作为企业管理者，需在企业内部植入更人性化的管理思想，需要适当关心员工正当的家庭和生活需要，培养起支持性的工作—生活文化，使得上司与下属之间、同事与同事之间营造一种支持性的文化氛围，也更好的体现组织的价值观并提高员工的组织价值认同程度。',this)" class="modify">段落修改</div></div><div class="para"><div class="duanluo"><span>467</span></div><div class="l"><span style="margin-left:25px"></span><span >4)	提供家庭及生活方面培训和服务。 </span></div></div><div class="para"><div class="duanluo"><span>468</span></div><div class="l"><span style="margin-left:25px"></span><span >公司除了技术培训之外，还应当请专家或相关组织为员工提供生活及家庭方面的培训，例如育儿知识，情绪培养，人际交往等方面。 </span><span >让员工意识到公司不仅仅关注其工作绩效，同时也在乎员工的生活品质，同样员工自身也会提升对生活的重视意识。 </span><span >  </span></div><div class="modify" align="right" paraseq="467"><span class="btn btn-blue" onclick="submitPart('公司除了技术培训之外，还应当请专家或相关组织为员工提供生活及家庭方面的培训，例如育儿知识，情绪培养，人际交往等方面。让员工意识到公司不仅仅关注其工作绩效，同时也在乎员工的生活品质，同样员工自身也会提升对生活的重视意识。',this)" class="modify">段落修改</div></div><div class="para"><div class="duanluo"><span>469</span></div><div class="l"><span style="margin-left:25px"></span><span >其次，公司一些为员工提供的服务也可以惠及家庭成员，例如医疗保险，体检，英语培训及和外部商家达成的一些优惠服务等。 </span></div><div class="modify" align="right" paraseq="468"><span class="btn btn-blue" onclick="submitPart('其次，公司一些为员工提供的服务也可以惠及家庭成员，例如医疗保险，体检，英语培训及和外部商家达成的一些优惠服务等。',this)" class="modify">段落修改</div></div><div class="para"><div class="duanluo"><span>470</span></div><div class="l"><span style="margin-left:25px"></span><span >最后，创造更多&quot;公司家庭日&rdquo;、家庭运动会或以家庭为单位组织公益活动等的机会，促进家庭成员和工作范围内成员的互相认识与了解， </span><span >明确员工和其家庭成员在家庭角度应承担的责任，从而促进工作与生活的平衡。 </span></div><div class="modify" align="right" paraseq="469"><span class="btn btn-blue" onclick="submitPart('最后，创造更多&quot;公司家庭日&rdquo;、家庭运动会或以家庭为单位组织公益活动等的机会，促进家庭成员和工作范围内成员的互相认识与了解，明确员工和其家庭成员在家庭角度应承担的责任，从而促进工作与生活的平衡。',this)" class="modify">段落修改</div></div><div class="para"><div class="duanluo"><span>471</span></div><div class="l"><span style="margin-left:25px"></span><span >4.2  基于公平性原则的薪资制度改进 </span></div></div><div class="para"><div class="duanluo"><span>472</span></div><div class="l"><span style="margin-left:25px"></span><span >在薪资制度这个最重要的职业要素上，人人都追求公平，尽管没有绝对公平的存在，但是合情合理的相对公平即可以满足大多数人的需要。 </span><span >公司对薪资可以从其内部公平性、外部公平性、市场定位及市场竞争力等方面出发，并结合以下几个步骤着手实施： </span></div><div class="modify" align="right" paraseq="471"><span class="btn btn-blue" onclick="submitPart('在薪资制度这个最重要的职业要素上，人人都追求公平，尽管没有绝对公平的存在，但是合情合理的相对公平即可以满足大多数人的需要。公司对薪资可以从其内部公平性、外部公平性、市场定位及市场竞争力等方面出发，并结合以下几个步骤着手实施：',this)" class="modify">段落修改</div></div><div class="para"><div class="duanluo"><span>473</span></div><div class="l"><span style="margin-left:25px"></span><span >第一，明确全面薪酬理念，确定经济性薪酬体系。 </span><span >基于当前企业战略及企业现状，应实行目前的岗位薪资体系不变，这也符合美国总部的基本政策和要求及企业文化特点。 </span></div><div class="modify" align="right" paraseq="472"><span class="btn btn-blue" onclick="submitPart('第一，明确全面薪酬理念，确定经济性薪酬体系。基于当前企业战略及企业现状，应实行目前的岗位薪资体系不变，这也符合美国总部的基本政策和要求及企业文化特点。',this)" class="modify">段落修改</div></div><div class="para"><div class="duanluo"><span>474</span></div><div class="l"><span style="margin-left:25px"></span><span >第二，进行薪酬的市场调查。这是有效解决薪酬制度的外部公平性问题的第一步。 </span><span >参考竞争对手的薪酬现状，F公司目前的薪资水平显然不具有竞争力，员工多数是因为外企的轻松环境而选择加入公司，这样无法吸引或留住顶尖的技术人员， </span><span >因此应当做出大的调整。 </span></div><div class="modify" align="right" paraseq="473"><span class="btn btn-blue" onclick="submitPart('第二，进行薪酬的市场调查。这是有效解决薪酬制度的外部公平性问题的第一步。参考竞争对手的薪酬现状，F公司目前的薪资水平显然不具有竞争力，员工多数是因为外企的轻松环境而选择加入公司，这样无法吸引或留住顶尖的技术人员，因此应当做出大的调整。',this)" class="modify">段落修改</div></div><div class="para"><div class="duanluo"><span>475</span></div><div class="l"><span style="margin-left:25px"></span><span >第三，定位薪酬水平。 </span><span >既然公司力图阻止技术人员流失，其薪酬水平定位必须要具备一定的市场竞争力。 </span><span >从目前看来，应当大力提高在数量上占主导地位的非管理层技术人员的薪资水平，努力地使公司的平均薪酬现状从市场中位以下提升到市场中位以上或者是接近高位， </span><span >才能使人才倦怠或人才流失这一现象得到合理的控制。 </span></div><div class="modify" align="right" paraseq="474"><span class="btn btn-blue" onclick="submitPart('第三，定位薪酬水平。既然公司力图阻止技术人员流失，其薪酬水平定位必须要具备一定的市场竞争力。从目前看来，应当大力提高在数量上占主导地位的非管理层技术人员的薪资水平，努力地使公司的平均薪酬现状从市场中位以下提升到市场中位以上或者是接近高位，才能使人才倦怠或人才流失这一现象得到合理的控制。',this)" class="modify">段落修改</div></div><div class="para"><div class="duanluo"><span>476</span></div><div class="l"><span style="margin-left:25px"></span><span >第四，薪资制度的优化设计，这是薪资制度改进的重点，需要结合企业自身特点和外部市场水平来进行设计，结合F公司现状，可以从以下三方面进行： </span></div><div class="modify" align="right" paraseq="475"><span class="btn btn-blue" onclick="submitPart('第四，薪资制度的优化设计，这是薪资制度改进的重点，需要结合企业自身特点和外部市场水平来进行设计，结合F公司现状，可以从以下三方面进行：',this)" class="modify">段落修改</div></div><div class="para"><div class="duanluo"><span>477</span></div><div class="l"><span style="margin-left:25px"></span><span >首先，提高非管理技术人员的薪资标准，缩短管理层与非管理层技术骨干的薪资水平差距，即减少资深工程师薪资级别（TB-2）和经理薪资级别（TC-1）的差距。 </span><span >这同时需要对其他级别岗位进行一定的薪资调整，而薪资调整一定是要以岗位描述和岗位评价作为依据，最终薪资结构应体现梯度性、科学性和合理性。 </span></div><div class="modify" align="right" paraseq="476"><span class="btn btn-blue" onclick="submitPart('首先，提高非管理技术人员的薪资标准，缩短管理层与非管理层技术骨干的薪资水平差距，即减少资深工程师薪资级别（TB-2）和经理薪资级别（TC-1）的差距。这同时需要对其他级别岗位进行一定的薪资调整，而薪资调整一定是要以岗位描述和岗位评价作为依据，最终薪资结构应体现梯度性、科学性和合理性。',this)" class="modify">段落修改</div></div><div class="para"><div class="duanluo"><span>478</span></div><div class="l"><span style="margin-left:25px"></span><span >其次，对外来的有特殊技能的员工，以及新加入公司的一流院校的研究生毕业生，采用工资帽政策，不能高于同级别岗位的工资上限，在每个考察周期结束时进行评估， </span><span >如果表现出来所期望的能力并承担完成了需求的工作，则按照正常涨薪幅度加薪，否则依然以不能高于同级别岗位上限为准控制涨薪幅度。 </span><span >这样可以严格遵守公司的薪资等级制度，保证同级别的员工薪水相差不会过大，避免引来老员工的不满。 </span></div><div class="modify" align="right" paraseq="477"><span class="btn btn-blue" onclick="submitPart('其次，对外来的有特殊技能的员工，以及新加入公司的一流院校的研究生毕业生，采用工资帽政策，不能高于同级别岗位的工资上限，在每个考察周期结束时进行评估，如果表现出来所期望的能力并承担完成了需求的工作，则按照正常涨薪幅度加薪，否则依然以不能高于同级别岗位上限为准控制涨薪幅度。这样可以严格遵守公司的薪资等级制度，保证同级别的员工薪水相差不会过大，避免引来老员工的不满。',this)" class="modify">段落修改</div></div><div class="para"><div class="duanluo"><span>479</span></div><div class="l"><span style="margin-left:25px"></span><span >最后，对于年终奖，公司应放大个人绩效等级系数的作用，同时加入工龄系数，这样既可以保证表现优秀的员工能够获得嘉奖， </span><span >也可以避免拥有特殊技能的新人刚加入公司就拿到远超老员工的奖金。 </span></div><div class="modify" align="right" paraseq="478"><span class="btn btn-blue" onclick="submitPart('最后，对于年终奖，公司应放大个人绩效等级系数的作用，同时加入工龄系数，这样既可以保证表现优秀的员工能够获得嘉奖，也可以避免拥有特殊技能的新人刚加入公司就拿到远超老员工的奖金。',this)" class="modify">段落修改</div></div><div class="para"><div class="duanluo"><span>480</span></div><div class="l"><span style="margin-left:25px"></span><span >除了薪资公平以外，组织行为公平也是组织层面一个非常重要的因素，更有学者认为，公平是组织最重要的特性之一，反映了企业文化的特点。 </span><span >因此外企管理者应当从组织行为层面着手来开展工作，保证晋升，加薪，福利发放，任务分配，出国机会等相对公平，努力提高员工的组织公平感。 </span><a href="../sentence_detail/1020.htm" target="right" class="orange">既要重视员工所获得的各种回报的公平性，还应重视以往比较忽略的程序公平，程序公平顾名思义是指，在企业进行事件的处理与决策的过程与程序中，</a><a href="../sentence_detail/1021.htm" target="right" class="red">对事件利益相关方与当事者都是公平的，</a><a href="../sentence_detail/1022.htm" target="right" class="red">这个过程中不存在因为人为偏移与&quot;走后门&rdquo;而造成这个处理与决策过程产生不公正不合理的结果。</a><span >因此也是保证&quot;结果公平&rdquo;的保障条件之一。 </span><span >通过提升企业内部程序公平性，员工能够更加认可组织价值观，工作成就感也会不断得到提升，从而有效地预防工作倦怠现象的产生。 </span></div><div class="modify" align="right" paraseq="479"><span class="btn btn-blue" onclick="submitPart('除了薪资公平以外，组织行为公平也是组织层面一个非常重要的因素，更有学者认为，公平是组织最重要的特性之一，反映了企业文化的特点。因此外企管理者应当从组织行为层面着手来开展工作，保证晋升，加薪，福利发放，任务分配，出国机会等相对公平，努力提高员工的组织公平感。既要重视员工所获得的各种回报的公平性，还应重视以往比较忽略的程序公平，程序公平顾名思义是指，在企业进行事件的处理与决策的过程与程序中，对事件利益相关方与当事者都是公平的，这个过程中不存在因为人为偏移与&quot;走后门&rdquo;而造成这个处理与决策过程产生不公正不合理的结果。因此也是保证&quot;结果公平&rdquo;的保障条件之一。通过提升企业内部程序公平性，员工能够更加认可组织价值观，工作成就感也会不断得到提升，从而有效地预防工作倦怠现象的产生。',this)" class="modify">段落修改</div></div><div class="para"><div class="duanluo"><span>481</span></div><div class="l"><span style="margin-left:25px"></span><span >4.3  职业生涯管理体系的改进 </span></div></div><div class="para"><div class="duanluo"><span>482</span></div><div class="l"><span style="margin-left:25px"></span><span >正如本文之前提到的，F公司产品开发部的员工职业生涯管理体系还处于相对初级的阶段，多数员工虽然时有抱怨，但并没有向管理层提出清晰有效的改进对策。 </span><span >而好的职业生涯管理体系可以有效的帮助员工规划职业生涯，平衡好企业和个人的需求，满足员工成就感的同时提高企业运作效率，达到公司和员工双赢的理想结果。 </span></div><div class="modify" align="right" paraseq="481"><span class="btn btn-blue" onclick="submitPart('正如本文之前提到的，F公司产品开发部的员工职业生涯管理体系还处于相对初级的阶段，多数员工虽然时有抱怨，但并没有向管理层提出清晰有效的改进对策。而好的职业生涯管理体系可以有效的帮助员工规划职业生涯，平衡好企业和个人的需求，满足员工成就感的同时提高企业运作效率，达到公司和员工双赢的理想结果。',this)" class="modify">段落修改</div></div><div class="para"><div class="duanluo"><span>483</span></div><div class="l"><span style="margin-left:25px"></span><span >技术人才职业生涯管理体系的完善需要充分调动企业管理层和员工个人两方面的力量，其具体实施方案可以分为如下几个步骤： </span></div><div class="modify" align="right" paraseq="482"><span class="btn btn-blue" onclick="submitPart('技术人才职业生涯管理体系的完善需要充分调动企业管理层和员工个人两方面的力量，其具体实施方案可以分为如下几个步骤：',this)" class="modify">段落修改</div></div><div class="para"><div class="duanluo"><span>484</span></div><div class="l"><span style="margin-left:25px"></span><span >（1）	提高员工对企业文化的认同度 </span></div></div><div class="para"><div class="duanluo"><span>485</span></div><div class="l"><span style="margin-left:25px"></span><span >企业是每个员工发展职业生涯的载体，而企业文化和组织价值是影响企业员工行为与观念的关键因素，同时也是企业提高自身竞争力的重要手段之一， </span><span >员工感知的企业价值观、个人与组织价值观的匹配对员工行为会产生很大的影响，所以要通过宣传企业文化，集中培训等方式努力提高员工对组织价值观的认同程度， </span><span >才能使员工愿意接受企业对自身职业发展方向的建议和举措。 </span></div><div class="modify" align="right" paraseq="484"><span class="btn btn-blue" onclick="submitPart('企业是每个员工发展职业生涯的载体，而企业文化和组织价值是影响企业员工行为与观念的关键因素，同时也是企业提高自身竞争力的重要手段之一，员工感知的企业价值观、个人与组织价值观的匹配对员工行为会产生很大的影响，所以要通过宣传企业文化，集中培训等方式努力提高员工对组织价值观的认同程度，才能使员工愿意接受企业对自身职业发展方向的建议和举措。',this)" class="modify">段落修改</div></div><div class="para"><div class="duanluo"><span>486</span></div><div class="l"><span style="margin-left:25px"></span><span >（2）	员工的自我评估 </span></div></div><div class="para"><div class="duanluo"><span>487</span></div><div class="l"><span style="margin-left:25px"></span><span >在了解了企业文化和组织内职业发展路径后， </span><span >员工首先对自己在业务知识、技术技能、个人职业倾向和职业发展目标等方面进行评估和规划，然后填写《自我技能评估与职业生涯规划书》（下文简称《规划书》）， </span><span >所有的评估结果与规划内容都在上面显示。 </span></div><div class="modify" align="right" paraseq="486"><span class="btn btn-blue" onclick="submitPart('在了解了企业文化和组织内职业发展路径后，员工首先对自己在业务知识、技术技能、个人职业倾向和职业发展目标等方面进行评估和规划，然后填写《自我技能评估与职业生涯规划书》（下文简称《规划书》），所有的评估结果与规划内容都在上面显示。',this)" class="modify">段落修改</div></div><div class="para"><div class="duanluo"><span>488</span></div><div class="l"><span style="margin-left:25px"></span><span >（3）	公司对员工进行检验 </span></div></div><div class="para"><div class="duanluo"><span>489</span></div><div class="l"><span style="margin-left:25px"></span><span >填写了《规划书》的员工的直接领导要参与对员工实际能力的检验，根据《规划书》的具体内容对员工进行指导，了解员工事实，指出其中不相符合的地方， </span><span >并参考个人绩效最终给出结论分数与发展建议并提交公司人力部门，在得到人力部专员的评估审核后，给予员工科学的职业规划指导并提供反馈。 </span></div><div class="modify" align="right" paraseq="488"><span class="btn btn-blue" onclick="submitPart('填写了《规划书》的员工的直接领导要参与对员工实际能力的检验，根据《规划书》的具体内容对员工进行指导，了解员工事实，指出其中不相符合的地方，并参考个人绩效最终给出结论分数与发展建议并提交公司人力部门，在得到人力部专员的评估审核后，给予员工科学的职业规划指导并提供反馈。',this)" class="modify">段落修改</div></div><div class="para"><div class="duanluo"><span>490</span></div><div class="l"><span style="margin-left:25px"></span><span >（4）	员工设定职业生涯目标 </span></div></div><div class="para"><div class="duanluo"><span>491</span></div><div class="l"><span style="margin-left:25px"></span><span >员工接到人力部门反馈以后对自己的目标进行相应的调整，在此基础上最终设立一个职业发展目标，并把这个目标分为多个阶段，其中每个阶段都要设立一个子目标， </span><span >可以以一年为一个阶段周期，从而结合年度考评与绩效奖励来进行实施。 </span></div><div class="modify" align="right" paraseq="490"><span class="btn btn-blue" onclick="submitPart('员工接到人力部门反馈以后对自己的目标进行相应的调整，在此基础上最终设立一个职业发展目标，并把这个目标分为多个阶段，其中每个阶段都要设立一个子目标，可以以一年为一个阶段周期，从而结合年度考评与绩效奖励来进行实施。',this)" class="modify">段落修改</div></div><div class="para"><div class="duanluo"><span>492</span></div><div class="l"><span style="margin-left:25px"></span><span >（5）	企业为员工提供实现目标的必要条件 </span></div></div><div class="para"><div class="duanluo"><span>493</span></div><div class="l"><span style="margin-left:25px"></span><span >为了让员工达到公司与员工本人共同设定的职业生涯目标， </span><span >公司要规划组织对员工进行不同类型的相关培训并与企业的自身特点和业务需求相结合：例如对于技术开发部入职的每一批员工均有定期不同深度的业务知识培训， </span><span >对管理人员或预备管理人员则进行软技能和管理知识方面的培训，让每个员工都在自己需要的地方得到加强。 </span><span >在不影响部门工作的情况下实施部门内部轮岗制，让员工接触到不同的岗位或技术，了解自身对不同岗位的适应程度从而了解自己的真正喜好和需求， </span><span >同时也可以为员工未来的职业发展及调整提供一定的帮助与指导。 </span></div><div class="modify" align="right" paraseq="492"><span class="btn btn-blue" onclick="submitPart('为了让员工达到公司与员工本人共同设定的职业生涯目标，公司要规划组织对员工进行不同类型的相关培训并与企业的自身特点和业务需求相结合：例如对于技术开发部入职的每一批员工均有定期不同深度的业务知识培训，对管理人员或预备管理人员则进行软技能和管理知识方面的培训，让每个员工都在自己需要的地方得到加强。在不影响部门工作的情况下实施部门内部轮岗制，让员工接触到不同的岗位或技术，了解自身对不同岗位的适应程度从而了解自己的真正喜好和需求，同时也可以为员工未来的职业发展及调整提供一定的帮助与指导。',this)" class="modify">段落修改</div></div><div class="para"><div class="duanluo"><span>494</span></div><div class="l"><span style="margin-left:25px"></span><span >（6）	员工职业生涯目标完成情况的跟踪 </span></div></div><div class="para"><div class="duanluo"><span>495</span></div><div class="l"><span style="margin-left:25px"></span><span >企业应以半年为单位对员工的职业生涯规划的完成情况进行跟踪与考察，人力部门与部门主管一起对员工的职业规划内容进行考评，并及时将考评结果通知给员工个人。 </span><span >直接领导应每月与员工有一次关于职业生涯目标的单独谈话，从而了解员工的进展与可能产生的情绪变化，保证员工始终走在正确的职业发展道路上。 </span></div><div class="modify" align="right" paraseq="494"><span class="btn btn-blue" onclick="submitPart('企业应以半年为单位对员工的职业生涯规划的完成情况进行跟踪与考察，人力部门与部门主管一起对员工的职业规划内容进行考评，并及时将考评结果通知给员工个人。直接领导应每月与员工有一次关于职业生涯目标的单独谈话，从而了解员工的进展与可能产生的情绪变化，保证员工始终走在正确的职业发展道路上。',this)" class="modify">段落修改</div></div><div class="para"><div class="duanluo"><span>496</span></div><div class="l"><span style="margin-left:25px"></span><span >（7）	员工的反馈及自我修正 </span></div></div><div class="para"><div class="duanluo"><span>497</span></div><div class="l"><span style="margin-left:25px"></span><span >员工在接到考评结果后，要对结果进行仔细分析，给出改进或修正，如果认为需要重新定位职业发展目标则建议和直接领导讨论给出重新调整意见， </span><span >直到找出正确的职业发展方向和路径并给与执行。 </span></div><div class="modify" align="right" paraseq="496"><span class="btn btn-blue" onclick="submitPart('员工在接到考评结果后，要对结果进行仔细分析，给出改进或修正，如果认为需要重新定位职业发展目标则建议和直接领导讨论给出重新调整意见，直到找出正确的职业发展方向和路径并给与执行。',this)" class="modify">段落修改</div></div><div class="para"><div class="duanluo"><span>498</span></div><div class="l"><span style="margin-left:25px"></span><span >在以上的实施方案中，员工和企业都是实施的主体，员工应该由过去的被动接受公司安排变为主动规划自我。 </span><span >企业应从内心激励员工，让员工认识到自己过去的成就以及在现有项目中自身的重要性，从而对未来更有信心，更有动力作出符合自己内心需求的职业规划。 </span></div><div class="modify" align="right" paraseq="497"><span class="btn btn-blue" onclick="submitPart('在以上的实施方案中，员工和企业都是实施的主体，员工应该由过去的被动接受公司安排变为主动规划自我。企业应从内心激励员工，让员工认识到自己过去的成就以及在现有项目中自身的重要性，从而对未来更有信心，更有动力作出符合自己内心需求的职业规划。',this)" class="modify">段落修改</div></div><div class="para"><div class="duanluo"><span>499</span></div><div class="l"><span style="margin-left:25px"></span><span >结    论 </span></div></div><div class="para"><div class="duanluo"><span>500</span></div><div class="l"><span style="margin-left:25px"></span><span >本文就F公司的技术人才激励管理问题，通过三个具体案例，运用案例研究法和文献研究法对此进行了分析，得出的结论是公司现行的激励管理制度中存在三方面问题， </span><span >分别是非经济性薪酬激励的缺失，薪酬福利制度的公平性不足，以及员工职业生涯发展激励不足造成的工作倦怠问题。 </span></div><div class="modify" align="right" paraseq="499"><span class="btn btn-blue" onclick="submitPart('本文就F公司的技术人才激励管理问题，通过三个具体案例，运用案例研究法和文献研究法对此进行了分析，得出的结论是公司现行的激励管理制度中存在三方面问题，分别是非经济性薪酬激励的缺失，薪酬福利制度的公平性不足，以及员工职业生涯发展激励不足造成的工作倦怠问题。',this)" class="modify">段落修改</div></div><div class="para"><div class="duanluo"><span>501</span></div><div class="l"><span style="margin-left:25px"></span><span >员工不满，不思进取或离职跳槽从表面看大多是个人行为，但事实上更多时候却隐藏着企业在人力资源管理尤其是激励管理方面存在着的巨大问题。 </span><span >这就好比自然界中的物种衰败，水土流失，其根本原因乃是环境的恶化。 </span><span >如果一个企业中作为核心骨干的技术人员产生了问题，那么企业的管理者是不是也应该认识到这个企业的人才环境正在变差，从而想办法去改善这个环境呢？ </span><span >这是一个值得外资企业家和企业管理者们所要反省和深思的问题。 </span><span >反省和深思之余，还要针对问题产生的不同原因进行深入而细致的分析研究，以便能够采取行之有效的对策来组织问题和错误的进一步深化。 </span></div><div class="modify" align="right" paraseq="500"><span class="btn btn-blue" onclick="submitPart('员工不满，不思进取或离职跳槽从表面看大多是个人行为，但事实上更多时候却隐藏着企业在人力资源管理尤其是激励管理方面存在着的巨大问题。这就好比自然界中的物种衰败，水土流失，其根本原因乃是环境的恶化。如果一个企业中作为核心骨干的技术人员产生了问题，那么企业的管理者是不是也应该认识到这个企业的人才环境正在变差，从而想办法去改善这个环境呢？这是一个值得外资企业家和企业管理者们所要反省和深思的问题。反省和深思之余，还要针对问题产生的不同原因进行深入而细致的分析研究，以便能够采取行之有效的对策来组织问题和错误的进一步深化。',this)" class="modify">段落修改</div></div><div class="para"><div class="duanluo"><span>502</span></div><div class="l"><span style="margin-left:25px"></span><span >企业对人才尤其是技术型人才的管理，一定要了解他们真正需要的是什么：他们除了需要一份较为满意的薪酬与福利外，更需要的是一个真正适合自己发展的环境， </span><span >这个环境使他们在能够获得心理相对平衡的基础上去充分的展现自己的能力，实现自我的价值，从而推动企业向前发展。 </span><span >他们不能接受自己的辛勤付出得不到应有的回报，不愿看到以人性化著称的企业却存在着诸多不公平现象，也不想因为企业人才流失而被要求日夜加班到处救火， </span><span >远离了家人或远离了自己的梦想，这将使人才丧失对企业的信心和对企业的忠诚。 </span><span >所以，管理者们有义务用更好更人性化的激励手段使企业成为人才聚集的一片沃土，在这片沃土上，每个人都能像一棵被充足的阳光所照耀，被丰富的雨水所灌溉的植物， </span><span >快乐成长，从而促使这片沃土成为更多人才发展的乐园。 </span></div><div class="modify" align="right" paraseq="501"><span class="btn btn-blue" onclick="submitPart('企业对人才尤其是技术型人才的管理，一定要了解他们真正需要的是什么：他们除了需要一份较为满意的薪酬与福利外，更需要的是一个真正适合自己发展的环境，这个环境使他们在能够获得心理相对平衡的基础上去充分的展现自己的能力，实现自我的价值，从而推动企业向前发展。他们不能接受自己的辛勤付出得不到应有的回报，不愿看到以人性化著称的企业却存在着诸多不公平现象，也不想因为企业人才流失而被要求日夜加班到处救火，远离了家人或远离了自己的梦想，这将使人才丧失对企业的信心和对企业的忠诚。所以，管理者们有义务用更好更人性化的激励手段使企业成为人才聚集的一片沃土，在这片沃土上，每个人都能像一棵被充足的阳光所照耀，被丰富的雨水所灌溉的植物，快乐成长，从而促使这片沃土成为更多人才发展的乐园。',this)" class="modify">段落修改</div></div><div class="para"><div class="duanluo"><span>503</span></div><div class="l"><span style="margin-left:25px"></span><span >实践表明，企业若不能充分利用人才，日益增加的人力成本将为企业填上一笔重重的负担，甚至将企业拖垮。 </span><span >所以我们说，企业的生存与发展之本是人才，而发展之道就是如何留住并有效激励人才。 </span></div><div class="modify" align="right" paraseq="502"><span class="btn btn-blue" onclick="submitPart('实践表明，企业若不能充分利用人才，日益增加的人力成本将为企业填上一笔重重的负担，甚至将企业拖垮。所以我们说，企业的生存与发展之本是人才，而发展之道就是如何留住并有效激励人才。',this)" class="modify">段落修改</div></div><div align="center" class="navigation"><a href="paper_1.htm"><span class="btn_gray">首页</span></a><a  href="paper_4.htm"><span class="btn_gray">上一页</span></a><a href="#"><span class="btn_gray">下一页</span></a><a href="paper_5.htm">	<span class="btn_gray">尾页</span></a><span>页码：5/5页</span></div><div class="footer"><div align="center" class="a666" style="font-size:14px;padding-top:50px;padding-bottom:30px;"><div>检测报告由 <a class="nounderline" href="http://www.ptcheck.com" target="_blank">PTcheck</a>文献相似度检测系统生成 </div><div>Copyright © 2007-2016 PTcheck </div></div></div></div></body></html>

@@ -1,0 +1,446 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01//EN"
+"http://www.w3.org/TR/html4/strict.dtd">
+
+<html xmlns="http://www.w3.org/1999/xhtml" lang="en">
+
+	<head>
+		<meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+		<title>PTcheck论文检测报告</title>
+		<link rel="stylesheet" href="../css/base.css" />
+		<style type="text/css">
+		a {
+    color: #0796fe;
+}
+a:hover{
+    color:#0796fe!important;
+}
+			.mainContainer {
+				padding: 20px;
+	
+			}
+			
+			.navigation span {
+				display: inline-block;
+				padding-left: 5px;
+				padding-right: 5px;
+				color: #666;
+			}
+			
+			.btn_gray {
+				border: solid 1px #dddddd;
+				background-color: #eeeeee;
+				border-radius: 5px;
+				cursor: pointer;
+			}
+			
+			.btn_gray:hover,
+			.btn_blue {
+				background-color: #0099ff;
+				border: solid 1px #0099ff;
+				color: #fff!important;
+				border-radius: 5px;
+				cursor: pointer;
+			}
+			.para{
+				padding-top:20px;
+			}
+			
+			.duanluo{
+				padding-left:20px;
+				
+				padding-bottom: 5px;
+			}
+			.duanluo span{
+				display: inline-block;
+				padding-left:5px;
+				padding-right: 5px;
+				border: solid 1px #999;
+				color:#999;
+			}
+			.l{
+				line-height: 20px;
+				padding-bottom: 5px;
+			}
+			.l span{
+				color:#333;
+			}
+			.mymodify{
+				font-size:12px;
+			}
+			.mymodify textarea{
+				width:98%;
+				height:100px;
+				color:#333;
+				clear:both;
+			}
+			textarea{
+				padding:10px;
+				line-height: 20px;
+			}
+		</style>
+		<script type="text/javascript">
+
+        var isstorage=false;
+        var danhao;
+        var result= new Array();
+         function trimStr(str) {
+
+            if ((typeof (str) != "string") || !str) {
+
+                return "";
+
+            }
+
+            return str.replace(/(^\s*)|(\s*$)/g, "");
+
+        }
+          
+        function myclick() {
+            window.parent.parent.ViewMain.window.location.href = "../../htmls/jianchong_.htm";
+        }
+        function submitPart(obj, target) {
+            var parent = target.parentNode;
+            if(parent.getAttribute("data")=="add"){
+              var mynext = parent.nextSibling;
+              parent.setAttribute("data","remove");
+              parent.parentNode.removeChild(mynext);
+            }
+            else{
+            	parent.setAttribute("data","add");
+            	var temphtml = document.createElement("div");
+                temphtml.innerHTML = "<input type=\"hidden\" value=\""+ parent.getAttribute("paraseq") +"\"><div name=\"mymodify\" class=\"mymodify\" >"
+					+"<div class=\"a999\">改重内容（请对本句修改之后，点击“临时保存”，然后进入报告左侧“修改文档”页面中获取修改后的内容）：</div>"
+					+"<div><textarea>"+obj
+					+"</textarea>"
+					+"</div>"
+					+"<div align=\"right\" class=\"a999\" style=\"margin-top:14px;\">（注意：改完请及时到“修改文档”复制到原文）<span class=\"btn-gray btn a333\" onclick=\"mysave(this)\">临时保存</span></div>"
+				+"</div>";
+            	   parent.parentNode.insertBefore(temphtml, null);
+            }
+
+        }
+
+		function myNavigate(){
+		 document.getElementById("a_url").click();
+		}
+       
+        function mysave(target) {
+            var tempsen = trimStr(target.parentNode.previousSibling.lastChild.value.replace(/\"/g,"\\\"").replace(/\'/g,"\\\'"));
+            var paraseq = target.parentNode.parentNode.parentNode.firstChild.value;            
+            var mydiv = target.parentNode.parentNode.parentNode.previousSibling;
+             if (mydiv.nodeName == "#text") {
+                mydiv = mydiv.previousSibling;
+            }
+             
+            mydiv.lastChild.setAttribute("onclick", "submitPart('" + tempsen + "',this)");
+           mydiv.setAttribute("data","remove");
+           if (mydiv.firstChild.innerHTML != "已修改") {
+                var xiugai = document.createElement("span");
+                xiugai.setAttribute("style", "font-size:12px;color:#00AEAE;margin-right:10px;");
+                xiugai.innerHTML = "已修改";
+                mydiv.insertBefore(xiugai, mydiv.lastChild);
+               }
+            
+            var parent = target.parentNode.parentNode.parentNode;
+            parent.parentNode.removeChild(parent);
+            if(!isstorage)
+            {
+            window.parent.parent.parent.myset(paraseq, tempsen);
+            }
+            else
+            {
+            myset(paraseq, tempsen);
+            }
+        }
+        window.onload = function() {
+            danhao = document.getElementById("danhao").value;
+            if (window.localStorage) {
+                isstorage = true;
+            }
+            if (!isstorage) {
+                result = window.parent.parent.parent.modifyPara;
+                
+            }
+            else {
+                var temp = localStorage.getItem(danhao);
+                if (temp) {
+                    result = eval("(" + temp + ")");
+                }
+            }
+            if (result) {
+            	
+                for (var i = 0; i < result.length; i++) {
+                	
+                    //var all = $(":hidden");
+                    var all = getClass("div","modify");
+                   
+                    for (var j = 0; j < all.length; j++) {
+                        if (all[j].getAttribute("paraseq") == result[i].para) {
+                        	
+                            var xiugai = document.createElement("span");
+                            xiugai.setAttribute("style", "font-size:12px;color:#00AEAE;margin-right:10px;");
+                            xiugai.innerHTML = "已修改";
+                            all[j].insertBefore(xiugai, all[j].lastChild);
+                            all[j].lastChild.setAttribute("onclick", "submitPart('" + result[i].text.replace(/\"/g,"\\\"").replace(/\'/g,"\\\'") + "',this)");
+                        }
+                    }
+
+                }
+            }  
+        }
+
+
+        function mydivclick(e,obj) {
+            if (e.target.tagName.toUpperCase() != "INPUT") {
+                obj.lastChild.previousSibling.click();
+            }
+        }
+
+        function getClass(tagname, className) { //tagname指元素，className指class的值
+            var tagname = document.getElementsByTagName(tagname);  //获取指定元素
+            var tagnameAll = [];     //这个数组用于存储所有符合条件的元素
+            for (var i = 0; i < tagname.length; i++) {     //遍历获得的元素
+                if (tagname[i].className == className) {     //如果获得的元素中的class的值等于指定的类名，就赋值给tagnameAll
+                    tagnameAll[tagnameAll.length] = tagname[i];
+                }
+            }
+            return tagnameAll;
+
+        }
+
+       
+        
+        
+         function myset(paraseq, sen) {
+         	
+            var reg = new RegExp("\"", "g")
+            var model = "{\"para\":\"" + paraseq + "\",\"text\": \"" + sen + "\"}";
+            var mo = eval("(" + model + ")");
+            var exist = false;
+            for (var i = 0; i < result.length; i++) {
+                if (mo.para == result[i].para) {
+                    exist = true;
+                    result[i].text = mo.text;
+                }
+            }
+            if (!exist) {
+                result.push(mo);
+            }
+            localStorage.removeItem(danhao);
+            localStorage.setItem(danhao, json_encode(result));
+        }
+        
+        function json_decode(str_json) {
+            // Decodes the JSON representation into a PHP value  
+            //  
+            // version: 906.1806  
+            // discuss at: http://phpjs.org/functions/json_decode  
+            // +      original by: Public Domain (http://www.json.org/json2.js)  
+            // + reimplemented by: Kevin van Zonneveld (http://kevin.vanzonneveld.net)  
+            // + improved by: T.J. Leahy  
+            // *     example 1: json_decode('[\n    "e",\n    {\n    "pluribus": "unum"\n}\n]');  
+            // *     returns 1: ['e', {pluribus: 'unum'}]  
+            /* 
+            http://www.JSON.org/json2.js 
+            2008-11-19 
+            Public Domain. 
+            NO WARRANTY EXPRESSED OR IMPLIED. USE AT YOUR OWN RISK. 
+            See http://www.JSON.org/js.html 
+            */
+
+            var json = this.window.JSON;
+            if (typeof json === 'object' && typeof json.parse === 'function') {
+                return json.parse(str_json);
+            }
+
+            var cx = /[\u0000\u00ad\u0600-\u0604\u070f\u17b4\u17b5\u200c-\u200f\u2028-\u202f\u2060-\u206f\ufeff\ufff0-\uffff]/g;
+            var j;
+            var text = str_json;
+
+            // Parsing happens in four stages. In the first stage, we replace certain  
+            // Unicode characters with escape sequences. JavaScript handles many characters  
+            // incorrectly, either silently deleting them, or treating them as line endings.  
+            cx.lastIndex = 0;
+            if (cx.test(text)) {
+                text = text.replace(cx, function(a) {
+                    return '\\u' +
+            ('0000' + a.charCodeAt(0).toString(16)).slice(-4);
+                });
+            }
+
+            // In the second stage, we run the text against regular expressions that look  
+            // for non-JSON patterns. We are especially concerned with '()' and 'new'  
+            // because they can cause invocation, and '=' because it can cause mutation.  
+            // But just to be safe, we want to reject all unexpected forms.  
+
+            // We split the second stage into 4 regexp operations in order to work around  
+            // crippling inefficiencies in IE's and Safari's regexp engines. First we  
+            // replace the JSON backslash pairs with '@' (a non-JSON character). Second, we  
+            // replace all simple value tokens with ']' characters. Third, we delete all  
+            // open brackets that follow a colon or comma or that begin the text. Finally,  
+            // we look to see that the remaining characters are only whitespace or ']' or  
+            // ',' or ':' or '{' or '}'. If that is so, then the text is safe for eval.  
+            if (/^[\],:{}\s]*$/.
+        test(text.replace(/\\(?:["\\\/bfnrt]|u[0-9a-fA-F]{4})/g, '@').
+            replace(/"[^"\\\n\r]*"|true|false|null|-?\d+(?:\.\d*)?(?:[eE][+\-]?\d+)?/g, ']').
+            replace(/(?:^|:|,)(?:\s*\[)+/g, ''))) {
+
+                // In the third stage we use the eval function to compile the text into a  
+                // JavaScript structure. The '{' operator is subject to a syntactic ambiguity  
+                // in JavaScript: it can begin a block or an object literal. We wrap the text  
+                // in parens to eliminate the ambiguity.  
+
+                j = eval('(' + text + ')');
+
+                return j;
+            }
+
+            // If the text is not JSON parseable, then a SyntaxError is thrown.  
+            throw new SyntaxError('json_decode');
+        }
+
+        function json_encode(mixed_val) {
+            // Returns the JSON representation of a value  
+            //  
+            // version: 906.1806  
+            // discuss at: http://phpjs.org/functions/json_encode  
+            // +      original by: Public Domain (http://www.json.org/json2.js)  
+            // + reimplemented by: Kevin van Zonneveld (http://kevin.vanzonneveld.net)  
+            // + improved by: T.J. Leahy  
+            // *     example 1: json_encode(['e', {pluribus: 'unum'}]);  
+            // *     returns 1: '[\n    "e",\n    {\n    "pluribus": "unum"\n}\n]'  
+            /* 
+            http://www.JSON.org/json2.js 
+            2008-11-19 
+            Public Domain. 
+            NO WARRANTY EXPRESSED OR IMPLIED. USE AT YOUR OWN RISK. 
+            See http://www.JSON.org/js.html 
+            */
+            var json = this.window.JSON;
+            if (typeof json === 'object' && typeof json.stringify === 'function') {
+                return json.stringify(mixed_val);
+            }
+
+            var value = mixed_val;
+
+            var quote = function(string) {
+                var escapable = /[\\\"\u0000-\u001f\u007f-\u009f\u00ad\u0600-\u0604\u070f\u17b4\u17b5\u200c-\u200f\u2028-\u202f\u2060-\u206f\ufeff\ufff0-\uffff]/g;
+                var meta = {    // table of character substitutions  
+                    '\b': '\\b',
+                    '\t': '\\t',
+                    '\n': '\\n',
+                    '\f': '\\f',
+                    '\r': '\\r',
+                    '"': '\\"',
+                    '\\': '\\\\'
+                };
+
+                escapable.lastIndex = 0;
+                return escapable.test(string) ?
+        '"' + string.replace(escapable, function(a) {
+            var c = meta[a];
+            return typeof c === 'string' ? c :
+            '\\u' + ('0000' + a.charCodeAt(0).toString(16)).slice(-4);
+        }) + '"' :
+        '"' + string + '"';
+            };
+
+            var str = function(key, holder) {
+                var gap = '';
+                var indent = '    ';
+                var i = 0;          // The loop counter.  
+                var k = '';          // The member key.  
+                var v = '';          // The member value.  
+                var length = 0;
+                var mind = gap;
+                var partial = [];
+                var value = holder[key];
+
+                // If the value has a toJSON method, call it to obtain a replacement value.  
+                if (value && typeof value === 'object' &&
+            typeof value.toJSON === 'function') {
+                    value = value.toJSON(key);
+                }
+
+                // What happens next depends on the value's type.  
+                switch (typeof value) {
+                    case 'string':
+                        return quote(value);
+
+                    case 'number':
+                        // JSON numbers must be finite. Encode non-finite numbers as null.  
+                        return isFinite(value) ? String(value) : 'null';
+
+                    case 'boolean':
+                    case 'null':
+                        // If the value is a boolean or null, convert it to a string. Note:  
+                        // typeof null does not produce 'null'. The case is included here in  
+                        // the remote chance that this gets fixed someday.  
+
+                        return String(value);
+
+                    case 'object':
+                        // If the type is 'object', we might be dealing with an object or an array or  
+                        // null.  
+                        // Due to a specification blunder in ECMAScript, typeof null is 'object',  
+                        // so watch out for that case.  
+                        if (!value) {
+                            return 'null';
+                        }
+
+                        // Make an array to hold the partial results of stringifying this object value.  
+                        gap += indent;
+                        partial = [];
+
+                        // Is the value an array?  
+                        if (Object.prototype.toString.apply(value) === '[object Array]') {
+                            // The value is an array. Stringify every element. Use null as a placeholder  
+                            // for non-JSON values.  
+
+                            length = value.length;
+                            for (i = 0; i < length; i += 1) {
+                                partial[i] = str(i, value) || 'null';
+                            }
+
+                            // Join all of the elements together, separated with commas, and wrap them in  
+                            // brackets.  
+                            v = partial.length === 0 ? '[]' :
+                    gap ? '[\n' + gap +
+                    partial.join(',\n' + gap) + '\n' +
+                    mind + ']' :
+                    '[' + partial.join(',') + ']';
+                            gap = mind;
+                            return v;
+                        }
+
+                        // Iterate through all of the keys in the object.  
+                        for (k in value) {
+                            if (Object.hasOwnProperty.call(value, k)) {
+                                v = str(k, value);
+                                if (v) {
+                                    partial.push(quote(k) + (gap ? ': ' : ':') + v);
+                                }
+                            }
+                        }
+
+                        // Join all of the member texts together, separated with commas,  
+                        // and wrap them in braces.  
+                        v = partial.length === 0 ? '{}' :
+                gap ? '{\n' + gap + partial.join(',\n' + gap) + '\n' +
+                mind + '}' : '{' + partial.join(',') + '}';
+                        gap = mind;
+                        return v;
+                }
+            };
+
+            // Make a fake root object containing our value under the key of ''.  
+            // Return the result of stringifying the value.  
+            return str('', {
+                '': value
+            });
+        } 
+       
+    </script>
+	</head>
+
+	<body><a href="http://www.ptcheck.com/jack/segment.aspx" target="_blank" id="a_url" style="display:none;" ></a> <input type="hidden" id="danhao" value="2285731800810302" /><div class="mainContainer"><div align="center" class="navigation"><a href="paper_1.htm"><span class="btn_gray">首页</span></a><a  href="paper_2.htm"><span class="btn_gray">上一页</span></a><a href="paper_4.htm"><span class="btn_gray">下一页</span></a><a href="paper_5.htm">	<span class="btn_gray">尾页</span></a><span>页码：3/5页</span></div><div class="zhengwen"><div class="para"><div class="duanluo"><span>203</span></div><div class="l"><span style="margin-left:25px"></span><a href="../sentence_detail/445.htm" target="right" class="red">①	 存在典型的疲劳症状，如心理或情感衰竭、疲倦和抑郁。</a></div></div><div class="para"><div class="duanluo"><span>204</span></div><div class="l"><span style="margin-left:25px"></span><a href="../sentence_detail/446.htm" target="right" class="red">②	可能会发生各种各样的非典型的身体症状。</a></div></div><div class="para"><div class="duanluo"><span>205</span></div><div class="l"><span style="margin-left:25px"></span><span >③	倦怠症状是与工作相关的。 </span></div></div><div class="para"><div class="duanluo"><span>206</span></div><div class="l"><span style="margin-left:25px"></span><a href="../sentence_detail/448.htm" target="right" class="red">④	症状出现在没有精神病理学原因的&quot;正常人&rdquo;身上。</a></div></div><div class="para"><div class="duanluo"><span>207</span></div><div class="l"><span style="margin-left:25px"></span><a href="../sentence_detail/449.htm" target="right" class="red">⑤	由于负性的工作态度和行为导致个体有效性和工作绩效下降。</a></div></div><div class="para"><div class="duanluo"><span>208</span></div><div class="l"><span style="margin-left:25px"></span><span >（2）	工作倦怠的动态定义 </span></div></div><div class="para"><div class="duanluo"><span>209</span></div><div class="l"><span style="margin-left:25px"></span><a href="../sentence_detail/451.htm" target="right" class="red">动态定义则是依据工作倦怠的发展过程来定义。</a><a href="../sentence_detail/452.htm" target="right" class="red">Cherniss是最早从动态的角度来论述工作倦怠的学者之一。</a><a href="../sentence_detail/453.htm" target="right" class="red">他认为&quot;作为对工作疲劳的反应，工作倦怠是指个体的职业态度和行为以负性的形式发生改变的过程&rdquo;。</a><span >它包括三个阶段： </span></div><div class="modify" align="right" paraseq="208"><span class="btn btn-blue" onclick="submitPart('动态定义则是依据工作倦怠的发展过程来定义。Cherniss是最早从动态的角度来论述工作倦怠的学者之一。他认为&quot;作为对工作疲劳的反应，工作倦怠是指个体的职业态度和行为以负性的形式发生改变的过程&rdquo;。它包括三个阶段：',this)" class="modify">段落修改</div></div><div class="para"><div class="duanluo"><span>210</span></div><div class="l"><span style="margin-left:25px"></span><a href="../sentence_detail/455.htm" target="right" class="red">第一阶段是应激阶段，即个体资源与工作要求之间的不平衡；</a><a href="../sentence_detail/456.htm" target="right" class="red">第二阶段为疲劳阶段，即即时的、短期的情绪紧张、疲劳和衰竭；</a><a href="../sentence_detail/457.htm" target="right" class="red">第三阶段为个体防御性应对阶段，包括一系列行为和态度的改变，</a><a href="../sentence_detail/458.htm" target="right" class="red">如以疏远的和机械的方式对待服务对象、优先考虑自身的需要、对待职业的玩世不恭的态度。</a><a href="../sentence_detail/459.htm" target="right" class="red">Etzion（1987）认为，工作倦怠是一个缓慢的发展过程，开始时毫无预警，在个体没有觉察到的情况下发展，一旦达到一个特殊的临界点，</a><a href="../sentence_detail/460.htm" target="right" class="red">个体突然感觉到衰竭，并且不能把这种破坏性的体验与任何特殊的应激事件联系起来。</a><a href="../sentence_detail/461.htm" target="right" class="red">可见工作倦怠的动态定义认为，工作倦怠是一个由量变到质变的渐进过程，它最初以应激的形式出现，在长久的发展过程中，．个体由于感觉到有效的资源过度透支，</a><a href="../sentence_detail/462.htm" target="right" class="red">于是开始改变自己对待他人和工作的态度，而这个过程的最终结果就是导致个体的工作倦怠。</a></div><div class="modify" align="right" paraseq="209"><span class="btn btn-blue" onclick="submitPart('第一阶段是应激阶段，即个体资源与工作要求之间的不平衡；第二阶段为疲劳阶段，即即时的、短期的情绪紧张、疲劳和衰竭；第三阶段为个体防御性应对阶段，包括一系列行为和态度的改变，如以疏远的和机械的方式对待服务对象、优先考虑自身的需要、对待职业的玩世不恭的态度。Etzion（1987）认为，工作倦怠是一个缓慢的发展过程，开始时毫无预警，在个体没有觉察到的情况下发展，一旦达到一个特殊的临界点，个体突然感觉到衰竭，并且不能把这种破坏性的体验与任何特殊的应激事件联系起来。可见工作倦怠的动态定义认为，工作倦怠是一个由量变到质变的渐进过程，它最初以应激的形式出现，在长久的发展过程中，．个体由于感觉到有效的资源过度透支，于是开始改变自己对待他人和工作的态度，而这个过程的最终结果就是导致个体的工作倦怠。',this)" class="modify">段落修改</div></div><div class="para"><div class="duanluo"><span>211</span></div><div class="l"><span style="margin-left:25px"></span><span >（3）	工作倦怠的经典定义 </span></div></div><div class="para"><div class="duanluo"><span>212</span></div><div class="l"><span style="margin-left:25px"></span><a href="../sentence_detail/464.htm" target="right" class="red">工作倦怠的动态定义和静态定义是互补的而不是相互排斥的，从一定意义上，静态定义描述的就是动态定义的最后阶段。</a><a href="../sentence_detail/465.htm" target="right" class="red">最为学者所接受的是Maslach和Jackson（1986）所做的静态定义，即&quot;以人为服务对象的职业领域中，</a><span >个体的一种情感衰竭、人格解体和成就感低落的症状。 </span><a href="../sentence_detail/467.htm" target="right" class="red">&rdquo;它包括情感衰竭（emotionexhaustion）、人格解体（depersonalization）以及个人成就感降低（Reducedpersonal accomplishment）三个维度。</a><a href="../sentence_detail/468.htm" target="right" class="red">情感衰竭是指个体的情感资源过度消耗，疲惫不堪，精力丧失；</a><a href="../sentence_detail/469.htm" target="right" class="red">人格解体是指个体对待服务对象负性的、冷漠的、过度疏远的态度；</a><a href="../sentence_detail/470.htm" target="right" class="red">个人成就感降低指的则是个体对于自己工作意义和自身价值的评价降低。</a></div><div class="modify" align="right" paraseq="211"><span class="btn btn-blue" onclick="submitPart('工作倦怠的动态定义和静态定义是互补的而不是相互排斥的，从一定意义上，静态定义描述的就是动态定义的最后阶段。最为学者所接受的是Maslach和Jackson（1986）所做的静态定义，即&quot;以人为服务对象的职业领域中，个体的一种情感衰竭、人格解体和成就感低落的症状。&rdquo;它包括情感衰竭（emotionexhaustion）、人格解体（depersonalization）以及个人成就感降低（Reducedpersonal accomplishment）三个维度。情感衰竭是指个体的情感资源过度消耗，疲惫不堪，精力丧失；人格解体是指个体对待服务对象负性的、冷漠的、过度疏远的态度；个人成就感降低指的则是个体对于自己工作意义和自身价值的评价降低。',this)" class="modify">段落修改</div></div><div class="para"><div class="duanluo"><span>213</span></div><div class="l"><span style="margin-left:25px"></span><a href="../sentence_detail/471.htm" target="right" class="red">Maslach和Jackson（1986）的这一定义是基于对以人为服务对象的职业领域（助人行业）的研究。</a><a href="../sentence_detail/472.htm" target="right" class="red">随着工作倦怠研究的深入，研究者发现，人际服务业中导致倦怠的压力因素在其他职业中同样普遍存在，并且造成相似的压力反应。</a><a href="../sentence_detail/473.htm" target="right" class="red">因此为了适用于广泛的职业群体，</a><a href="../sentence_detail/474.htm" target="right" class="red">Maslach（2001）将工作倦怠的概念扩展和修正为：工作倦怠是对工作中持续不断的情绪和人际关系压力大的长期反应，</a><a href="../sentence_detail/475.htm" target="right" class="red">它包括衰竭（Exhaustion）、玩世不恭（Cynicism）以及成就感低落（Inefficacy，</a><a href="../sentence_detail/476.htm" target="right" class="red">或职业效能感professional efficacy）三个维度。</a><a href="../sentence_detail/477.htm" target="right" class="red">此定义与工作倦怠最初的三维度定义相似，其中，衰竭指体力和情绪资源被极度衰竭的感觉，与情感衰竭相比，衰竭的原因不特指来源于服务接收者面对面的服务和帮助；</a><a href="../sentence_detail/478.htm" target="right" class="red">玩世不恭是指对工作各方面的负性和麻木的态度，对工作的疏离，缺乏工作热情，它不仅仅特指对服务接收者的人格解体；</a><a href="../sentence_detail/479.htm" target="right" class="red">成就感低落是对工作的不胜任感以及缺乏工作成就和工作效率，他包括了社会和非社会方面的成就感低落，反映了倦怠的自我评价维度。</a></div><div class="modify" align="right" paraseq="212"><span class="btn btn-blue" onclick="submitPart('Maslach和Jackson（1986）的这一定义是基于对以人为服务对象的职业领域（助人行业）的研究。随着工作倦怠研究的深入，研究者发现，人际服务业中导致倦怠的压力因素在其他职业中同样普遍存在，并且造成相似的压力反应。因此为了适用于广泛的职业群体，Maslach（2001）将工作倦怠的概念扩展和修正为：工作倦怠是对工作中持续不断的情绪和人际关系压力大的长期反应，它包括衰竭（Exhaustion）、玩世不恭（Cynicism）以及成就感低落（Inefficacy，或职业效能感professional efficacy）三个维度。此定义与工作倦怠最初的三维度定义相似，其中，衰竭指体力和情绪资源被极度衰竭的感觉，与情感衰竭相比，衰竭的原因不特指来源于服务接收者面对面的服务和帮助；玩世不恭是指对工作各方面的负性和麻木的态度，对工作的疏离，缺乏工作热情，它不仅仅特指对服务接收者的人格解体；成就感低落是对工作的不胜任感以及缺乏工作成就和工作效率，他包括了社会和非社会方面的成就感低落，反映了倦怠的自我评价维度。',this)" class="modify">段落修改</div></div><div class="para"><div class="duanluo"><span>214</span></div><div class="l"><span style="margin-left:25px"></span><a href="../sentence_detail/480.htm" target="right" class="red">本研究将采用Maslach（2001）对工作倦怠的定义，即工作倦怠是对工作中持续不断的情绪和人际关系压力大的长期反应，</a><a href="../sentence_detail/481.htm" target="right" class="red">它包括衰竭（Exhaustion）、玩世不恭（Cynicism）以及成就感低落（Inefficacy，</a><a href="../sentence_detail/482.htm" target="right" class="red">或职业效能感professional efficacy）三个维度。</a></div><div class="modify" align="right" paraseq="213"><span class="btn btn-blue" onclick="submitPart('本研究将采用Maslach（2001）对工作倦怠的定义，即工作倦怠是对工作中持续不断的情绪和人际关系压力大的长期反应，它包括衰竭（Exhaustion）、玩世不恭（Cynicism）以及成就感低落（Inefficacy，或职业效能感professional efficacy）三个维度。',this)" class="modify">段落修改</div></div><div class="para"><div class="duanluo"><span>215</span></div><div class="l"><span style="margin-left:25px"></span><span >3.1.5  人才流失理论 </span></div></div><div class="para"><div class="duanluo"><span>216</span></div><div class="l"><span style="margin-left:25px"></span><span >（1）	人才流失定义 </span></div></div><div class="para"><div class="duanluo"><span>217</span></div><div class="l"><span style="margin-left:25px"></span><a href="../sentence_detail/485.htm" target="right" class="red">人才流失是指在一个单位内，对其经营发展具有重要作用的人才流走，或失去其积极作用的现象，而这种人才流失又是非单位意愿而产生的。</a><span >从人才流失的含义我们可以发现人才流失分为两种类型：显性流失和隐性流失。 </span><a href="../sentence_detail/487.htm" target="right" class="red">显性流失是指该单位的人才因某种原因离开该单位另谋他就，给该单位的某些方面造成一定困难，从而影响其经营发展。</a><a href="../sentence_detail/488.htm" target="right" class="red">隐性流失是指因单位对人才激励不够或者其他某些因素的影响而使员工失去工作积极性，从而在一定程度上影响了该单位的经营发展。</a></div><div class="modify" align="right" paraseq="216"><span class="btn btn-blue" onclick="submitPart('人才流失是指在一个单位内，对其经营发展具有重要作用的人才流走，或失去其积极作用的现象，而这种人才流失又是非单位意愿而产生的。从人才流失的含义我们可以发现人才流失分为两种类型：显性流失和隐性流失。显性流失是指该单位的人才因某种原因离开该单位另谋他就，给该单位的某些方面造成一定困难，从而影响其经营发展。隐性流失是指因单位对人才激励不够或者其他某些因素的影响而使员工失去工作积极性，从而在一定程度上影响了该单位的经营发展。',this)" class="modify">段落修改</div></div><div class="para"><div class="duanluo"><span>218</span></div><div class="l"><span style="margin-left:25px"></span><span >（2）	人才流失的成因 </span></div></div><div class="para"><div class="duanluo"><span>219</span></div><div class="l"><span style="margin-left:25px"></span><span >①	从双因素理论看人才流失 </span></div></div><div class="para"><div class="duanluo"><span>220</span></div><div class="l"><span style="margin-left:25px"></span><span >赫茨伯格（F. </span><a href="../sentence_detail/492.htm" target="right" class="red">Herzberg）是美国著名的心理学家及行为学家，他于1959年出版的《工作的激励因素》中提出了&quot;激励因素/保健因素&rdquo;理论，又被称为&quot;双因素理论&rdquo;。</a></div><div class="modify" align="right" paraseq="219"><span class="btn btn-blue" onclick="submitPart('赫茨伯格（F.Herzberg）是美国著名的心理学家及行为学家，他于1959年出版的《工作的激励因素》中提出了&quot;激励因素/保健因素&rdquo;理论，又被称为&quot;双因素理论&rdquo;。',this)" class="modify">段落修改</div></div><div class="para"><div class="duanluo"><span>221</span></div><div class="l"><span style="margin-left:25px"></span><span >首先，双因素理论认为员工对单位不满意的成因往往是由于员工对工作环境不满意引起的的，主要是指员工对工资报酬、工作条件、公司政策、安全等方面因素的不满意。 </span><a href="../sentence_detail/494.htm" target="right" class="red">这类因素的满足对员工产生的效果类似于卫生保健对身体健康的作用，故这些因素被称为保健因素。</a><span >当员工在保健因素上得不到满足时必然会引起其对单位的强烈不满，最终很可能会导致人才流失现象的产生。 </span></div><div class="modify" align="right" paraseq="220"><span class="btn btn-blue" onclick="submitPart('首先，双因素理论认为员工对单位不满意的成因往往是由于员工对工作环境不满意引起的的，主要是指员工对工资报酬、工作条件、公司政策、安全等方面因素的不满意。这类因素的满足对员工产生的效果类似于卫生保健对身体健康的作用，故这些因素被称为保健因素。当员工在保健因素上得不到满足时必然会引起其对单位的强烈不满，最终很可能会导致人才流失现象的产生。',this)" class="modify">段落修改</div></div><div class="para"><div class="duanluo"><span>222</span></div><div class="l"><span style="margin-left:25px"></span><span >第二， </span><a href="../sentence_detail/497.htm" target="right" class="orange">员工在保健因素得到满足的基础上如果能够感觉自己的工作有意义、工作富有挑战性能够发挥自己的聪明才智、员工在工作上有成就感能够得到认可，</a><span >那么员工就会对单位感到满意。 </span><span >这类能够使员工在精神上得到满足的因素被称为激励因素。 </span><a href="../sentence_detail/500.htm" target="right" class="red">同样，如果这类因素得不到满足或者改善，那么同样会造成员工的流失。</a></div><div class="modify" align="right" paraseq="221"><span class="btn btn-blue" onclick="submitPart('第二，员工在保健因素得到满足的基础上如果能够感觉自己的工作有意义、工作富有挑战性能够发挥自己的聪明才智、员工在工作上有成就感能够得到认可，那么员工就会对单位感到满意。这类能够使员工在精神上得到满足的因素被称为激励因素。同样，如果这类因素得不到满足或者改善，那么同样会造成员工的流失。',this)" class="modify">段落修改</div></div><div class="para"><div class="duanluo"><span>223</span></div><div class="l"><span style="margin-left:25px"></span><span >从双因素理论我们不难得出如下结论：为减少人才大量流失的现象，企业要注意对员工的内在激励和外在激励的改善和提升。 </span><span >内在激励主要是指要是员工对工作产生爱好，兴趣和责任感等，使员工能够积极努力工作； </span><a href="../sentence_detail/503.htm" target="right" class="red">外在激励是指企业要在工资、奖酬等工作本身以外的因素上使员工得到满足。</a><a href="../sentence_detail/504.htm" target="right" class="red">只要员工在企业提供的内在激励和外在激励上得到满足，那么人才的流失倾向就会大大减小。</a></div><div class="modify" align="right" paraseq="222"><span class="btn btn-blue" onclick="submitPart('从双因素理论我们不难得出如下结论：为减少人才大量流失的现象，企业要注意对员工的内在激励和外在激励的改善和提升。内在激励主要是指要是员工对工作产生爱好，兴趣和责任感等，使员工能够积极努力工作；外在激励是指企业要在工资、奖酬等工作本身以外的因素上使员工得到满足。只要员工在企业提供的内在激励和外在激励上得到满足，那么人才的流失倾向就会大大减小。',this)" class="modify">段落修改</div></div><div class="para"><div class="duanluo"><span>224</span></div><div class="l"><span style="margin-left:25px"></span><span >②	普莱斯理论模型 </span></div></div><div class="para"><div class="duanluo"><span>225</span></div><div class="l"><span style="margin-left:25px"></span><span >普莱斯（Price）是美国著名的管理学家， </span><span >他经过大量的研究建立了普莱斯理论模型并认为能够决定员工流失与否的主要因素有：员工的工资水平、与企业和环境的融合度、基础交流和正规交流、企业的集权化。 </span><span >其中员工的工资水平越高、对企业和环境的融合度越高、基础交流和正规交流越通畅，那么员工的工作满意度就越高，员工流失的可能性也就越小。 </span><span >而企业的集权化正好与其他几个因素相反，与员工的工作满意度呈负相关性。 </span></div><div class="modify" align="right" paraseq="224"><span class="btn btn-blue" onclick="submitPart('普莱斯（Price）是美国著名的管理学家，他经过大量的研究建立了普莱斯理论模型并认为能够决定员工流失与否的主要因素有：员工的工资水平、与企业和环境的融合度、基础交流和正规交流、企业的集权化。其中员工的工资水平越高、对企业和环境的融合度越高、基础交流和正规交流越通畅，那么员工的工作满意度就越高，员工流失的可能性也就越小。而企业的集权化正好与其他几个因素相反，与员工的工作满意度呈负相关性。',this)" class="modify">段落修改</div></div><div class="para"><div class="duanluo"><span>226</span></div><div class="l"><span style="margin-left:25px"></span><span >3.1.6  职业生涯理论 </span></div></div><div class="para"><div class="duanluo"><span>227</span></div><div class="l"><span style="margin-left:25px"></span><span >（1）	职业生涯的含义 </span></div></div><div class="para"><div class="duanluo"><span>228</span></div><div class="l"><span style="margin-left:25px"></span><a href="../sentence_detail/512.htm" target="right" class="red">职业生涯是指一个人一生中实际在所有岗位上度过岁月的整个经历。</a><a href="../sentence_detail/513.htm" target="right" class="red">它由个人与工作相关的行为活动、认知工作的态度和价值两大方面组成。</a><a href="../sentence_detail/514.htm" target="right" class="orange">一个人的职业发展有四个阶段，即：职业探索阶段、早期的职业确立阶段、职业生涯的持续阶段、衰退或离职阶段。</a><a href="../sentence_detail/515.htm" target="right" class="red">职业生涯是人生中最重要的追求自我、实现自我的一个阶段。</a><span >一个员工如果能够得到组织正确的职业生涯发展方面的引导并且组织的引导能够与自身的职业目标相吻合，那么员工的工作满意度就会显著提高， </span><span >离职的倾向也会大大减少。 </span></div><div class="modify" align="right" paraseq="227"><span class="btn btn-blue" onclick="submitPart('职业生涯是指一个人一生中实际在所有岗位上度过岁月的整个经历。它由个人与工作相关的行为活动、认知工作的态度和价值两大方面组成。一个人的职业发展有四个阶段，即：职业探索阶段、早期的职业确立阶段、职业生涯的持续阶段、衰退或离职阶段。职业生涯是人生中最重要的追求自我、实现自我的一个阶段。一个员工如果能够得到组织正确的职业生涯发展方面的引导并且组织的引导能够与自身的职业目标相吻合，那么员工的工作满意度就会显著提高，离职的倾向也会大大减少。',this)" class="modify">段落修改</div></div><div class="para"><div class="duanluo"><span>229</span></div><div class="l"><span style="margin-left:25px"></span><span >（2）	职业生涯规划与管理 </span></div></div><div class="para"><div class="duanluo"><span>230</span></div><div class="l"><span style="margin-left:25px"></span><a href="../sentence_detail/519.htm" target="right" class="orange">职业生涯规划是员工个人对自己未来的职业生涯发展进行的总体策划和准备。</a><span >通常包括对自身进行主观与客观评测之后，针对其个人能力、兴趣爱好、性格特点等方面，在分析总结的基础上进行整体规划，定位出最优的职业奋斗目标与路径， </span><span >并为实现这一奋斗目标而进行合理有效的安排与计划。 </span></div><div class="modify" align="right" paraseq="229"><span class="btn btn-blue" onclick="submitPart('职业生涯规划是员工个人对自己未来的职业生涯发展进行的总体策划和准备。通常包括对自身进行主观与客观评测之后，针对其个人能力、兴趣爱好、性格特点等方面，在分析总结的基础上进行整体规划，定位出最优的职业奋斗目标与路径，并为实现这一奋斗目标而进行合理有效的安排与计划。',this)" class="modify">段落修改</div></div><div class="para"><div class="duanluo"><span>231</span></div><div class="l"><span style="margin-left:25px"></span><a href="../sentence_detail/522.htm" target="right" class="orange">职业生涯管理则是企业或组织对员工的职业生涯规划与实施所提供的支持、指导和管理。</a><span >在员工职业生涯规划的步骤中，个人和企业或组织的努力必须要结合起来，因为其职业规划的质量不仅决定了员工自身职业发展的优劣， </span><span >更在一定程度上影响着企业的整体绩效水平，对企业及员工二者均意义重大。 </span><span >职业生涯的规划与管理通常分为以下几个步骤进行： </span></div><div class="modify" align="right" paraseq="230"><span class="btn btn-blue" onclick="submitPart('职业生涯管理则是企业或组织对员工的职业生涯规划与实施所提供的支持、指导和管理。在员工职业生涯规划的步骤中，个人和企业或组织的努力必须要结合起来，因为其职业规划的质量不仅决定了员工自身职业发展的优劣，更在一定程度上影响着企业的整体绩效水平，对企业及员工二者均意义重大。职业生涯的规划与管理通常分为以下几个步骤进行：',this)" class="modify">段落修改</div></div><div class="para"><div class="duanluo"><span>232</span></div><div class="l"><span style="margin-left:25px"></span><span >①	自我评估。 </span><span >员工首先要对自身进行正确定位，通过对自己知识、能力、兴趣等各方面进行全面的自己观察及分析评估之后，从主观上确定自己的职业奋斗目标。 </span><span >在此阶段企业可以为员工提供一些自我评估的方法来供员工参考和使用。 </span></div><div class="modify" align="right" paraseq="231"><span class="btn btn-blue" onclick="submitPart('①	自我评估。员工首先要对自身进行正确定位，通过对自己知识、能力、兴趣等各方面进行全面的自己观察及分析评估之后，从主观上确定自己的职业奋斗目标。在此阶段企业可以为员工提供一些自我评估的方法来供员工参考和使用。',this)" class="modify">段落修改</div></div><div class="para"><div class="duanluo"><span>233</span></div><div class="l"><span style="margin-left:25px"></span><span >②	实际检验。 </span><a href="../sentence_detail/530.htm" target="right" class="red">这一步骤是企业在与员工确定其最终职业目标之前的一个互动过程：员工可以从企业方面获得企业对自己的评价，</a><span >通常情况下这个评价是通过员工的直接主管根据员工在工作中的日常表现及绩效水平反映至企业人力资源部门， </span><a href="../sentence_detail/532.htm" target="right" class="orange">企业此时可以通过自身的发展规划结合员工的实际情况对员工进行职业生涯发展的引导。</a></div><div class="modify" align="right" paraseq="232"><span class="btn btn-blue" onclick="submitPart('②	实际检验。这一步骤是企业在与员工确定其最终职业目标之前的一个互动过程：员工可以从企业方面获得企业对自己的评价，通常情况下这个评价是通过员工的直接主管根据员工在工作中的日常表现及绩效水平反映至企业人力资源部门，企业此时可以通过自身的发展规划结合员工的实际情况对员工进行职业生涯发展的引导。',this)" class="modify">段落修改</div></div><div class="para"><div class="duanluo"><span>234</span></div><div class="l"><span style="margin-left:25px"></span><span >③	目标设定。 </span><span >在结合企业反馈与自身特点的基础上，初步形成员工的职业发展目标。 </span><span >目标要兼有可实现性和一定挑战性的特点，这样员工在实现目标的过程中就可以逐步提高了自己的工作能力，加大了自己的工作兴趣，企业也相应地会从中受益。 </span></div><div class="modify" align="right" paraseq="233"><span class="btn btn-blue" onclick="submitPart('③	目标设定。在结合企业反馈与自身特点的基础上，初步形成员工的职业发展目标。目标要兼有可实现性和一定挑战性的特点，这样员工在实现目标的过程中就可以逐步提高了自己的工作能力，加大了自己的工作兴趣，企业也相应地会从中受益。',this)" class="modify">段落修改</div></div><div class="para"><div class="duanluo"><span>235</span></div><div class="l"><span style="margin-left:25px"></span><span >④	行动规划。 </span><span >为了达到员工的职业生涯目标，企业要进行相关的一系列的措施来保障目标的完成，例如让员工参加各种培训，岗位轮换和团体项目等等。 </span><span >这也是为员工的成长和进步提供一个平台。 </span><span >人力资源部门及主管领导也应当在这一过程中为员工提供一些合理的建议。 </span></div><div class="modify" align="right" paraseq="234"><span class="btn btn-blue" onclick="submitPart('④	行动规划。为了达到员工的职业生涯目标，企业要进行相关的一系列的措施来保障目标的完成，例如让员工参加各种培训，岗位轮换和团体项目等等。这也是为员工的成长和进步提供一个平台。人力资源部门及主管领导也应当在这一过程中为员工提供一些合理的建议。',this)" class="modify">段落修改</div></div><div class="para"><div class="duanluo"><span>236</span></div><div class="l"><span style="margin-left:25px"></span><span >⑤	评估、反馈与调整。 </span><span >由于员工的职业生涯是一个长期的不断发展的过程，需要根据员工在不同发展阶段的不同特点来进行调整，当然这种调整必须要兼顾企业目标与个人目标， </span><span >最终达到双赢的局面。 </span></div><div class="modify" align="right" paraseq="235"><span class="btn btn-blue" onclick="submitPart('⑤	评估、反馈与调整。由于员工的职业生涯是一个长期的不断发展的过程，需要根据员工在不同发展阶段的不同特点来进行调整，当然这种调整必须要兼顾企业目标与个人目标，最终达到双赢的局面。',this)" class="modify">段落修改</div></div><div class="para"><div class="duanluo"><span>237</span></div><div class="l"><span style="margin-left:25px"></span><span >3.2  F公司激励管理现状 </span></div></div><div class="para"><div class="duanluo"><span>238</span></div><div class="l"><span style="margin-left:25px"></span><span >众所周知，全面的薪酬体系通常是企业用来吸引和激励人才最有效的措施之一，所谓&quot;全面&rdquo;， </span><span >即是包含了经济性薪酬与非经济性薪酬在内的广义薪酬概念：除了反映在财务上的工资、奖金和补贴等经济性薪酬外， </span><span >还包括公司为员工提供的各类福利、职位升迁、培训学习等发展机会、企业文化、工作与生活的平衡条件以及公司的整体运行环境等非经济性薪酬。 </span><span >在三个案例中，我们多次体会到员工的情绪和工作状态是与这两类薪酬均密切相关的。 </span><span >企业员工对于薪酬不满的现象越大，员工的工作积极性就越低，相应的企业的整体效率就越差。 </span><span >所以， </span><span >了解并分析F公司现有的各项薪酬制度对有效的解决其存在的人力资源激励管理问题有着十分重要的意义。 </span></div><div class="modify" align="right" paraseq="237"><span class="btn btn-blue" onclick="submitPart('众所周知，全面的薪酬体系通常是企业用来吸引和激励人才最有效的措施之一，所谓&quot;全面&rdquo;，即是包含了经济性薪酬与非经济性薪酬在内的广义薪酬概念：除了反映在财务上的工资、奖金和补贴等经济性薪酬外，还包括公司为员工提供的各类福利、职位升迁、培训学习等发展机会、企业文化、工作与生活的平衡条件以及公司的整体运行环境等非经济性薪酬。在三个案例中，我们多次体会到员工的情绪和工作状态是与这两类薪酬均密切相关的。企业员工对于薪酬不满的现象越大，员工的工作积极性就越低，相应的企业的整体效率就越差。所以，了解并分析F公司现有的各项薪酬制度对有效的解决其存在的人力资源激励管理问题有着十分重要的意义。',this)" class="modify">段落修改</div></div><div class="para"><div class="duanluo"><span>239</span></div><div class="l"><span style="margin-left:25px"></span><span >3.2.1  薪资制度现状 </span></div></div><div class="para"><div class="duanluo"><span>240</span></div><div class="l"><span style="margin-left:25px"></span><span >薪资是经济性薪酬的主要组成部分。 </span><span >F公司的薪资体系主要由以下三部分构成：基本工资、年终奖、加班费。 </span><span >基本工资共12个月，每月10日发放；年终奖即年终绩效奖，在12月份与基本工资一起发放； </span><span >加班费主要包括夜班补助，平日加班补助和周末及节假日加班补助。 </span><span >这个薪资体系是F公司通用的薪酬制度，同样也适用于产品开发部。 </span><span >在F公司内部，员工薪资的定位原则上参考当地市场平均水平，但由于考虑到国籍或者特殊技能的差别以及岗位的重要程度， </span><span >高级经理以上的高管级别薪资的制定并不以当地市场水平作为基准。 </span></div><div class="modify" align="right" paraseq="239"><span class="btn btn-blue" onclick="submitPart('薪资是经济性薪酬的主要组成部分。F公司的薪资体系主要由以下三部分构成：基本工资、年终奖、加班费。基本工资共12个月，每月10日发放；年终奖即年终绩效奖，在12月份与基本工资一起发放；加班费主要包括夜班补助，平日加班补助和周末及节假日加班补助。这个薪资体系是F公司通用的薪酬制度，同样也适用于产品开发部。在F公司内部，员工薪资的定位原则上参考当地市场平均水平，但由于考虑到国籍或者特殊技能的差别以及岗位的重要程度，高级经理以上的高管级别薪资的制定并不以当地市场水平作为基准。',this)" class="modify">段落修改</div></div><div class="para"><div class="duanluo"><span>241</span></div><div class="l"><span style="margin-left:25px"></span><span >（1）	基本工资 </span></div></div><div class="para"><div class="duanluo"><span>242</span></div><div class="l"><span style="margin-left:25px"></span><span >基本工资的工资级别是基于美国总部的相关薪资规定进行了本土化改良得到的，可从低到高分为4个等级，TA、TB、TC、TD，每个等级又分为1、2两层， </span><span >共计8层。 </span><span >即最低为TA-1，最高为TD-4。 </span><span >其中TA-1为助理工程师级别，TA-2为工程师级别，TB-1为高级工程师级别，TB-2为资深工程师级别，TC-1为普通经理或架构师级别， </span><span >TC-2为高级经理或者资深架构师级别，TD为高管级别。 </span></div><div class="modify" align="right" paraseq="241"><span class="btn btn-blue" onclick="submitPart('基本工资的工资级别是基于美国总部的相关薪资规定进行了本土化改良得到的，可从低到高分为4个等级，TA、TB、TC、TD，每个等级又分为1、2两层，共计8层。即最低为TA-1，最高为TD-4。其中TA-1为助理工程师级别，TA-2为工程师级别，TB-1为高级工程师级别，TB-2为资深工程师级别，TC-1为普通经理或架构师级别，TC-2为高级经理或者资深架构师级别，TD为高管级别。',this)" class="modify">段落修改</div></div><div class="para"><div class="duanluo"><span>243</span></div><div class="l"><span style="margin-left:25px"></span><span >刚毕业的本科或硕士毕业生及其他工作经验1年以内的员工加入公司时一般被定为TA-1级，即助理工程师，一至两年后升职为工程师级别。 </span><span >其他级别之间的晋升较类似，但所需时间更长。 </span><span >基本工资会在升职当月（七月）自动上涨，涨幅在15%至25%之间。 </span><span >具体上涨比例会根据员工的工作表现及现有薪资水平等因素由其上级领导决定。 </span></div><div class="modify" align="right" paraseq="242"><span class="btn btn-blue" onclick="submitPart('刚毕业的本科或硕士毕业生及其他工作经验1年以内的员工加入公司时一般被定为TA-1级，即助理工程师，一至两年后升职为工程师级别。其他级别之间的晋升较类似，但所需时间更长。基本工资会在升职当月（七月）自动上涨，涨幅在15%至25%之间。具体上涨比例会根据员工的工作表现及现有薪资水平等因素由其上级领导决定。',this)" class="modify">段落修改</div></div><div class="para"><div class="duanluo"><span>244</span></div><div class="l"><span style="margin-left:25px"></span><span >除了职位晋升会有薪水较大幅度增长以外，公司每年年中七月时都有一次固定涨薪，这次固定涨薪的幅度较小，其基数大约在8%至9%之间， </span><span >具体比例会根据公司去年业绩水平及员工工作表现由上级领导决定。 </span></div><div class="modify" align="right" paraseq="243"><span class="btn btn-blue" onclick="submitPart('除了职位晋升会有薪水较大幅度增长以外，公司每年年中七月时都有一次固定涨薪，这次固定涨薪的幅度较小，其基数大约在8%至9%之间，具体比例会根据公司去年业绩水平及员工工作表现由上级领导决定。',this)" class="modify">段落修改</div></div><div class="para"><div class="duanluo"><span>245</span></div><div class="l"><span style="margin-left:25px"></span><span >（2）	年终奖 </span></div></div><div class="para"><div class="duanluo"><span>246</span></div><div class="l"><span style="margin-left:25px"></span><span >年终奖全称为年终绩效奖，它的计算也同样需要参考公司绩效部分与员工绩效部分，其中公司绩效部分是由美国总部来定， </span><span >而员工绩效部分则根据整年表现由上级领导确定绩效等级，再结合现有薪资水平确定最终绩效系数，员工绩效等级共分为三档：未达期望（E），达到期望（P）， </span><span >超出期望（E）。 </span><span >通常未达期望者仅占总员工的0.5%至1%左右，其年终奖金额度通常少于等于月基本工资，严重者甚至可能没有年终奖。 </span><span >而超出期望者约占总员工15%至20%左右，其年终奖金额度通常约等于两个月基本工资以上。 </span><span >其余员工均为达到期望，年终奖金额度约为1.5到两倍于月基本工资。 </span><span >具体额度由上级领导通过结合最终绩效系数计算决定。 </span></div><div class="modify" align="right" paraseq="245"><span class="btn btn-blue" onclick="submitPart('年终奖全称为年终绩效奖，它的计算也同样需要参考公司绩效部分与员工绩效部分，其中公司绩效部分是由美国总部来定，而员工绩效部分则根据整年表现由上级领导确定绩效等级，再结合现有薪资水平确定最终绩效系数，员工绩效等级共分为三档：未达期望（E），达到期望（P），超出期望（E）。通常未达期望者仅占总员工的0.5%至1%左右，其年终奖金额度通常少于等于月基本工资，严重者甚至可能没有年终奖。而超出期望者约占总员工15%至20%左右，其年终奖金额度通常约等于两个月基本工资以上。其余员工均为达到期望，年终奖金额度约为1.5到两倍于月基本工资。具体额度由上级领导通过结合最终绩效系数计算决定。',this)" class="modify">段落修改</div></div><div class="para"><div class="duanluo"><span>247</span></div><div class="l"><span style="margin-left:25px"></span><span >（3）	加班费 </span></div></div><div class="para"><div class="duanluo"><span>248</span></div><div class="l"><span style="margin-left:25px"></span><span >加班费主要分为夜班补助、平日加班补助、周末及法定节假日加班费三部分。 </span></div><div class="modify" align="right" paraseq="247"><span class="btn btn-blue" onclick="submitPart('加班费主要分为夜班补助、平日加班补助、周末及法定节假日加班费三部分。',this)" class="modify">段落修改</div></div><div class="para"><div class="duanluo"><span>249</span></div><div class="l"><span style="margin-left:25px"></span><span >①	夜班补助 </span></div></div><div class="para"><div class="duanluo"><span>250</span></div><div class="l"><span style="margin-left:25px"></span><span >因业务需要，公司员工需要经常跟美国总部业务部门进行电话会议、视频会议及在线解决问题等。 </span><span >由于和美国有12小时的时差，公司经研究，于2014年开始了夜班制度，即下午两点上班，夜里十一点下班，每天有110元补助并额外报销夜间出租车费用， </span><span >各团队可根据自身业务需求确定每周夜班数量和人员。 </span><span >大约有超过三分之二的产品开发部员工每周都有至少一天的固定夜班。 </span></div><div class="modify" align="right" paraseq="249"><span class="btn btn-blue" onclick="submitPart('因业务需要，公司员工需要经常跟美国总部业务部门进行电话会议、视频会议及在线解决问题等。由于和美国有12小时的时差，公司经研究，于2014年开始了夜班制度，即下午两点上班，夜里十一点下班，每天有110元补助并额外报销夜间出租车费用，各团队可根据自身业务需求确定每周夜班数量和人员。大约有超过三分之二的产品开发部员工每周都有至少一天的固定夜班。',this)" class="modify">段落修改</div></div><div class="para"><div class="duanluo"><span>251</span></div><div class="l"><span style="margin-left:25px"></span><span >②	平日加班补助 </span></div></div><div class="para"><div class="duanluo"><span>252</span></div><div class="l"><span style="margin-left:25px"></span><span >平日加班补助是指若9点以后若因工作需求留在公司，根据我国法律规定给予150%的时薪补助。 </span><span >但此项补助不适用于资深工程师及以上级别，因为资深工程师均拥有远程权限及弹性工作制权利，可相对自主安排工作地点和工作时间。 </span></div><div class="modify" align="right" paraseq="251"><span class="btn btn-blue" onclick="submitPart('平日加班补助是指若9点以后若因工作需求留在公司，根据我国法律规定给予150%的时薪补助。但此项补助不适用于资深工程师及以上级别，因为资深工程师均拥有远程权限及弹性工作制权利，可相对自主安排工作地点和工作时间。',this)" class="modify">段落修改</div></div><div class="para"><div class="duanluo"><span>253</span></div><div class="l"><span style="margin-left:25px"></span><span >③	周末及法定节假日加班费 </span></div></div><div class="para"><div class="duanluo"><span>254</span></div><div class="l"><span style="margin-left:25px"></span><span >按照国家法律规定，周末加班费按正常出勤的200%给予员工，法定节假日加班费则为300%。 </span></div><div class="modify" align="right" paraseq="253"><span class="btn btn-blue" onclick="submitPart('按照国家法律规定，周末加班费按正常出勤的200%给予员工，法定节假日加班费则为300%。',this)" class="modify">段落修改</div></div><div class="para"><div class="duanluo"><span>255</span></div><div class="l"><span style="margin-left:25px"></span><span >3.2.2  福利制度现状 </span></div></div><div class="para"><div class="duanluo"><span>256</span></div><div class="l"><span style="margin-left:25px"></span><span >福利制度通常涵盖了经济性薪酬和非经济性薪酬。 </span><span >F公司的员工福利主要包括公司为员工提供的五险一金，带薪假期，节日礼品发放，部门活动费、助学计划等几类。 </span></div><div class="modify" align="right" paraseq="255"><span class="btn btn-blue" onclick="submitPart('福利制度通常涵盖了经济性薪酬和非经济性薪酬。F公司的员工福利主要包括公司为员工提供的五险一金，带薪假期，节日礼品发放，部门活动费、助学计划等几类。',this)" class="modify">段落修改</div></div><div class="para"><div class="duanluo"><span>257</span></div><div class="l"><span style="margin-left:25px"></span><span >（1）	五险一金 </span></div></div><div class="para"><div class="duanluo"><span>258</span></div><div class="l"><span style="margin-left:25px"></span><span >在华外企通常会严格遵守国家有关规定为所有正式员工缴纳五险一金。 </span><span >除此之外，F公司还与保险公司合作，员工可以通过公司财务系统直接报销自身和直系家属的部分看病费用，包括拔牙等。 </span></div><div class="modify" align="right" paraseq="257"><span class="btn btn-blue" onclick="submitPart('在华外企通常会严格遵守国家有关规定为所有正式员工缴纳五险一金。除此之外，F公司还与保险公司合作，员工可以通过公司财务系统直接报销自身和直系家属的部分看病费用，包括拔牙等。',this)" class="modify">段落修改</div></div><div class="para"><div class="duanluo"><span>259</span></div><div class="l"><span style="margin-left:25px"></span><span >（2）	带薪假期 </span></div></div><div class="para"><div class="duanluo"><span>260</span></div><div class="l"><span style="margin-left:25px"></span><span >F公司的节假日政策完全按照国家法律规定执行，但通常为配合美国总部业务需要，除春节之外，不采用串休形式，而是严格休法定节假日和双休日。 </span></div><div class="modify" align="right" paraseq="259"><span class="btn btn-blue" onclick="submitPart('F公司的节假日政策完全按照国家法律规定执行，但通常为配合美国总部业务需要，除春节之外，不采用串休形式，而是严格休法定节假日和双休日。',this)" class="modify">段落修改</div></div><div class="para"><div class="duanluo"><span>261</span></div><div class="l"><span style="margin-left:25px"></span><span >F公司同时为员工提供有竞争力的带薪假期，包括年假、婚假、产假/陪产假、丧假、病假等几类带薪假期。 </span><span >带薪年假的起始天数为15天，当在公司任职满五年后，直接增长至20天。 </span><span >带薪病假每年共计10天，若连续休带薪病假超过1天则需要医生出具的请假条。 </span><span >带薪婚假、产假/陪产假、丧假和其他带薪假期等则完全按照国家规定执行。 </span></div><div class="modify" align="right" paraseq="260"><span class="btn btn-blue" onclick="submitPart('F公司同时为员工提供有竞争力的带薪假期，包括年假、婚假、产假/陪产假、丧假、病假等几类带薪假期。带薪年假的起始天数为15天，当在公司任职满五年后，直接增长至20天。带薪病假每年共计10天，若连续休带薪病假超过1天则需要医生出具的请假条。带薪婚假、产假/陪产假、丧假和其他带薪假期等则完全按照国家规定执行。',this)" class="modify">段落修改</div></div><div class="para"><div class="duanluo"><span>262</span></div><div class="l"><span style="margin-left:25px"></span><span >（3）	节日礼品发放 </span></div></div><div class="para"><div class="duanluo"><span>263</span></div><div class="l"><span style="margin-left:25px"></span><span >F公司在每年的中国传统节日春节和中秋节之际会为全体员工提供节日礼品，以感谢员工的辛勤工作。 </span><span >节日礼品一般为沃尔玛购物卡一张，面值分别为300元（春节）和150元（中秋节）。 </span><span >另外，在三八国际妇女节时，公司会为每位女员工准备礼品一份。 </span></div><div class="modify" align="right" paraseq="262"><span class="btn btn-blue" onclick="submitPart('F公司在每年的中国传统节日春节和中秋节之际会为全体员工提供节日礼品，以感谢员工的辛勤工作。节日礼品一般为沃尔玛购物卡一张，面值分别为300元（春节）和150元（中秋节）。另外，在三八国际妇女节时，公司会为每位女员工准备礼品一份。',this)" class="modify">段落修改</div></div><div class="para"><div class="duanluo"><span>264</span></div><div class="l"><span style="margin-left:25px"></span><span >每个过生日的员工在生日当月也会收到一张150元的购物卡作为生日礼物，这是公司一直以来的温馨福利。 </span><span >公司曾尝试过其他形式，如电影票代金券、自选书、蛋糕店代金券等，最终和其他节日礼品统一为使用购物卡。 </span></div><div class="modify" align="right" paraseq="263"><span class="btn btn-blue" onclick="submitPart('每个过生日的员工在生日当月也会收到一张150元的购物卡作为生日礼物，这是公司一直以来的温馨福利。公司曾尝试过其他形式，如电影票代金券、自选书、蛋糕店代金券等，最终和其他节日礼品统一为使用购物卡。',this)" class="modify">段落修改</div></div><div class="para"><div class="duanluo"><span>265</span></div><div class="l"><span style="margin-left:25px"></span><span >（4）	部门活动费 </span></div></div><div class="para"><div class="duanluo"><span>266</span></div><div class="l"><span style="margin-left:25px"></span><span >为促进公司内部员工交流，使大家互相之间能有更深的了解，从而促进工作效率，F公司为员工提供了部门活动经费，每人每月150元标准， </span><span >每个季度本部门可以借中提取一次，不以现金形式发放，实行实报实销，可以累计最多两个季度，不活动则视为主动放弃，活动内容大多选择为聚餐，郊游，休闲活动等。 </span></div><div class="modify" align="right" paraseq="265"><span class="btn btn-blue" onclick="submitPart('为促进公司内部员工交流，使大家互相之间能有更深的了解，从而促进工作效率，F公司为员工提供了部门活动经费，每人每月150元标准，每个季度本部门可以借中提取一次，不以现金形式发放，实行实报实销，可以累计最多两个季度，不活动则视为主动放弃，活动内容大多选择为聚餐，郊游，休闲活动等。',this)" class="modify">段落修改</div></div><div class="para"><div class="duanluo"><span>267</span></div><div class="l"><span style="margin-left:25px"></span><span >（5）	助学计划 </span></div></div><div class="para"><div class="duanluo"><span>268</span></div><div class="l"><span style="margin-left:25px"></span><span >为了鼓励公司员工自我提升，公司实施了助学计划（Study Assistance Program）， </span><span >每年提供一定经费为员工报销一定额度的技术培训和认证费用，并为报考在职硕士/MBA的员工报销部分学费，但同时要签一份绑定协议，毕业后需在公司再工作两年。 </span></div><div class="modify" align="right" paraseq="267"><span class="btn btn-blue" onclick="submitPart('为了鼓励公司员工自我提升，公司实施了助学计划（Study Assistance Program），每年提供一定经费为员工报销一定额度的技术培训和认证费用，并为报考在职硕士/MBA的员工报销部分学费，但同时要签一份绑定协议，毕业后需在公司再工作两年。',this)" class="modify">段落修改</div></div><div class="para"><div class="duanluo"><span>269</span></div><div class="l"><span style="margin-left:25px"></span><span >3.2.3  职业生涯管理现状 </span></div></div><div class="para"><div class="duanluo"><span>270</span></div><div class="l"><span style="margin-left:25px"></span><span >职业生涯的发展对于每个在企业任职的员工都有着重要的意义，如果企业在员工职业发展方面有着相对规范的管理，同样对企业的发展有利。 </span><span >可以说，具备良好的职业生涯管理体系是实现企业和员工自身价值最大化的有效途径之一，也是非经济性薪酬的重要组成部分。 </span></div><div class="modify" align="right" paraseq="269"><span class="btn btn-blue" onclick="submitPart('职业生涯的发展对于每个在企业任职的员工都有着重要的意义，如果企业在员工职业发展方面有着相对规范的管理，同样对企业的发展有利。可以说，具备良好的职业生涯管理体系是实现企业和员工自身价值最大化的有效途径之一，也是非经济性薪酬的重要组成部分。',this)" class="modify">段落修改</div></div><div class="para"><div class="duanluo"><span>271</span></div><div class="l"><span style="margin-left:25px"></span><span >F公司对于员工职业生涯的管理基于美国总部的管理方式实施了本土化。 </span><span >对产品开发部员工而言，在职业生涯发展上一般可能面临三方面问题：一是公司内部职称级别的晋升，二是未来技术或管理路线的职业发展方向的选择， </span><span >三是从事软件开发还是软件测试的岗位类型转换的选择。 </span></div><div class="modify" align="right" paraseq="270"><span class="btn btn-blue" onclick="submitPart('F公司对于员工职业生涯的管理基于美国总部的管理方式实施了本土化。对产品开发部员工而言，在职业生涯发展上一般可能面临三方面问题：一是公司内部职称级别的晋升，二是未来技术或管理路线的职业发展方向的选择，三是从事软件开发还是软件测试的岗位类型转换的选择。',this)" class="modify">段落修改</div></div><div class="para"><div class="duanluo"><span>272</span></div><div class="l"><span style="margin-left:25px"></span><span >（1）	职称的晋升 </span></div></div><div class="para"><div class="duanluo"><span>273</span></div><div class="l"><span style="margin-left:25px"></span><span >公司内部职称级别的晋升是全体员工都期待和关注的一个方面。 </span><span >每个人都想尽快的获得晋升，收获更丰厚的薪水，在更高级别的岗位上证明自己。 </span><span >公司通常会根据工作年限和工作经验来确定你入职时的职称，并在未来的工作中每年进行个人绩效的考察与评定， </span><span >符合条件者将在七月份获得职称的晋升及薪水的较大增幅。 </span></div><div class="modify" align="right" paraseq="272"><span class="btn btn-blue" onclick="submitPart('公司内部职称级别的晋升是全体员工都期待和关注的一个方面。每个人都想尽快的获得晋升，收获更丰厚的薪水，在更高级别的岗位上证明自己。公司通常会根据工作年限和工作经验来确定你入职时的职称，并在未来的工作中每年进行个人绩效的考察与评定，符合条件者将在七月份获得职称的晋升及薪水的较大增幅。',this)" class="modify">段落修改</div></div><div class="para"><div class="duanluo"><span>274</span></div><div class="l"><span style="margin-left:25px"></span><span >（2）	职业发展方向选择 </span></div></div><div class="para"><div class="duanluo"><span>275</span></div><div class="l"><span style="margin-left:25px"></span><span >关于技术或管理方向的抉择通常发生在资深工程师身上，这个级别的员工已经有了较多的工作经验，并带领过小型团队完成过项目。 </span><span >此时员工应该考虑自己更适合做技术还是做管理，如果走技术方向，未来的晋升级别是架构师，而管理方向则是开发经理或测试经理。 </span></div><div class="modify" align="right" paraseq="274"><span class="btn btn-blue" onclick="submitPart('关于技术或管理方向的抉择通常发生在资深工程师身上，这个级别的员工已经有了较多的工作经验，并带领过小型团队完成过项目。此时员工应该考虑自己更适合做技术还是做管理，如果走技术方向，未来的晋升级别是架构师，而管理方向则是开发经理或测试经理。',this)" class="modify">段落修改</div></div><div class="para"><div class="duanluo"><span>276</span></div><div class="l"><span style="margin-left:25px"></span><span >（3）	开发与测试岗位的转换 </span></div></div><div class="para"><div class="duanluo"><span>277</span></div><div class="l"><span style="margin-left:25px"></span><span >只有少部分员工会面临开发和测试岗位转换的问题，有的软件开发工程师觉得自己能力不足以应付相对复杂的产品开发工作，便想要转到较为轻松的测试岗位上。 </span><span >相反地，有的测试工程师认为自己的兴趣更多的在创造新产品上，自己的能力也足够，便申请从测试工程师转为开发工程师。 </span><span >两类职位没有谁更好更差，只是侧重点不同，要求的技能也有所不同，员工完全可以选择自己更喜爱，更擅长的方向，对公司来说是双赢的结果。 </span></div><div class="modify" align="right" paraseq="276"><span class="btn btn-blue" onclick="submitPart('只有少部分员工会面临开发和测试岗位转换的问题，有的软件开发工程师觉得自己能力不足以应付相对复杂的产品开发工作，便想要转到较为轻松的测试岗位上。相反地，有的测试工程师认为自己的兴趣更多的在创造新产品上，自己的能力也足够，便申请从测试工程师转为开发工程师。两类职位没有谁更好更差，只是侧重点不同，要求的技能也有所不同，员工完全可以选择自己更喜爱，更擅长的方向，对公司来说是双赢的结果。',this)" class="modify">段落修改</div></div><div class="para"><div class="duanluo"><span>278</span></div><div class="l"><span style="margin-left:25px"></span><span >3.3  F公司工作满意度调查 </span></div></div><div class="para"><div class="duanluo"><span>279</span></div><div class="l"><span style="margin-left:25px"></span><span >3.3.1  调查问卷的背景与目的 </span></div></div><div class="para"><div class="duanluo"><span>280</span></div><div class="l"><span style="margin-left:25px"></span><span >外资企业在我国的建立与发展，一方面对我国的经济与社会发展起到了强劲的推动作用， </span><span >另一方面也在一定程度上对我国原有的人才市场形式及就业人员观念产生了巨大影响。 </span><span >在华外企的主要员工都来自中国本土，其工作满意度不仅是与中国传统文化与观念密切相关， </span><span >外资企业迥异的文化背景以及信息时代不断变化的经济环境也在很大程度上影响着员工对工作满意程度的感知。 </span><span >受多方因素影响，外资企业员工近年来在其价值观和行为方式等方面表现出了较多的问题，以下几点相对较为明显：（1）被雇佣感强，而主人翁意识较弱。 </span><span >（2）对企业文化的认同需要较长时间完成，对组织缺乏归属感。（3）人员流失率较高。 </span></div><div class="modify" align="right" paraseq="279"><span class="btn btn-blue" onclick="submitPart('外资企业在我国的建立与发展，一方面对我国的经济与社会发展起到了强劲的推动作用，另一方面也在一定程度上对我国原有的人才市场形式及就业人员观念产生了巨大影响。在华外企的主要员工都来自中国本土，其工作满意度不仅是与中国传统文化与观念密切相关，外资企业迥异的文化背景以及信息时代不断变化的经济环境也在很大程度上影响着员工对工作满意程度的感知。受多方因素影响，外资企业员工近年来在其价值观和行为方式等方面表现出了较多的问题，以下几点相对较为明显：（1）被雇佣感强，而主人翁意识较弱。（2）对企业文化的认同需要较长时间完成，对组织缺乏归属感。（3）人员流失率较高。',this)" class="modify">段落修改</div></div><div class="para"><div class="duanluo"><span>281</span></div><div class="l"><span style="margin-left:25px"></span><span >F公司是典型的近年来选择在国内快速发展的外资IT企业。 </span><span >从案例中可以了解到，目前F公司的部分员工存在工作懈怠、职业发展迷茫及人才流失等现象，很大程度上是由于管理层缺乏有效的本土化的激励制度。 </span><span >基于以上各类人力资源现象和问题，本文以F公司产品开发部员工作为研究调查对象， </span><span >期待通过实施工作满意度问卷调查来真实反映现阶段F公司技术员工工作满意度状况，以期深入分析得出影响其工作满意度的因素，从而暴露出企业存在的激励管理问题， </span><span >并据此为有效激励员工提高其工作满意度及其对组织的认同提供参考，最终实现为企业创造更大价值。 </span></div><div class="modify" align="right" paraseq="280"><span class="btn btn-blue" onclick="submitPart('F公司是典型的近年来选择在国内快速发展的外资IT企业。从案例中可以了解到，目前F公司的部分员工存在工作懈怠、职业发展迷茫及人才流失等现象，很大程度上是由于管理层缺乏有效的本土化的激励制度。基于以上各类人力资源现象和问题，本文以F公司产品开发部员工作为研究调查对象，期待通过实施工作满意度问卷调查来真实反映现阶段F公司技术员工工作满意度状况，以期深入分析得出影响其工作满意度的因素，从而暴露出企业存在的激励管理问题，并据此为有效激励员工提高其工作满意度及其对组织的认同提供参考，最终实现为企业创造更大价值。',this)" class="modify">段落修改</div></div><div class="para"><div class="duanluo"><span>282</span></div><div class="l"><span style="margin-left:25px"></span><span >3.3.2  调查问卷的设计与内容 </span></div></div><div class="para"><div class="duanluo"><span>283</span></div><div class="l"><span style="margin-left:25px"></span><a href="../sentence_detail/647.htm" target="right" class="red">本论文的调查问卷的设计借鉴了F公司内部的工作满意度调查问卷和明尼苏达满意度问卷(MSO)，测试表工作满意度问卷共计40道问题，这些问题简单明了，</a><span >涉及方面广泛，对于员工的工作满意度调查测量准确。 </span><span >同时，本问卷将工作满意度调查意向分为十个维度，即：1至5为培训角度的工作满意度问题，6至10为内部沟通角度的工作满意度问题， </span><a href="../sentence_detail/650.htm" target="right" class="red">1l至14为薪酬福利角度的工作满意度问题，15至17为晋升机制角度的工作满意度问题，18至22为工作吸引力角度的工作满意度问题，</a><span >23至26为授权角度的工作满意度问题，27至30为管理者能力角度的工作满意度问题，31至33为组织环境能力匹配角度的工作满意度问题， </span><a href="../sentence_detail/652.htm" target="right" class="orange">34至36为企业文化角度的工作满意度问题，37至40为团队协作能力角度的工作满意度问题。</a><span >之所以划分为这些维度， </span><span >是根据F公司内部的人力资源问卷以及国内外学者广泛研究的影响工作满意度因素类别上得出的。 </span><span >本论文工作满意度问卷采用的是Likert 5点法进行划分级别：&quot;非常不满意、不满意、一般、满意、非常满意&rdquo;分别给与&quot;1分，2分，3分，4分，5分&rdquo;。 </span><span > 如表3.1表述： </span></div><div class="modify" align="right" paraseq="282"><span class="btn btn-blue" onclick="submitPart('本论文的调查问卷的设计借鉴了F公司内部的工作满意度调查问卷和明尼苏达满意度问卷(MSO)，测试表工作满意度问卷共计40道问题，这些问题简单明了，涉及方面广泛，对于员工的工作满意度调查测量准确。同时，本问卷将工作满意度调查意向分为十个维度，即：1至5为培训角度的工作满意度问题，6至10为内部沟通角度的工作满意度问题，1l至14为薪酬福利角度的工作满意度问题，15至17为晋升机制角度的工作满意度问题，18至22为工作吸引力角度的工作满意度问题，23至26为授权角度的工作满意度问题，27至30为管理者能力角度的工作满意度问题，31至33为组织环境能力匹配角度的工作满意度问题，34至36为企业文化角度的工作满意度问题，37至40为团队协作能力角度的工作满意度问题。之所以划分为这些维度，是根据F公司内部的人力资源问卷以及国内外学者广泛研究的影响工作满意度因素类别上得出的。本论文工作满意度问卷采用的是Likert 5点法进行划分级别：&quot;非常不满意、不满意、一般、满意、非常满意&rdquo;分别给与&quot;1分，2分，3分，4分，5分&rdquo;。如表3.1表述：',this)" class="modify">段落修改</div></div><div class="para"><div class="duanluo"><span>284</span></div><div class="l"><span style="margin-left:25px"></span><span >表3.1  工作满意度度量表 </span></div></div><div class="para"><div class="duanluo"><span>285</span></div><div class="l"><span style="margin-left:25px"></span><span >Tab. </span><span > 3.1  Scale of job satisfaction </span></div><div class="modify" align="right" paraseq="284"><span class="btn btn-blue" onclick="submitPart('Tab.3.1  Scale of job satisfaction',this)" class="modify">段落修改</div></div><div class="para"><div class="duanluo"><span>286</span></div><div class="l"><span style="margin-left:25px"></span><span >编号	题目	非常不满意	不满意	一般	满意	非常满意 </span></div></div><div class="para"><div class="duanluo"><span>287</span></div><div class="l"><span style="margin-left:25px"></span><span >1	对员工的入职前培训、入职后工作技术培训、行业内部培训是否满意	1	2	3	4	5 </span></div><div class="modify" align="right" paraseq="286"><span class="btn btn-blue" onclick="submitPart('1	对员工的入职前培训、入职后工作技术培训、行业内部培训是否满意	1	2	3	4	5',this)" class="modify">段落修改</div></div><div class="para"><div class="duanluo"><span>288</span></div><div class="l"><span style="margin-left:25px"></span><span >2	对培训内容的实效性及方式的丰富性是否满意	1	2	3	4	5 </span></div></div><div class="para"><div class="duanluo"><span>289</span></div><div class="l"><span style="margin-left:25px"></span><span >3	对培训讲师的授课能力是否满意	1	2	3	4	5 </span></div></div><div class="para"><div class="duanluo"><span>290</span></div><div class="l"><span style="margin-left:25px"></span><span >4	对培训结束后考核是否满意	1	2	3	4	5 </span></div></div><div class="para"><div class="duanluo"><span>291</span></div><div class="l"><span style="margin-left:25px"></span><span >5	对培训后员工在工作中的运用情况及后续跟踪是否满意	1	2	3	4	5 </span></div><div class="modify" align="right" paraseq="290"><span class="btn btn-blue" onclick="submitPart('5	对培训后员工在工作中的运用情况及后续跟踪是否满意	1	2	3	4	5',this)" class="modify">段落修改</div></div><div class="para"><div class="duanluo"><span>292</span></div><div class="l"><span style="margin-left:25px"></span><span >6	对目前公司内部信息的公开是否满意	1	2	3	4	5 </span></div></div><div class="para"><div class="duanluo"><span>293</span></div><div class="l"><span style="margin-left:25px"></span><span >7	公司管理者能够将公司目标、经营策略等信息及时有效的传递给员工	1	2	3	4	5 </span></div><div class="modify" align="right" paraseq="292"><span class="btn btn-blue" onclick="submitPart('7	公司管理者能够将公司目标、经营策略等信息及时有效的传递给员工	1	2	3	4	5',this)" class="modify">段落修改</div></div><div class="para"><div class="duanluo"><span>294</span></div><div class="l"><span style="margin-left:25px"></span><span >8	员工对公司发展及运营的提议、问题和要求能够畅通的反映给公司管理者	1	2	3	4	5 </span></div><div class="modify" align="right" paraseq="293"><span class="btn btn-blue" onclick="submitPart('8	员工对公司发展及运营的提议、问题和要求能够畅通的反映给公司管理者	1	2	3	4	5',this)" class="modify">段落修改</div></div><div class="para"><div class="duanluo"><span>295</span></div><div class="l"><span style="margin-left:25px"></span><span >9	员工与本部门同事之间的沟通顺畅，没有阻碍	1	2	3	4	5 </span></div></div><div class="para"><div class="duanluo"><span>296</span></div><div class="l"><span style="margin-left:25px"></span><span >10	员工与其他部门同事之间的沟通顺畅，相互信任	1	2	3	4	5 </span></div></div><div class="para"><div class="duanluo"><span>297</span></div><div class="l"><span style="margin-left:25px"></span><span >11	对目前薪酬待遇是否满意	1	2	3	4	5 </span></div></div><div class="para"><div class="duanluo"><span>298</span></div><div class="l"><span style="margin-left:25px"></span><span >12	对目前福利待遇分配的公平性是否满意	1	2	3	4	5 </span></div></div><div class="para"><div class="duanluo"><span>299</span></div><div class="l"><span style="margin-left:25px"></span><span >13	对目前薪酬待遇在行业中的竞争力是否满意	1	2	3	4	5 </span></div></div><div class="para"><div class="duanluo"><span>300</span></div><div class="l"><span style="margin-left:25px"></span><span >14	对公司内部绩效考核结果与工资增长情况是否满意	1	2	3	4	5 </span></div></div><div class="para"><div class="duanluo"><span>301</span></div><div class="l"><span style="margin-left:25px"></span><span >15	对公司内部职位晋升的实效性和公平性是否满意	1	2	3	4	5 </span></div></div><div class="para"><div class="duanluo"><span>302</span></div><div class="l"><span style="margin-left:25px"></span><span >16	对目前职位的发展空间是否满意	1	2	3	4	5 </span></div></div><div class="para"><div class="duanluo"><span>303</span></div><div class="l"><span style="margin-left:25px"></span><span >17	对本职工作长远计划是否满意	1	2	3	4	5 </span></div></div><div align="center" class="navigation"><a href="paper_1.htm"><span class="btn_gray">首页</span></a><a  href="paper_2.htm"><span class="btn_gray">上一页</span></a><a href="paper_4.htm"><span class="btn_gray">下一页</span></a><a href="paper_5.htm">	<span class="btn_gray">尾页</span></a><span>页码：3/5页</span></div><div class="footer"><div align="center" class="a666" style="font-size:14px;padding-top:50px;padding-bottom:30px;"><div>检测报告由 <a class="nounderline" href="http://www.ptcheck.com" target="_blank">PTcheck</a>文献相似度检测系统生成 </div><div>Copyright © 2007-2016 PTcheck </div></div></div></div></body></html>

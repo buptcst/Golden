@@ -1,0 +1,446 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01//EN"
+"http://www.w3.org/TR/html4/strict.dtd">
+
+<html xmlns="http://www.w3.org/1999/xhtml" lang="en">
+
+	<head>
+		<meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+		<title>PTcheck论文检测报告</title>
+		<link rel="stylesheet" href="../css/base.css" />
+		<style type="text/css">
+		a {
+    color: #0796fe;
+}
+a:hover{
+    color:#0796fe!important;
+}
+			.mainContainer {
+				padding: 20px;
+	
+			}
+			
+			.navigation span {
+				display: inline-block;
+				padding-left: 5px;
+				padding-right: 5px;
+				color: #666;
+			}
+			
+			.btn_gray {
+				border: solid 1px #dddddd;
+				background-color: #eeeeee;
+				border-radius: 5px;
+				cursor: pointer;
+			}
+			
+			.btn_gray:hover,
+			.btn_blue {
+				background-color: #0099ff;
+				border: solid 1px #0099ff;
+				color: #fff!important;
+				border-radius: 5px;
+				cursor: pointer;
+			}
+			.para{
+				padding-top:20px;
+			}
+			
+			.duanluo{
+				padding-left:20px;
+				
+				padding-bottom: 5px;
+			}
+			.duanluo span{
+				display: inline-block;
+				padding-left:5px;
+				padding-right: 5px;
+				border: solid 1px #999;
+				color:#999;
+			}
+			.l{
+				line-height: 20px;
+				padding-bottom: 5px;
+			}
+			.l span{
+				color:#333;
+			}
+			.mymodify{
+				font-size:12px;
+			}
+			.mymodify textarea{
+				width:98%;
+				height:100px;
+				color:#333;
+				clear:both;
+			}
+			textarea{
+				padding:10px;
+				line-height: 20px;
+			}
+		</style>
+		<script type="text/javascript">
+
+        var isstorage=false;
+        var danhao;
+        var result= new Array();
+         function trimStr(str) {
+
+            if ((typeof (str) != "string") || !str) {
+
+                return "";
+
+            }
+
+            return str.replace(/(^\s*)|(\s*$)/g, "");
+
+        }
+          
+        function myclick() {
+            window.parent.parent.ViewMain.window.location.href = "../../htmls/jianchong_.htm";
+        }
+        function submitPart(obj, target) {
+            var parent = target.parentNode;
+            if(parent.getAttribute("data")=="add"){
+              var mynext = parent.nextSibling;
+              parent.setAttribute("data","remove");
+              parent.parentNode.removeChild(mynext);
+            }
+            else{
+            	parent.setAttribute("data","add");
+            	var temphtml = document.createElement("div");
+                temphtml.innerHTML = "<input type=\"hidden\" value=\""+ parent.getAttribute("paraseq") +"\"><div name=\"mymodify\" class=\"mymodify\" >"
+					+"<div class=\"a999\">改重内容（请对本句修改之后，点击“临时保存”，然后进入报告左侧“修改文档”页面中获取修改后的内容）：</div>"
+					+"<div><textarea>"+obj
+					+"</textarea>"
+					+"</div>"
+					+"<div align=\"right\" class=\"a999\" style=\"margin-top:14px;\">（注意：改完请及时到“修改文档”复制到原文）<span class=\"btn-gray btn a333\" onclick=\"mysave(this)\">临时保存</span></div>"
+				+"</div>";
+            	   parent.parentNode.insertBefore(temphtml, null);
+            }
+
+        }
+
+		function myNavigate(){
+		 document.getElementById("a_url").click();
+		}
+       
+        function mysave(target) {
+            var tempsen = trimStr(target.parentNode.previousSibling.lastChild.value.replace(/\"/g,"\\\"").replace(/\'/g,"\\\'"));
+            var paraseq = target.parentNode.parentNode.parentNode.firstChild.value;            
+            var mydiv = target.parentNode.parentNode.parentNode.previousSibling;
+             if (mydiv.nodeName == "#text") {
+                mydiv = mydiv.previousSibling;
+            }
+             
+            mydiv.lastChild.setAttribute("onclick", "submitPart('" + tempsen + "',this)");
+           mydiv.setAttribute("data","remove");
+           if (mydiv.firstChild.innerHTML != "已修改") {
+                var xiugai = document.createElement("span");
+                xiugai.setAttribute("style", "font-size:12px;color:#00AEAE;margin-right:10px;");
+                xiugai.innerHTML = "已修改";
+                mydiv.insertBefore(xiugai, mydiv.lastChild);
+               }
+            
+            var parent = target.parentNode.parentNode.parentNode;
+            parent.parentNode.removeChild(parent);
+            if(!isstorage)
+            {
+            window.parent.parent.parent.myset(paraseq, tempsen);
+            }
+            else
+            {
+            myset(paraseq, tempsen);
+            }
+        }
+        window.onload = function() {
+            danhao = document.getElementById("danhao").value;
+            if (window.localStorage) {
+                isstorage = true;
+            }
+            if (!isstorage) {
+                result = window.parent.parent.parent.modifyPara;
+                
+            }
+            else {
+                var temp = localStorage.getItem(danhao);
+                if (temp) {
+                    result = eval("(" + temp + ")");
+                }
+            }
+            if (result) {
+            	
+                for (var i = 0; i < result.length; i++) {
+                	
+                    //var all = $(":hidden");
+                    var all = getClass("div","modify");
+                   
+                    for (var j = 0; j < all.length; j++) {
+                        if (all[j].getAttribute("paraseq") == result[i].para) {
+                        	
+                            var xiugai = document.createElement("span");
+                            xiugai.setAttribute("style", "font-size:12px;color:#00AEAE;margin-right:10px;");
+                            xiugai.innerHTML = "已修改";
+                            all[j].insertBefore(xiugai, all[j].lastChild);
+                            all[j].lastChild.setAttribute("onclick", "submitPart('" + result[i].text.replace(/\"/g,"\\\"").replace(/\'/g,"\\\'") + "',this)");
+                        }
+                    }
+
+                }
+            }  
+        }
+
+
+        function mydivclick(e,obj) {
+            if (e.target.tagName.toUpperCase() != "INPUT") {
+                obj.lastChild.previousSibling.click();
+            }
+        }
+
+        function getClass(tagname, className) { //tagname指元素，className指class的值
+            var tagname = document.getElementsByTagName(tagname);  //获取指定元素
+            var tagnameAll = [];     //这个数组用于存储所有符合条件的元素
+            for (var i = 0; i < tagname.length; i++) {     //遍历获得的元素
+                if (tagname[i].className == className) {     //如果获得的元素中的class的值等于指定的类名，就赋值给tagnameAll
+                    tagnameAll[tagnameAll.length] = tagname[i];
+                }
+            }
+            return tagnameAll;
+
+        }
+
+       
+        
+        
+         function myset(paraseq, sen) {
+         	
+            var reg = new RegExp("\"", "g")
+            var model = "{\"para\":\"" + paraseq + "\",\"text\": \"" + sen + "\"}";
+            var mo = eval("(" + model + ")");
+            var exist = false;
+            for (var i = 0; i < result.length; i++) {
+                if (mo.para == result[i].para) {
+                    exist = true;
+                    result[i].text = mo.text;
+                }
+            }
+            if (!exist) {
+                result.push(mo);
+            }
+            localStorage.removeItem(danhao);
+            localStorage.setItem(danhao, json_encode(result));
+        }
+        
+        function json_decode(str_json) {
+            // Decodes the JSON representation into a PHP value  
+            //  
+            // version: 906.1806  
+            // discuss at: http://phpjs.org/functions/json_decode  
+            // +      original by: Public Domain (http://www.json.org/json2.js)  
+            // + reimplemented by: Kevin van Zonneveld (http://kevin.vanzonneveld.net)  
+            // + improved by: T.J. Leahy  
+            // *     example 1: json_decode('[\n    "e",\n    {\n    "pluribus": "unum"\n}\n]');  
+            // *     returns 1: ['e', {pluribus: 'unum'}]  
+            /* 
+            http://www.JSON.org/json2.js 
+            2008-11-19 
+            Public Domain. 
+            NO WARRANTY EXPRESSED OR IMPLIED. USE AT YOUR OWN RISK. 
+            See http://www.JSON.org/js.html 
+            */
+
+            var json = this.window.JSON;
+            if (typeof json === 'object' && typeof json.parse === 'function') {
+                return json.parse(str_json);
+            }
+
+            var cx = /[\u0000\u00ad\u0600-\u0604\u070f\u17b4\u17b5\u200c-\u200f\u2028-\u202f\u2060-\u206f\ufeff\ufff0-\uffff]/g;
+            var j;
+            var text = str_json;
+
+            // Parsing happens in four stages. In the first stage, we replace certain  
+            // Unicode characters with escape sequences. JavaScript handles many characters  
+            // incorrectly, either silently deleting them, or treating them as line endings.  
+            cx.lastIndex = 0;
+            if (cx.test(text)) {
+                text = text.replace(cx, function(a) {
+                    return '\\u' +
+            ('0000' + a.charCodeAt(0).toString(16)).slice(-4);
+                });
+            }
+
+            // In the second stage, we run the text against regular expressions that look  
+            // for non-JSON patterns. We are especially concerned with '()' and 'new'  
+            // because they can cause invocation, and '=' because it can cause mutation.  
+            // But just to be safe, we want to reject all unexpected forms.  
+
+            // We split the second stage into 4 regexp operations in order to work around  
+            // crippling inefficiencies in IE's and Safari's regexp engines. First we  
+            // replace the JSON backslash pairs with '@' (a non-JSON character). Second, we  
+            // replace all simple value tokens with ']' characters. Third, we delete all  
+            // open brackets that follow a colon or comma or that begin the text. Finally,  
+            // we look to see that the remaining characters are only whitespace or ']' or  
+            // ',' or ':' or '{' or '}'. If that is so, then the text is safe for eval.  
+            if (/^[\],:{}\s]*$/.
+        test(text.replace(/\\(?:["\\\/bfnrt]|u[0-9a-fA-F]{4})/g, '@').
+            replace(/"[^"\\\n\r]*"|true|false|null|-?\d+(?:\.\d*)?(?:[eE][+\-]?\d+)?/g, ']').
+            replace(/(?:^|:|,)(?:\s*\[)+/g, ''))) {
+
+                // In the third stage we use the eval function to compile the text into a  
+                // JavaScript structure. The '{' operator is subject to a syntactic ambiguity  
+                // in JavaScript: it can begin a block or an object literal. We wrap the text  
+                // in parens to eliminate the ambiguity.  
+
+                j = eval('(' + text + ')');
+
+                return j;
+            }
+
+            // If the text is not JSON parseable, then a SyntaxError is thrown.  
+            throw new SyntaxError('json_decode');
+        }
+
+        function json_encode(mixed_val) {
+            // Returns the JSON representation of a value  
+            //  
+            // version: 906.1806  
+            // discuss at: http://phpjs.org/functions/json_encode  
+            // +      original by: Public Domain (http://www.json.org/json2.js)  
+            // + reimplemented by: Kevin van Zonneveld (http://kevin.vanzonneveld.net)  
+            // + improved by: T.J. Leahy  
+            // *     example 1: json_encode(['e', {pluribus: 'unum'}]);  
+            // *     returns 1: '[\n    "e",\n    {\n    "pluribus": "unum"\n}\n]'  
+            /* 
+            http://www.JSON.org/json2.js 
+            2008-11-19 
+            Public Domain. 
+            NO WARRANTY EXPRESSED OR IMPLIED. USE AT YOUR OWN RISK. 
+            See http://www.JSON.org/js.html 
+            */
+            var json = this.window.JSON;
+            if (typeof json === 'object' && typeof json.stringify === 'function') {
+                return json.stringify(mixed_val);
+            }
+
+            var value = mixed_val;
+
+            var quote = function(string) {
+                var escapable = /[\\\"\u0000-\u001f\u007f-\u009f\u00ad\u0600-\u0604\u070f\u17b4\u17b5\u200c-\u200f\u2028-\u202f\u2060-\u206f\ufeff\ufff0-\uffff]/g;
+                var meta = {    // table of character substitutions  
+                    '\b': '\\b',
+                    '\t': '\\t',
+                    '\n': '\\n',
+                    '\f': '\\f',
+                    '\r': '\\r',
+                    '"': '\\"',
+                    '\\': '\\\\'
+                };
+
+                escapable.lastIndex = 0;
+                return escapable.test(string) ?
+        '"' + string.replace(escapable, function(a) {
+            var c = meta[a];
+            return typeof c === 'string' ? c :
+            '\\u' + ('0000' + a.charCodeAt(0).toString(16)).slice(-4);
+        }) + '"' :
+        '"' + string + '"';
+            };
+
+            var str = function(key, holder) {
+                var gap = '';
+                var indent = '    ';
+                var i = 0;          // The loop counter.  
+                var k = '';          // The member key.  
+                var v = '';          // The member value.  
+                var length = 0;
+                var mind = gap;
+                var partial = [];
+                var value = holder[key];
+
+                // If the value has a toJSON method, call it to obtain a replacement value.  
+                if (value && typeof value === 'object' &&
+            typeof value.toJSON === 'function') {
+                    value = value.toJSON(key);
+                }
+
+                // What happens next depends on the value's type.  
+                switch (typeof value) {
+                    case 'string':
+                        return quote(value);
+
+                    case 'number':
+                        // JSON numbers must be finite. Encode non-finite numbers as null.  
+                        return isFinite(value) ? String(value) : 'null';
+
+                    case 'boolean':
+                    case 'null':
+                        // If the value is a boolean or null, convert it to a string. Note:  
+                        // typeof null does not produce 'null'. The case is included here in  
+                        // the remote chance that this gets fixed someday.  
+
+                        return String(value);
+
+                    case 'object':
+                        // If the type is 'object', we might be dealing with an object or an array or  
+                        // null.  
+                        // Due to a specification blunder in ECMAScript, typeof null is 'object',  
+                        // so watch out for that case.  
+                        if (!value) {
+                            return 'null';
+                        }
+
+                        // Make an array to hold the partial results of stringifying this object value.  
+                        gap += indent;
+                        partial = [];
+
+                        // Is the value an array?  
+                        if (Object.prototype.toString.apply(value) === '[object Array]') {
+                            // The value is an array. Stringify every element. Use null as a placeholder  
+                            // for non-JSON values.  
+
+                            length = value.length;
+                            for (i = 0; i < length; i += 1) {
+                                partial[i] = str(i, value) || 'null';
+                            }
+
+                            // Join all of the elements together, separated with commas, and wrap them in  
+                            // brackets.  
+                            v = partial.length === 0 ? '[]' :
+                    gap ? '[\n' + gap +
+                    partial.join(',\n' + gap) + '\n' +
+                    mind + ']' :
+                    '[' + partial.join(',') + ']';
+                            gap = mind;
+                            return v;
+                        }
+
+                        // Iterate through all of the keys in the object.  
+                        for (k in value) {
+                            if (Object.hasOwnProperty.call(value, k)) {
+                                v = str(k, value);
+                                if (v) {
+                                    partial.push(quote(k) + (gap ? ': ' : ':') + v);
+                                }
+                            }
+                        }
+
+                        // Join all of the member texts together, separated with commas,  
+                        // and wrap them in braces.  
+                        v = partial.length === 0 ? '{}' :
+                gap ? '{\n' + gap + partial.join(',\n' + gap) + '\n' +
+                mind + '}' : '{' + partial.join(',') + '}';
+                        gap = mind;
+                        return v;
+                }
+            };
+
+            // Make a fake root object containing our value under the key of ''.  
+            // Return the result of stringifying the value.  
+            return str('', {
+                '': value
+            });
+        } 
+       
+    </script>
+	</head>
+
+	<body><a href="http://www.ptcheck.com/jack/segment.aspx" target="_blank" id="a_url" style="display:none;" ></a> <input type="hidden" id="danhao" value="2285731800810302" /><div class="mainContainer"><div align="center" class="navigation"><a href="paper_1.htm"><span class="btn_gray">首页</span></a><a  href="#"><span class="btn_gray">上一页</span></a><a href="paper_2.htm"><span class="btn_gray">下一页</span></a><a href="paper_5.htm">	<span class="btn_gray">尾页</span></a><span>页码：1/5页</span></div><div class="zhengwen"><div class="para"><div class="duanluo"><span>1</span></div><div class="l"><span style="margin-left:25px"></span><span >摘    要 </span></div></div><div class="para"><div class="duanluo"><span>2</span></div><div class="l"><span style="margin-left:25px"></span><a href="../sentence_detail/2.htm" target="right" class="orange">随着经济全球化和贸易自由化的不断发展，越来越多的外资企业在我国投资建厂，</a><span >并凭借其有竞争力的薪资福利、人性化的管理、开放的企业文化及丰富的培训机会吸引着大量的国内优秀人才的加盟。 </span><span >然而伴随着新鲜感的结束，近年来一部分外资企业在人才激励管理上存在的问题也逐步地暴露了出来，由于未能够成功地克服因跨国经营带来的诸多文化及语言等差异， </span><span >导致企业原有的激励机制失效，最终形成人才的流失。 </span></div><div class="modify" align="right" paraseq="1"><span class="btn btn-blue" onclick="submitPart('随着经济全球化和贸易自由化的不断发展，越来越多的外资企业在我国投资建厂，并凭借其有竞争力的薪资福利、人性化的管理、开放的企业文化及丰富的培训机会吸引着大量的国内优秀人才的加盟。然而伴随着新鲜感的结束，近年来一部分外资企业在人才激励管理上存在的问题也逐步地暴露了出来，由于未能够成功地克服因跨国经营带来的诸多文化及语言等差异，导致企业原有的激励机制失效，最终形成人才的流失。',this)" class="modify">段落修改</div></div><div class="para"><div class="duanluo"><span>3</span></div><div class="l"><span style="margin-left:25px"></span><a href="../sentence_detail/6.htm" target="right" class="orange">企业的竞争很大程度上是人才的竞争，而吸引人才、保留人才的核心因素则是企业的激励管理机制，有效的激励能够激发企业员工的工作积极性及创造性，</a><span >从而提高企业的竞争力。 </span><span >而不当的激励会导致企业员工频繁跳槽，将大大增加企业的管理成本，严重影响企业的发展。 </span></div><div class="modify" align="right" paraseq="2"><span class="btn btn-blue" onclick="submitPart('企业的竞争很大程度上是人才的竞争，而吸引人才、保留人才的核心因素则是企业的激励管理机制，有效的激励能够激发企业员工的工作积极性及创造性，从而提高企业的竞争力。而不当的激励会导致企业员工频繁跳槽，将大大增加企业的管理成本，严重影响企业的发展。',this)" class="modify">段落修改</div></div><div class="para"><div class="duanluo"><span>4</span></div><div class="l"><span style="margin-left:25px"></span><span >本文以F公司技术人才激励管理的三个案例为切入点，结合F公司的企业自身特点和员工满意度调查等形式，从广义薪酬激励， </span><span >薪资制度内外部公平性和职业生涯发展激励等方面和角度进行了分析，从深层次揭示了企业激励管理问题产生的根本原因，并据此提出了针对各方面原因的不同解决方案。 </span><span >相信本文的研究结果能够有效解决和改善F公司技术人才的激励管理问题，从而提升企业的绩效与竞争力，减少人才流失，最终实现企业与员工双赢的局面。 </span></div><div class="modify" align="right" paraseq="3"><span class="btn btn-blue" onclick="submitPart('本文以F公司技术人才激励管理的三个案例为切入点，结合F公司的企业自身特点和员工满意度调查等形式，从广义薪酬激励，薪资制度内外部公平性和职业生涯发展激励等方面和角度进行了分析，从深层次揭示了企业激励管理问题产生的根本原因，并据此提出了针对各方面原因的不同解决方案。相信本文的研究结果能够有效解决和改善F公司技术人才的激励管理问题，从而提升企业的绩效与竞争力，减少人才流失，最终实现企业与员工双赢的局面。',this)" class="modify">段落修改</div></div><div class="para"><div class="duanluo"><span>5</span></div><div class="l"><span style="margin-left:25px"></span><span >关键词：IT外企；技术人才；激励管理 </span></div></div><div class="para"><div class="duanluo"><span>6</span></div><div class="l"><span style="margin-left:25px"></span><span >Research on Employee Motivation of F Company </span></div><div class="modify" align="right" paraseq="5"><span class="btn btn-blue" onclick="submitPart('Research on Employee Motivation of F Company',this)" class="modify">段落修改</div></div><div class="para"><div class="duanluo"><span>7</span></div><div class="l"><span style="margin-left:25px"></span><span >Abstract </span></div></div><div class="para"><div class="duanluo"><span>8</span></div><div class="l"><span style="margin-left:25px"></span><a href="../sentence_detail/15.htm" target="right" class="orange">With the growth of economic globalization and trading freedom,</a><span > more and more foreign-owned enterprises have built branches in China. </span><a href="../sentence_detail/17.htm" target="right" class="red"> Their competitive compensation and benefits, humane management,</a><a href="../sentence_detail/18.htm" target="right" class="orange"> open corporate culture and a wealth of training opportunities have been attracting a large number of outstanding domestic talents to join.</a><a href="../sentence_detail/19.htm" target="right" class="orange"> However, in recent years, with the end of the initial freshness,</a><span > the motivation management problems are gradually exposed in some foreign companies. </span><a href="../sentence_detail/21.htm" target="right" class="orange"> Due to the difficulties of overcoming the cultural and linguistic differences,</a><span > the transnational management of these companies is leading to a failure of the existing motivation mechanisms, </span><span > and ultimately the formation of the brain drain. </span><span >  </span></div><div class="modify" align="right" paraseq="7"><span class="btn btn-blue" onclick="submitPart('With the growth of economic globalization and trading freedom,more and more foreign-owned enterprises have built branches in China.Their competitive compensation and benefits, humane management,open corporate culture and a wealth of training opportunities have been attracting a large number of outstanding domestic talents to join.However, in recent years, with the end of the initial freshness,the motivation management problems are gradually exposed in some foreign companies.Due to the difficulties of overcoming the cultural and linguistic differences,the transnational management of these companies is leading to a failure of the existing motivation mechanisms,and ultimately the formation of the brain drain.',this)" class="modify">段落修改</div></div><div class="para"><div class="duanluo"><span>9</span></div><div class="l"><span style="margin-left:25px"></span><span >The competition between enterprise is largely the talent competition. </span><span > The key factor of attracting and retaining talents is the motivation management mechanisms. </span><a href="../sentence_detail/27.htm" target="right" class="orange"> Effective motivations can mobilize the enthusiasm of employees and fully stimulate their creativity,</a><span > sequentially enhancing the key competitiveness of the enterprise. </span><span > Conversely, </span><span > improper motivations will result in employees changing jobs frequently, </span><a href="../sentence_detail/31.htm" target="right" class="orange"> which will significantly increase the human resource management cost and hence seriously affect the development of enterprises.</a><span >  </span></div><div class="modify" align="right" paraseq="8"><span class="btn btn-blue" onclick="submitPart('The competition between enterprise is largely the talent competition.The key factor of attracting and retaining talents is the motivation management mechanisms.Effective motivations can mobilize the enthusiasm of employees and fully stimulate their creativity,sequentially enhancing the key competitiveness of the enterprise.Conversely,improper motivations will result in employees changing jobs frequently,which will significantly increase the human resource management cost and hence seriously affect the development of enterprises.',this)" class="modify">段落修改</div></div><div class="para"><div class="duanluo"><span>10</span></div><div class="l"><span style="margin-left:25px"></span><span >By illustrating three cases on motivation of technicians of F Company, </span><span > this paper is going to show us analytical processes from angles of generalized compensation motivation, </span><span > external and internal salary equity and career development based on traits of the company itself and the employee job satisfaction survey in order to deeply dig root causes of how the motivation problems happened, </span><span > additionally provide us respective solutions on different causes accordingly which could effectively resolve and improve the situations of motivation management situations for technicians of F Company. </span><span > These will lead to decreasing the talent outflow, </span><span > ultimately achieve the mutual benefits between enterprise and employees．  </span></div><div class="modify" align="right" paraseq="9"><span class="btn btn-blue" onclick="submitPart('By illustrating three cases on motivation of technicians of F Company,this paper is going to show us analytical processes from angles of generalized compensation motivation,external and internal salary equity and career development based on traits of the company itself and the employee job satisfaction survey in order to deeply dig root causes of how the motivation problems happened,additionally provide us respective solutions on different causes accordingly which could effectively resolve and improve the situations of motivation management situations for technicians of F Company.These will lead to decreasing the talent outflow,ultimately achieve the mutual benefits between enterprise and employees．',this)" class="modify">段落修改</div></div><div class="para"><div class="duanluo"><span>11</span></div><div class="l"><span style="margin-left:25px"></span><span >Key Words：Foreign-Invested Enterprise; </span><span > Technical Talents; Motivation Management </span></div><div class="modify" align="right" paraseq="10"><span class="btn btn-blue" onclick="submitPart('Key Words：Foreign-Invested Enterprise;Technical Talents; Motivation Management',this)" class="modify">段落修改</div></div><div class="para"><div class="duanluo"><span>12</span></div><div class="l"><span style="margin-left:25px"></span><span >目    录 </span></div></div><div class="para"><div class="duanluo"><span>13</span></div><div class="l"><span style="margin-left:25px"></span><span >摘    要	I </span></div></div><div class="para"><div class="duanluo"><span>14</span></div><div class="l"><span style="margin-left:25px"></span><span >Abstract	II </span></div></div><div class="para"><div class="duanluo"><span>15</span></div><div class="l"><span style="margin-left:25px"></span><span >1  绪论	1 </span></div></div><div class="para"><div class="duanluo"><span>16</span></div><div class="l"><span style="margin-left:25px"></span><span >1.1  研究背景	1 </span></div></div><div class="para"><div class="duanluo"><span>17</span></div><div class="l"><span style="margin-left:25px"></span><span >1.2  研究目的及意义	2 </span></div></div><div class="para"><div class="duanluo"><span>18</span></div><div class="l"><span style="margin-left:25px"></span><span >1.3  研究思路与方法	2 </span></div></div><div class="para"><div class="duanluo"><span>19</span></div><div class="l"><span style="margin-left:25px"></span><span >2  案例正文	4 </span></div></div><div class="para"><div class="duanluo"><span>20</span></div><div class="l"><span style="margin-left:25px"></span><span >2.1  行业背景与公司简介	4 </span></div></div><div class="para"><div class="duanluo"><span>21</span></div><div class="l"><span style="margin-left:25px"></span><span >2.1.1  行业背景	4 </span></div></div><div class="para"><div class="duanluo"><span>22</span></div><div class="l"><span style="margin-left:25px"></span><span >2.1.2  公司简介	4 </span></div></div><div class="para"><div class="duanluo"><span>23</span></div><div class="l"><span style="margin-left:25px"></span><span >2.1.3  公司人力资源现状	5 </span></div></div><div class="para"><div class="duanluo"><span>24</span></div><div class="l"><span style="margin-left:25px"></span><span >2.2  案例描述	8 </span></div></div><div class="para"><div class="duanluo"><span>25</span></div><div class="l"><span style="margin-left:25px"></span><span >2.2.1  资深员工的离职申请	8 </span></div></div><div class="para"><div class="duanluo"><span>26</span></div><div class="l"><span style="margin-left:25px"></span><span >2.2.2  新员工的迷茫与困惑	9 </span></div></div><div class="para"><div class="duanluo"><span>27</span></div><div class="l"><span style="margin-left:25px"></span><span >2.2.3  老员工的日渐懈怠	10 </span></div></div><div class="para"><div class="duanluo"><span>28</span></div><div class="l"><span style="margin-left:25px"></span><span >3  案例分析	12 </span></div></div><div class="para"><div class="duanluo"><span>29</span></div><div class="l"><span style="margin-left:25px"></span><span >3.1  相关理论概述	12 </span></div></div><div class="para"><div class="duanluo"><span>30</span></div><div class="l"><span style="margin-left:25px"></span><span >3.1.1  概念界定	12 </span></div></div><div class="para"><div class="duanluo"><span>31</span></div><div class="l"><span style="margin-left:25px"></span><span >3.1.2  激励相关理论	13 </span></div></div><div class="para"><div class="duanluo"><span>32</span></div><div class="l"><span style="margin-left:25px"></span><span >3.1.3  薪酬理论	16 </span></div></div><div class="para"><div class="duanluo"><span>33</span></div><div class="l"><span style="margin-left:25px"></span><span >3.1.4  工作倦怠理论	17 </span></div></div><div class="para"><div class="duanluo"><span>34</span></div><div class="l"><span style="margin-left:25px"></span><span >3.1.5  人才流失理论	19 </span></div></div><div class="para"><div class="duanluo"><span>35</span></div><div class="l"><span style="margin-left:25px"></span><span >3.1.6  职业生涯理论	20 </span></div></div><div class="para"><div class="duanluo"><span>36</span></div><div class="l"><span style="margin-left:25px"></span><span >3.2  F公司激励管理现状	21 </span></div></div><div class="para"><div class="duanluo"><span>37</span></div><div class="l"><span style="margin-left:25px"></span><span >3.2.1  薪资制度现状	22 </span></div></div><div class="para"><div class="duanluo"><span>38</span></div><div class="l"><span style="margin-left:25px"></span><span >3.2.2  福利制度现状	23 </span></div></div><div class="para"><div class="duanluo"><span>39</span></div><div class="l"><span style="margin-left:25px"></span><span >3.2.3  职业生涯管理现状	24 </span></div></div><div class="para"><div class="duanluo"><span>40</span></div><div class="l"><span style="margin-left:25px"></span><span >3.3  F公司工作满意度调查	25 </span></div></div><div class="para"><div class="duanluo"><span>41</span></div><div class="l"><span style="margin-left:25px"></span><span >3.3.1  调查问卷的背景与目的	25 </span></div></div><div class="para"><div class="duanluo"><span>42</span></div><div class="l"><span style="margin-left:25px"></span><span >3.3.2  调查问卷的设计与内容	25 </span></div></div><div class="para"><div class="duanluo"><span>43</span></div><div class="l"><span style="margin-left:25px"></span><span >3.3.3  问卷数据分析与结论	27 </span></div></div><div class="para"><div class="duanluo"><span>44</span></div><div class="l"><span style="margin-left:25px"></span><span >3.4  F公司激励问题原因分析	32 </span></div></div><div class="para"><div class="duanluo"><span>45</span></div><div class="l"><span style="margin-left:25px"></span><span >3.4.1  广义薪酬需求问题	32 </span></div></div><div class="para"><div class="duanluo"><span>46</span></div><div class="l"><span style="margin-left:25px"></span><span >3.4.2  薪资制度内外部公平问题	34 </span></div></div><div class="para"><div class="duanluo"><span>47</span></div><div class="l"><span style="margin-left:25px"></span><span >3.4.3  职业生涯管理问题	36 </span></div></div><div class="para"><div class="duanluo"><span>48</span></div><div class="l"><span style="margin-left:25px"></span><span >4  对策与建议	38 </span></div></div><div class="para"><div class="duanluo"><span>49</span></div><div class="l"><span style="margin-left:25px"></span><span >4.1  广义薪酬概念下的激励制度改进	38 </span></div></div><div class="para"><div class="duanluo"><span>50</span></div><div class="l"><span style="margin-left:25px"></span><span >4.2  基于公平性原则的薪资制度改进	39 </span></div></div><div class="para"><div class="duanluo"><span>51</span></div><div class="l"><span style="margin-left:25px"></span><span >4.3  职业生涯管理体系的改进	40 </span></div></div><div class="para"><div class="duanluo"><span>52</span></div><div class="l"><span style="margin-left:25px"></span><span >结    论	43 </span></div></div><div class="para"><div class="duanluo"><span>53</span></div><div class="l"><span style="margin-left:25px"></span><span >参 考 文 献	44 </span></div></div><div class="para"><div class="duanluo"><span>54</span></div><div class="l"><span style="margin-left:25px"></span><span >附录A  附录内容名称	47 </span></div></div><div class="para"><div class="duanluo"><span>55</span></div><div class="l"><span style="margin-left:25px"></span><span >致    谢	48 </span></div></div><div class="para"><div class="duanluo"><span>56</span></div><div class="l"><span style="margin-left:25px"></span><a href="../sentence_detail/85.htm" target="right" class="red">大连理工大学学位论文版权使用授权书	49</a></div></div><div class="para"><div class="duanluo"><span>57</span></div><div class="l"><span style="margin-left:25px"></span><span >1  绪论 </span></div></div><div class="para"><div class="duanluo"><span>58</span></div><div class="l"><span style="margin-left:25px"></span><span >&quot;最后，再次感谢诸位优秀毕业生选择了我司作为职业生涯的起点，祝每位同学未来的工作生活一切顺利，和公司共同进步，一起成长，早日成为驰骋职场的技术精英！ </span><span >&rdquo;张总慷慨激昂的总结陈词话音未落，台下已经响起了热烈的掌声，又一批毕业生从竞争者中脱颖而出，成为了F公司产品开发部的新晋实习生。 </span><span >张总望着台下一张张稚嫩却又充满斗志和憧憬的脸，心中想：希望公司的这步棋是对的吧。 </span></div><div class="modify" align="right" paraseq="57"><span class="btn btn-blue" onclick="submitPart('&quot;最后，再次感谢诸位优秀毕业生选择了我司作为职业生涯的起点，祝每位同学未来的工作生活一切顺利，和公司共同进步，一起成长，早日成为驰骋职场的技术精英！&rdquo;张总慷慨激昂的总结陈词话音未落，台下已经响起了热烈的掌声，又一批毕业生从竞争者中脱颖而出，成为了F公司产品开发部的新晋实习生。张总望着台下一张张稚嫩却又充满斗志和憧憬的脸，心中想：希望公司的这步棋是对的吧。',this)" class="modify">段落修改</div></div><div class="para"><div class="duanluo"><span>59</span></div><div class="l"><span style="margin-left:25px"></span><span >会后，张总回答了几个实习生的问题便回到了办公室，企业开发部总监杨总已经在那里等着向他汇报了。 </span><span >&quot;张总，年中人力资源考评结果出来了，大部分员工都完成了指标，遗憾的是仍然有少部分员工表现低于去年同期，经理们不得不给出不达标的考核结果。 </span><span >&rdquo;&quot;我看看都有谁？这几个名字不太熟，应该是刚来没多久吧，还有&hellip;&hellip;咦？ </span><span >这两是老员工了吧，我记得他俩以前还得过优秀员工奖，现在怎么不进反退了？ </span><span >&rdquo;&quot;这个，据他们经理反映，老王是任务比较重，家里又有点事，分心了，而这个小陈，正好相反，是因为现在的活不如以前忙，所以懈怠了。 </span><span >&rdquo;&quot;这样啊，这肯定是工作分配出了问题，再就是对员工的激励工作没有做好，我看让王秘书跟人力资源部安排个会我们讨论一下吧。 </span><span >&rdquo;&quot;好的张总，另外&hellip;&hellip;另外就是新来的这届实习生，工资是不是有点偏高了，又有三个月出国培训，前几届的实习生甚至有些老员工都颇有微辞啊。 </span><span >&rdquo;&quot;老杨，我们之前不是讨论过了吗？ </span><span >现在人才竞争这么激烈，我们不能落后啊，这批选拔过的名校毕业生，天赋好又很勤奋，学习能力强，只要我们确定好方向来大力培养，肯定比社招成本要低。 </span><span >要对公司的战略有信心嘛&rdquo;&quot;好的，张总，那我先出去了，您忙。 </span><span >&rdquo;杨总带上了门，去找王秘书安排会议去了，只剩张总在办公室里陷入了短暂的沉思，究竟该如何激励那些原本优秀的员工呢， </span><span >又该如何消除公司里由新实习生带来的&quot;不公平&rdquo;情绪呢? </span><span >&hellip;&hellip; </span></div><div class="modify" align="right" paraseq="58"><span class="btn btn-blue" onclick="submitPart('会后，张总回答了几个实习生的问题便回到了办公室，企业开发部总监杨总已经在那里等着向他汇报了。&quot;张总，年中人力资源考评结果出来了，大部分员工都完成了指标，遗憾的是仍然有少部分员工表现低于去年同期，经理们不得不给出不达标的考核结果。&rdquo;&quot;我看看都有谁？这几个名字不太熟，应该是刚来没多久吧，还有&hellip;&hellip;咦？这两是老员工了吧，我记得他俩以前还得过优秀员工奖，现在怎么不进反退了？&rdquo;&quot;这个，据他们经理反映，老王是任务比较重，家里又有点事，分心了，而这个小陈，正好相反，是因为现在的活不如以前忙，所以懈怠了。&rdquo;&quot;这样啊，这肯定是工作分配出了问题，再就是对员工的激励工作没有做好，我看让王秘书跟人力资源部安排个会我们讨论一下吧。&rdquo;&quot;好的张总，另外&hellip;&hellip;另外就是新来的这届实习生，工资是不是有点偏高了，又有三个月出国培训，前几届的实习生甚至有些老员工都颇有微辞啊。&rdquo;&quot;老杨，我们之前不是讨论过了吗？现在人才竞争这么激烈，我们不能落后啊，这批选拔过的名校毕业生，天赋好又很勤奋，学习能力强，只要我们确定好方向来大力培养，肯定比社招成本要低。要对公司的战略有信心嘛&rdquo;&quot;好的，张总，那我先出去了，您忙。&rdquo;杨总带上了门，去找王秘书安排会议去了，只剩张总在办公室里陷入了短暂的沉思，究竟该如何激励那些原本优秀的员工呢，又该如何消除公司里由新实习生带来的&quot;不公平&rdquo;情绪呢?&hellip;&hellip;',this)" class="modify">段落修改</div></div><div class="para"><div class="duanluo"><span>60</span></div><div class="l"><span style="margin-left:25px"></span><span >1.1  研究背景 </span></div></div><div class="para"><div class="duanluo"><span>61</span></div><div class="l"><span style="margin-left:25px"></span><span >经过半个多世纪特别是改革开放近四十年的努力，中国经济如巨轮般乘风破浪，一路前行，这与中国积极开展国际合作，引进外资， </span><span >吸引跨国企业来华投资有着密切的关系。 </span><span >近年来，外商在华投资额正呈逐年递增趋势，成为中国经济快速发展的重要动力，与此同时也将其领先的管理理念、治理模式以及高效的人力资源管理机制带到了中国。 </span><span >在华外企在中国的很多行业，例如：IT行业、快速消费品行业、汽车行业、家电行业等都表现出了较高的竞争水平。 </span></div><div class="modify" align="right" paraseq="60"><span class="btn btn-blue" onclick="submitPart('经过半个多世纪特别是改革开放近四十年的努力，中国经济如巨轮般乘风破浪，一路前行，这与中国积极开展国际合作，引进外资，吸引跨国企业来华投资有着密切的关系。近年来，外商在华投资额正呈逐年递增趋势，成为中国经济快速发展的重要动力，与此同时也将其领先的管理理念、治理模式以及高效的人力资源管理机制带到了中国。在华外企在中国的很多行业，例如：IT行业、快速消费品行业、汽车行业、家电行业等都表现出了较高的竞争水平。',this)" class="modify">段落修改</div></div><div class="para"><div class="duanluo"><span>62</span></div><div class="l"><span style="margin-left:25px"></span><span >F公司作为美国富达投资公司在中国开设的第一家全资子公司，专注于为公司提供软件解决方案的开发与创新设计，其自2011年底成立起进行快速扩张， </span><span >四年间从最初的五十多人迅速扩张到500余人，完成了数百个业务模块的研发与交付工作，获得了美国总部的信任。 </span><span >但是最近一年多，随着人员逐渐饱和，部门构架和各类设施也已齐全，F公司进入了成熟期，随之而来的就是部分员工出现了疲倦或懈怠的表现， </span><span >以及一部分员工对于公司的待遇或制度感到不甚满意，进而选择了离职或者失去了工作积极性。 </span><span >  </span></div><div class="modify" align="right" paraseq="61"><span class="btn btn-blue" onclick="submitPart('F公司作为美国富达投资公司在中国开设的第一家全资子公司，专注于为公司提供软件解决方案的开发与创新设计，其自2011年底成立起进行快速扩张，四年间从最初的五十多人迅速扩张到500余人，完成了数百个业务模块的研发与交付工作，获得了美国总部的信任。但是最近一年多，随着人员逐渐饱和，部门构架和各类设施也已齐全，F公司进入了成熟期，随之而来的就是部分员工出现了疲倦或懈怠的表现，以及一部分员工对于公司的待遇或制度感到不甚满意，进而选择了离职或者失去了工作积极性。',this)" class="modify">段落修改</div></div><div class="para"><div class="duanluo"><span>63</span></div><div class="l"><span style="margin-left:25px"></span><span >虽然大部分外资企业在面临与国内外企业激烈的人才竞争时表现出了较强的竞争力，但同时也有一些类似F公司这样的外企，在华落户时只进行了简单的本土化经营策略， </span><span >而其人力资源制度特别是激励机制大多照搬母公司，虽然这些成型已久的激励机制在企业建立伊始起到了积极的作用，可由于未能够有效克服跨文化及语言等差异， </span><span >加上面临激烈的人才市场竞争，导致一段时间后原有的激励失效，技术人才纷纷流失。 </span><span >如何改变这种状况，采用更有效的激励管理措施，成为了在华外资企业面前的一道亟待解决的课题。 </span></div><div class="modify" align="right" paraseq="62"><span class="btn btn-blue" onclick="submitPart('虽然大部分外资企业在面临与国内外企业激烈的人才竞争时表现出了较强的竞争力，但同时也有一些类似F公司这样的外企，在华落户时只进行了简单的本土化经营策略，而其人力资源制度特别是激励机制大多照搬母公司，虽然这些成型已久的激励机制在企业建立伊始起到了积极的作用，可由于未能够有效克服跨文化及语言等差异，加上面临激烈的人才市场竞争，导致一段时间后原有的激励失效，技术人才纷纷流失。如何改变这种状况，采用更有效的激励管理措施，成为了在华外资企业面前的一道亟待解决的课题。',this)" class="modify">段落修改</div></div><div class="para"><div class="duanluo"><span>64</span></div><div class="l"><span style="margin-left:25px"></span><span >1.2  研究目的及意义 </span></div></div><div class="para"><div class="duanluo"><span>65</span></div><div class="l"><span style="margin-left:25px"></span><span >当今企业的最大竞争，也是最核心的竞争，说到底越来越归于人才的竞争，人力资源也理所当然成为企业所有资源中最宝贵最核心的资源， </span><span >可以说谁拥有了适合企业发展的人才队伍，谁就掌握了企业发展的主动权。 </span></div><div class="modify" align="right" paraseq="64"><span class="btn btn-blue" onclick="submitPart('当今企业的最大竞争，也是最核心的竞争，说到底越来越归于人才的竞争，人力资源也理所当然成为企业所有资源中最宝贵最核心的资源，可以说谁拥有了适合企业发展的人才队伍，谁就掌握了企业发展的主动权。',this)" class="modify">段落修改</div></div><div class="para"><div class="duanluo"><span>66</span></div><div class="l"><span style="margin-left:25px"></span><span >本文通过对F公司在进行技术人才培养和引导员工职业发展时出现的激励管理困境，结合人力资源中的激励管理理论，企业现状和员工特点进行分析， </span><span >找出其现有人才激励思路和策略中的不足，寻找对策和解决方案，力图使F公司人尽其用的同时给员工职业发展带来收益，实现双赢， </span><span >同时对其他有志于追求人才培养的外资及本土IT企业，有一定的借鉴意义。 </span></div><div class="modify" align="right" paraseq="65"><span class="btn btn-blue" onclick="submitPart('本文通过对F公司在进行技术人才培养和引导员工职业发展时出现的激励管理困境，结合人力资源中的激励管理理论，企业现状和员工特点进行分析，找出其现有人才激励思路和策略中的不足，寻找对策和解决方案，力图使F公司人尽其用的同时给员工职业发展带来收益，实现双赢，同时对其他有志于追求人才培养的外资及本土IT企业，有一定的借鉴意义。',this)" class="modify">段落修改</div></div><div class="para"><div class="duanluo"><span>67</span></div><div class="l"><span style="margin-left:25px"></span><span >1.3  研究思路与方法 </span></div></div><div class="para"><div class="duanluo"><span>68</span></div><div class="l"><span style="margin-left:25px"></span><span >本文以F公司技术人才激励管理问题为研究内容，选取了具有代表意义的三个典型案例分别对其进行描述， </span><span >揭示了F公司人才激励管理的现状并折射出背后存在的诸多问题：非经济性薪酬激励的缺失，缺乏公平性的薪资待遇差别，以及十分有限的职业生涯发展激励等。 </span><span >本文通过运用了人力资源管理理论中的激励理论、广义薪酬理论、工作倦怠理论和职业生涯理论等，采用案例研究法、调查问卷法和文献研究法，提出问题并加以分析， </span><span >最终得出相应的对策与解决方案。 </span></div><div class="modify" align="right" paraseq="67"><span class="btn btn-blue" onclick="submitPart('本文以F公司技术人才激励管理问题为研究内容，选取了具有代表意义的三个典型案例分别对其进行描述，揭示了F公司人才激励管理的现状并折射出背后存在的诸多问题：非经济性薪酬激励的缺失，缺乏公平性的薪资待遇差别，以及十分有限的职业生涯发展激励等。本文通过运用了人力资源管理理论中的激励理论、广义薪酬理论、工作倦怠理论和职业生涯理论等，采用案例研究法、调查问卷法和文献研究法，提出问题并加以分析，最终得出相应的对策与解决方案。',this)" class="modify">段落修改</div></div><div class="para"><div class="duanluo"><span>69</span></div><div class="l"><span style="margin-left:25px"></span><span >论文共分为五个部分。 </span><span >第一部分是绪论，包括了本论文论题的提出，进行此项研究分析的意义及论文的框架； </span><span >第二部分首先介绍了F公司的行业背景、企业概况以及员工的基本组成情况，最后对本案例的管理问题进行了描述； </span><span >第三部分对案例进行了深入的探索性分析，案例分析是从理论和实际情况两个维度进行的，并结合了公司现有激励制度得出分析结论； </span><span >第四部分为针对本案例F公司遇到的有关激励的问题提出了对策和建议。 </span><span >论文的最后部分是结论和前景展望。 </span></div><div class="modify" align="right" paraseq="68"><span class="btn btn-blue" onclick="submitPart('论文共分为五个部分。第一部分是绪论，包括了本论文论题的提出，进行此项研究分析的意义及论文的框架；第二部分首先介绍了F公司的行业背景、企业概况以及员工的基本组成情况，最后对本案例的管理问题进行了描述；第三部分对案例进行了深入的探索性分析，案例分析是从理论和实际情况两个维度进行的，并结合了公司现有激励制度得出分析结论；第四部分为针对本案例F公司遇到的有关激励的问题提出了对策和建议。论文的最后部分是结论和前景展望。',this)" class="modify">段落修改</div></div><div class="para"><div class="duanluo"><span>70</span></div><div class="l"><span style="margin-left:25px"></span><span >通过研究认为，本文能够对F公司在人力资源管理体系中的激励管理起到实践指导作用，通过解决企业所面临的问题与困惑， </span><a href="../sentence_detail/135.htm" target="right" class="orange">提高企业人力资源管理能力从而能够有效吸引人才、留住人才和发展人才，提升企业整体实力与核心竞争力，使企业在愈加激烈的市场竞争中立于不败之地。</a></div><div class="modify" align="right" paraseq="69"><span class="btn btn-blue" onclick="submitPart('通过研究认为，本文能够对F公司在人力资源管理体系中的激励管理起到实践指导作用，通过解决企业所面临的问题与困惑，提高企业人力资源管理能力从而能够有效吸引人才、留住人才和发展人才，提升企业整体实力与核心竞争力，使企业在愈加激烈的市场竞争中立于不败之地。',this)" class="modify">段落修改</div></div><div class="para"><div class="duanluo"><span>71</span></div><div class="l"><span style="margin-left:25px"></span><span >2  案例正文 </span></div></div><div class="para"><div class="duanluo"><span>72</span></div><div class="l"><span style="margin-left:25px"></span><span >2.1  行业背景与公司简介 </span></div></div><div class="para"><div class="duanluo"><span>73</span></div><div class="l"><span style="margin-left:25px"></span><span >2.1.1  行业背景 </span></div></div><div class="para"><div class="duanluo"><span>74</span></div><div class="l"><span style="margin-left:25px"></span><span >随着云计算与移动互联网的兴起，全球经济信息化的热潮持续升温，中国的IT业也随着经济发展一同快速成长。 </span><a href="../sentence_detail/140.htm" target="right" class="orange">在未来巨大的市场前景刺激下，为了取得先机，外资巨头先后将其软件研发中心迁入中国，不限于北上广深，</a><span >一些经济发达的准一线或二线城市也已经成为外资青睐的对象。 </span></div><div class="modify" align="right" paraseq="73"><span class="btn btn-blue" onclick="submitPart('随着云计算与移动互联网的兴起，全球经济信息化的热潮持续升温，中国的IT业也随着经济发展一同快速成长。在未来巨大的市场前景刺激下，为了取得先机，外资巨头先后将其软件研发中心迁入中国，不限于北上广深，一些经济发达的准一线或二线城市也已经成为外资青睐的对象。',this)" class="modify">段落修改</div></div><div class="para"><div class="duanluo"><span>75</span></div><div class="l"><span style="margin-left:25px"></span><span >大连作为沿海发达城市之一，近些年IT行业发展速度攀升，吸引了不少外资企业落户，技术人才的竞争也略显白热化。 </span><span >在如今，在华外企已无法仅仅靠品牌吸引到优秀人才，那么如何建立并实行有效的本土化激励管理手段，从而吸引人才、留住人才、发展人才， </span><span >成为了诸多IT外企面临的问题与挑战。 </span></div><div class="modify" align="right" paraseq="74"><span class="btn btn-blue" onclick="submitPart('大连作为沿海发达城市之一，近些年IT行业发展速度攀升，吸引了不少外资企业落户，技术人才的竞争也略显白热化。在如今，在华外企已无法仅仅靠品牌吸引到优秀人才，那么如何建立并实行有效的本土化激励管理手段，从而吸引人才、留住人才、发展人才，成为了诸多IT外企面临的问题与挑战。',this)" class="modify">段落修改</div></div><div class="para"><div class="duanluo"><span>76</span></div><div class="l"><span style="margin-left:25px"></span><span >2.1.2  公司简介 </span></div></div><div class="para"><div class="duanluo"><span>77</span></div><div class="l"><span style="margin-left:25px"></span><a href="../sentence_detail/146.htm" target="right" class="red">美国富达投资公司（Fidelity Investments） 是全球最大的金融服务公司之一，主要为美国及全球客户提供投资管理方面的专业服务。</a><a href="../sentence_detail/147.htm" target="right" class="red">公司成立于1946年，是一家行业领先的专注于投资管理，退休金计划，证券投资组合指导，券商业务，员工福利外包及其他金融产品和服务的专业供应商。</a><a href="../sentence_detail/148.htm" target="right" class="red">其客户包括逾2,300万个人，20,000家大型企业和接近10, 000 家金融顾问与经纪公司。</a><a href="../sentence_detail/149.htm" target="right" class="red">截止2015年6月30日，客户总资产超过5.2万亿美元，包括共计2.07万亿美元的管理资产。</a><span >公司一直致力于让更多的客户可以享受到最专业的金融服务并有效提高生活品质。 </span></div><div class="modify" align="right" paraseq="76"><span class="btn btn-blue" onclick="submitPart('美国富达投资公司（Fidelity Investments） 是全球最大的金融服务公司之一，主要为美国及全球客户提供投资管理方面的专业服务。公司成立于1946年，是一家行业领先的专注于投资管理，退休金计划，证券投资组合指导，券商业务，员工福利外包及其他金融产品和服务的专业供应商。其客户包括逾2,300万个人，20,000家大型企业和接近10, 000 家金融顾问与经纪公司。截止2015年6月30日，客户总资产超过5.2万亿美元，包括共计2.07万亿美元的管理资产。公司一直致力于让更多的客户可以享受到最专业的金融服务并有效提高生活品质。',this)" class="modify">段落修改</div></div><div class="para"><div class="duanluo"><span>78</span></div><div class="l"><span style="margin-left:25px"></span><a href="../sentence_detail/151.htm" target="right" class="orange">富达大连商务服务公司（下文简称F公司）成立于2011年底，现有员工约500人，是美国富达投资公司在中国开设的首家全资子公司，</a><a href="../sentence_detail/152.htm" target="right" class="orange">也是在美国境外成立的继印度的班加罗尔（Bangalore）、清奈（Chennai）、爱尔兰的都柏林（Dublin）和高威（Galway）之后的第五家全球IT研发中心。</a><span >F公司以金融产品的技术开发与创新为主，为其美国总部的各个业务部门提供战略与创新的软件解决方案。 </span></div><div class="modify" align="right" paraseq="77"><span class="btn btn-blue" onclick="submitPart('富达大连商务服务公司（下文简称F公司）成立于2011年底，现有员工约500人，是美国富达投资公司在中国开设的首家全资子公司，也是在美国境外成立的继印度的班加罗尔（Bangalore）、清奈（Chennai）、爱尔兰的都柏林（Dublin）和高威（Galway）之后的第五家全球IT研发中心。F公司以金融产品的技术开发与创新为主，为其美国总部的各个业务部门提供战略与创新的软件解决方案。',this)" class="modify">段落修改</div></div><div class="para"><div class="duanluo"><span>79</span></div><div class="l"><span style="margin-left:25px"></span><span >F公司成立初期仅有近百名员工，其中技术人员多数从IBM和东软等公司挖角而来，经过短暂的公司业务培训后， </span><span >分别服务于产品开发部下属的个人投资部（Personal Investing，简称PI）和企业投资部（Workplace Investing， </span><span >简称WI）两大部门，承担了业务产品的研发和测试工作。 </span><span >随着时间的推进，一个个产品被成功的交付，也逐步获得了美国的认可，这期间员工人数也逐步扩大到了两百余人。 </span><span >2013年初，经过F公司高层领导不懈的努力， </span><a href="../sentence_detail/159.htm" target="right" class="orange">美国总部同意将其核心部门之一的战略投资产品与数据部门（Strategic Investment Product and Data，</a><span >简称SIPD）和企业技术部（Corporate Technology Group，简称CTG）等部门的产品开发业务引入F公司， </span><span >后来又有FI和FCAT等诸多小规模产品开发部门纷纷落户，由此带来的是大规模的人员招聘，到2015年底F公司已经成为了500多名员工的一家中型公司， </span><span >不仅在近五年的时间里完成了数百个业务产品模块的研发与交付工作，各类企业设施和支持部门也几近完备， </span><span >在实力、能力、企业素质等方面都得到了大连地区其他竞争对手的认可，并继续发展壮大。 </span></div><div class="modify" align="right" paraseq="78"><span class="btn btn-blue" onclick="submitPart('F公司成立初期仅有近百名员工，其中技术人员多数从IBM和东软等公司挖角而来，经过短暂的公司业务培训后，分别服务于产品开发部下属的个人投资部（Personal Investing，简称PI）和企业投资部（Workplace Investing，简称WI）两大部门，承担了业务产品的研发和测试工作。随着时间的推进，一个个产品被成功的交付，也逐步获得了美国的认可，这期间员工人数也逐步扩大到了两百余人。2013年初，经过F公司高层领导不懈的努力，美国总部同意将其核心部门之一的战略投资产品与数据部门（Strategic Investment Product and Data，简称SIPD）和企业技术部（Corporate Technology Group，简称CTG）等部门的产品开发业务引入F公司，后来又有FI和FCAT等诸多小规模产品开发部门纷纷落户，由此带来的是大规模的人员招聘，到2015年底F公司已经成为了500多名员工的一家中型公司，不仅在近五年的时间里完成了数百个业务产品模块的研发与交付工作，各类企业设施和支持部门也几近完备，在实力、能力、企业素质等方面都得到了大连地区其他竞争对手的认可，并继续发展壮大。',this)" class="modify">段落修改</div></div><div class="para"><div class="duanluo"><span>80</span></div><div class="l"><span style="margin-left:25px"></span><span >2.1.3  公司人力资源现状 </span></div></div><div class="para"><div class="duanluo"><span>81</span></div><div class="l"><span style="margin-left:25px"></span><span >F公司成立之初的多数员工挖角自IBM、东软等IT企业，随着业务的扩大和企业实力的提升，三四年内从最初的近百人迅速扩张到500余人， </span><span >出色的交付能力和工作表现也赢得了Fidelity美国总部的信任，原来越多的产品开发部门都在大连设立了团队，各个支撑部门也日益完善。 </span></div><div class="modify" align="right" paraseq="80"><span class="btn btn-blue" onclick="submitPart('F公司成立之初的多数员工挖角自IBM、东软等IT企业，随着业务的扩大和企业实力的提升，三四年内从最初的近百人迅速扩张到500余人，出色的交付能力和工作表现也赢得了Fidelity美国总部的信任，原来越多的产品开发部门都在大连设立了团队，各个支撑部门也日益完善。',this)" class="modify">段落修改</div></div><div class="para"><div class="duanluo"><span>82</span></div><div class="l"><span style="margin-left:25px"></span><span >（1）	公司基本组织架构  </span></div></div><div class="para"><div class="duanluo"><span>83</span></div><div class="l"><span style="margin-left:25px"></span><span >目前公司主要分为产品开发部，财务部，人力资源部，行政部，IT支持部门，风险合规部等六个部门。 </span><span >各部门分别设有副总裁或总监一名。 </span><span >其中产品开发部是核心部门， </span><span >主要职责其下又按照业务领域分为个人投资部（PI）、企业投资部（WI）、战略投资产品与数据部（SIPD）、企业技术部（CTG）等多个子部门。 </span><span >每个子部门均再分为研发部门和测试部门，分别设有总监一至两名及数位高级经理或经理带领开发或测试团队。 </span><span >具体组织结构图如图2.1所示： </span></div><div class="modify" align="right" paraseq="82"><span class="btn btn-blue" onclick="submitPart('目前公司主要分为产品开发部，财务部，人力资源部，行政部，IT支持部门，风险合规部等六个部门。各部门分别设有副总裁或总监一名。其中产品开发部是核心部门，主要职责其下又按照业务领域分为个人投资部（PI）、企业投资部（WI）、战略投资产品与数据部（SIPD）、企业技术部（CTG）等多个子部门。每个子部门均再分为研发部门和测试部门，分别设有总监一至两名及数位高级经理或经理带领开发或测试团队。具体组织结构图如图2.1所示：',this)" class="modify">段落修改</div></div><div class="para"><div class="duanluo"><span>84</span></div><div class="l"><span style="margin-left:25px"></span><span >图2.1  企业组织结构图 </span></div></div><div class="para"><div class="duanluo"><span>85</span></div><div class="l"><span style="margin-left:25px"></span><span >Fig 2.1  The corporate organization chart </span></div><div class="modify" align="right" paraseq="84"><span class="btn btn-blue" onclick="submitPart('Fig 2.1  The corporate organization chart',this)" class="modify">段落修改</div></div><div class="para"><div class="duanluo"><span>86</span></div><div class="l"><span style="margin-left:25px"></span><span >（2）	产品开发部人员构成概况 </span></div></div><div class="para"><div class="duanluo"><span>87</span></div><div class="l"><span style="margin-left:25px"></span><span >至2016年1月，F公司目前共有员工502人，其中产品开发部共425人，占公司主体，其余支撑部门共计77人。 </span></div><div class="modify" align="right" paraseq="86"><span class="btn btn-blue" onclick="submitPart('至2016年1月，F公司目前共有员工502人，其中产品开发部共425人，占公司主体，其余支撑部门共计77人。',this)" class="modify">段落修改</div></div><div class="para"><div class="duanluo"><span>88</span></div><div class="l"><span style="margin-left:25px"></span><span >产品开发部以技术人员为主，由开发经理或测试经理进行团队管理。 </span><span >技术人员主要分为软件开发工程师和软件测试工程师两类，又因工作经验年限不同而具备不同的职称等级，0-2年者为助理级（Associate）， </span><span >2-5年为普通级，5-7年为高级（Senior），7-10年为资深级别（Lead），更资深者可以选择管理路线成为经理或者选择纯技术路线成为架构师。 </span><span >通常每年年中进行涨薪和升职，而级别的晋升会带来较大的薪水涨幅。 </span></div><div class="modify" align="right" paraseq="87"><span class="btn btn-blue" onclick="submitPart('产品开发部以技术人员为主，由开发经理或测试经理进行团队管理。技术人员主要分为软件开发工程师和软件测试工程师两类，又因工作经验年限不同而具备不同的职称等级，0-2年者为助理级（Associate），2-5年为普通级，5-7年为高级（Senior），7-10年为资深级别（Lead），更资深者可以选择管理路线成为经理或者选择纯技术路线成为架构师。通常每年年中进行涨薪和升职，而级别的晋升会带来较大的薪水涨幅。',this)" class="modify">段落修改</div></div><div class="para"><div class="duanluo"><span>89</span></div><div class="l"><span style="margin-left:25px"></span><span >本文主要以产品开发部全体员工作为分析对象，以下分别按照职称等级、教育程度及年龄分布对产品开发部员工概况进行列表统计。 </span></div><div class="modify" align="right" paraseq="88"><span class="btn btn-blue" onclick="submitPart('本文主要以产品开发部全体员工作为分析对象，以下分别按照职称等级、教育程度及年龄分布对产品开发部员工概况进行列表统计。',this)" class="modify">段落修改</div></div><div class="para"><div class="duanluo"><span>90</span></div><div class="l"><span style="margin-left:25px"></span><span >①	按职称等级分类如表2.1表述： </span></div></div><div class="para"><div class="duanluo"><span>91</span></div><div class="l"><span style="margin-left:25px"></span><span >表2.1  职称等级统计表 </span></div></div><div class="para"><div class="duanluo"><span>92</span></div><div class="l"><span style="margin-left:25px"></span><span >Tab. 2.1  Allocation of job title </span></div></div><div class="para"><div class="duanluo"><span>93</span></div><div class="l"><span style="margin-left:25px"></span><span >级别	员工数量（人）	占总人数比例（%） </span></div></div><div class="para"><div class="duanluo"><span>94</span></div><div class="l"><span style="margin-left:25px"></span><span >助理工程师	45	10．6 </span></div></div><div class="para"><div class="duanluo"><span>95</span></div><div class="l"><span style="margin-left:25px"></span><span >工程师	122	28．7 </span></div></div><div class="para"><div class="duanluo"><span>96</span></div><div class="l"><span style="margin-left:25px"></span><span >高级工程师	143	33．6 </span></div></div><div class="para"><div class="duanluo"><span>97</span></div><div class="l"><span style="margin-left:25px"></span><span >资深工程师及以上	79	18．6 </span></div></div><div class="para"><div class="duanluo"><span>98</span></div><div class="l"><span style="margin-left:25px"></span><span >开发/测试经理	36	8．5 </span></div></div><div class="para"><div class="duanluo"><span>99</span></div><div class="l"><span style="margin-left:25px"></span><span >合计	425	100．0 </span></div></div><div class="para"><div class="duanluo"><span>100</span></div><div class="l"><span style="margin-left:25px"></span><span >②	按教育程度分类如表2.2表述： </span></div></div><div class="para"><div class="duanluo"><span>101</span></div><div class="l"><span style="margin-left:25px"></span><span >表2.2  教育程度统计表 </span></div></div><div align="center" class="navigation"><a href="paper_1.htm"><span class="btn_gray">首页</span></a><a  href="#"><span class="btn_gray">上一页</span></a><a href="paper_2.htm"><span class="btn_gray">下一页</span></a><a href="paper_5.htm">	<span class="btn_gray">尾页</span></a><span>页码：1/5页</span></div><div class="footer"><div align="center" class="a666" style="font-size:14px;padding-top:50px;padding-bottom:30px;"><div>检测报告由 <a class="nounderline" href="http://www.ptcheck.com" target="_blank">PTcheck</a>文献相似度检测系统生成 </div><div>Copyright © 2007-2016 PTcheck </div></div></div></div></body></html>

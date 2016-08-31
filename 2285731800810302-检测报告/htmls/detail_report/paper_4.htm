@@ -1,0 +1,446 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01//EN"
+"http://www.w3.org/TR/html4/strict.dtd">
+
+<html xmlns="http://www.w3.org/1999/xhtml" lang="en">
+
+	<head>
+		<meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+		<title>PTcheck论文检测报告</title>
+		<link rel="stylesheet" href="../css/base.css" />
+		<style type="text/css">
+		a {
+    color: #0796fe;
+}
+a:hover{
+    color:#0796fe!important;
+}
+			.mainContainer {
+				padding: 20px;
+	
+			}
+			
+			.navigation span {
+				display: inline-block;
+				padding-left: 5px;
+				padding-right: 5px;
+				color: #666;
+			}
+			
+			.btn_gray {
+				border: solid 1px #dddddd;
+				background-color: #eeeeee;
+				border-radius: 5px;
+				cursor: pointer;
+			}
+			
+			.btn_gray:hover,
+			.btn_blue {
+				background-color: #0099ff;
+				border: solid 1px #0099ff;
+				color: #fff!important;
+				border-radius: 5px;
+				cursor: pointer;
+			}
+			.para{
+				padding-top:20px;
+			}
+			
+			.duanluo{
+				padding-left:20px;
+				
+				padding-bottom: 5px;
+			}
+			.duanluo span{
+				display: inline-block;
+				padding-left:5px;
+				padding-right: 5px;
+				border: solid 1px #999;
+				color:#999;
+			}
+			.l{
+				line-height: 20px;
+				padding-bottom: 5px;
+			}
+			.l span{
+				color:#333;
+			}
+			.mymodify{
+				font-size:12px;
+			}
+			.mymodify textarea{
+				width:98%;
+				height:100px;
+				color:#333;
+				clear:both;
+			}
+			textarea{
+				padding:10px;
+				line-height: 20px;
+			}
+		</style>
+		<script type="text/javascript">
+
+        var isstorage=false;
+        var danhao;
+        var result= new Array();
+         function trimStr(str) {
+
+            if ((typeof (str) != "string") || !str) {
+
+                return "";
+
+            }
+
+            return str.replace(/(^\s*)|(\s*$)/g, "");
+
+        }
+          
+        function myclick() {
+            window.parent.parent.ViewMain.window.location.href = "../../htmls/jianchong_.htm";
+        }
+        function submitPart(obj, target) {
+            var parent = target.parentNode;
+            if(parent.getAttribute("data")=="add"){
+              var mynext = parent.nextSibling;
+              parent.setAttribute("data","remove");
+              parent.parentNode.removeChild(mynext);
+            }
+            else{
+            	parent.setAttribute("data","add");
+            	var temphtml = document.createElement("div");
+                temphtml.innerHTML = "<input type=\"hidden\" value=\""+ parent.getAttribute("paraseq") +"\"><div name=\"mymodify\" class=\"mymodify\" >"
+					+"<div class=\"a999\">改重内容（请对本句修改之后，点击“临时保存”，然后进入报告左侧“修改文档”页面中获取修改后的内容）：</div>"
+					+"<div><textarea>"+obj
+					+"</textarea>"
+					+"</div>"
+					+"<div align=\"right\" class=\"a999\" style=\"margin-top:14px;\">（注意：改完请及时到“修改文档”复制到原文）<span class=\"btn-gray btn a333\" onclick=\"mysave(this)\">临时保存</span></div>"
+				+"</div>";
+            	   parent.parentNode.insertBefore(temphtml, null);
+            }
+
+        }
+
+		function myNavigate(){
+		 document.getElementById("a_url").click();
+		}
+       
+        function mysave(target) {
+            var tempsen = trimStr(target.parentNode.previousSibling.lastChild.value.replace(/\"/g,"\\\"").replace(/\'/g,"\\\'"));
+            var paraseq = target.parentNode.parentNode.parentNode.firstChild.value;            
+            var mydiv = target.parentNode.parentNode.parentNode.previousSibling;
+             if (mydiv.nodeName == "#text") {
+                mydiv = mydiv.previousSibling;
+            }
+             
+            mydiv.lastChild.setAttribute("onclick", "submitPart('" + tempsen + "',this)");
+           mydiv.setAttribute("data","remove");
+           if (mydiv.firstChild.innerHTML != "已修改") {
+                var xiugai = document.createElement("span");
+                xiugai.setAttribute("style", "font-size:12px;color:#00AEAE;margin-right:10px;");
+                xiugai.innerHTML = "已修改";
+                mydiv.insertBefore(xiugai, mydiv.lastChild);
+               }
+            
+            var parent = target.parentNode.parentNode.parentNode;
+            parent.parentNode.removeChild(parent);
+            if(!isstorage)
+            {
+            window.parent.parent.parent.myset(paraseq, tempsen);
+            }
+            else
+            {
+            myset(paraseq, tempsen);
+            }
+        }
+        window.onload = function() {
+            danhao = document.getElementById("danhao").value;
+            if (window.localStorage) {
+                isstorage = true;
+            }
+            if (!isstorage) {
+                result = window.parent.parent.parent.modifyPara;
+                
+            }
+            else {
+                var temp = localStorage.getItem(danhao);
+                if (temp) {
+                    result = eval("(" + temp + ")");
+                }
+            }
+            if (result) {
+            	
+                for (var i = 0; i < result.length; i++) {
+                	
+                    //var all = $(":hidden");
+                    var all = getClass("div","modify");
+                   
+                    for (var j = 0; j < all.length; j++) {
+                        if (all[j].getAttribute("paraseq") == result[i].para) {
+                        	
+                            var xiugai = document.createElement("span");
+                            xiugai.setAttribute("style", "font-size:12px;color:#00AEAE;margin-right:10px;");
+                            xiugai.innerHTML = "已修改";
+                            all[j].insertBefore(xiugai, all[j].lastChild);
+                            all[j].lastChild.setAttribute("onclick", "submitPart('" + result[i].text.replace(/\"/g,"\\\"").replace(/\'/g,"\\\'") + "',this)");
+                        }
+                    }
+
+                }
+            }  
+        }
+
+
+        function mydivclick(e,obj) {
+            if (e.target.tagName.toUpperCase() != "INPUT") {
+                obj.lastChild.previousSibling.click();
+            }
+        }
+
+        function getClass(tagname, className) { //tagname指元素，className指class的值
+            var tagname = document.getElementsByTagName(tagname);  //获取指定元素
+            var tagnameAll = [];     //这个数组用于存储所有符合条件的元素
+            for (var i = 0; i < tagname.length; i++) {     //遍历获得的元素
+                if (tagname[i].className == className) {     //如果获得的元素中的class的值等于指定的类名，就赋值给tagnameAll
+                    tagnameAll[tagnameAll.length] = tagname[i];
+                }
+            }
+            return tagnameAll;
+
+        }
+
+       
+        
+        
+         function myset(paraseq, sen) {
+         	
+            var reg = new RegExp("\"", "g")
+            var model = "{\"para\":\"" + paraseq + "\",\"text\": \"" + sen + "\"}";
+            var mo = eval("(" + model + ")");
+            var exist = false;
+            for (var i = 0; i < result.length; i++) {
+                if (mo.para == result[i].para) {
+                    exist = true;
+                    result[i].text = mo.text;
+                }
+            }
+            if (!exist) {
+                result.push(mo);
+            }
+            localStorage.removeItem(danhao);
+            localStorage.setItem(danhao, json_encode(result));
+        }
+        
+        function json_decode(str_json) {
+            // Decodes the JSON representation into a PHP value  
+            //  
+            // version: 906.1806  
+            // discuss at: http://phpjs.org/functions/json_decode  
+            // +      original by: Public Domain (http://www.json.org/json2.js)  
+            // + reimplemented by: Kevin van Zonneveld (http://kevin.vanzonneveld.net)  
+            // + improved by: T.J. Leahy  
+            // *     example 1: json_decode('[\n    "e",\n    {\n    "pluribus": "unum"\n}\n]');  
+            // *     returns 1: ['e', {pluribus: 'unum'}]  
+            /* 
+            http://www.JSON.org/json2.js 
+            2008-11-19 
+            Public Domain. 
+            NO WARRANTY EXPRESSED OR IMPLIED. USE AT YOUR OWN RISK. 
+            See http://www.JSON.org/js.html 
+            */
+
+            var json = this.window.JSON;
+            if (typeof json === 'object' && typeof json.parse === 'function') {
+                return json.parse(str_json);
+            }
+
+            var cx = /[\u0000\u00ad\u0600-\u0604\u070f\u17b4\u17b5\u200c-\u200f\u2028-\u202f\u2060-\u206f\ufeff\ufff0-\uffff]/g;
+            var j;
+            var text = str_json;
+
+            // Parsing happens in four stages. In the first stage, we replace certain  
+            // Unicode characters with escape sequences. JavaScript handles many characters  
+            // incorrectly, either silently deleting them, or treating them as line endings.  
+            cx.lastIndex = 0;
+            if (cx.test(text)) {
+                text = text.replace(cx, function(a) {
+                    return '\\u' +
+            ('0000' + a.charCodeAt(0).toString(16)).slice(-4);
+                });
+            }
+
+            // In the second stage, we run the text against regular expressions that look  
+            // for non-JSON patterns. We are especially concerned with '()' and 'new'  
+            // because they can cause invocation, and '=' because it can cause mutation.  
+            // But just to be safe, we want to reject all unexpected forms.  
+
+            // We split the second stage into 4 regexp operations in order to work around  
+            // crippling inefficiencies in IE's and Safari's regexp engines. First we  
+            // replace the JSON backslash pairs with '@' (a non-JSON character). Second, we  
+            // replace all simple value tokens with ']' characters. Third, we delete all  
+            // open brackets that follow a colon or comma or that begin the text. Finally,  
+            // we look to see that the remaining characters are only whitespace or ']' or  
+            // ',' or ':' or '{' or '}'. If that is so, then the text is safe for eval.  
+            if (/^[\],:{}\s]*$/.
+        test(text.replace(/\\(?:["\\\/bfnrt]|u[0-9a-fA-F]{4})/g, '@').
+            replace(/"[^"\\\n\r]*"|true|false|null|-?\d+(?:\.\d*)?(?:[eE][+\-]?\d+)?/g, ']').
+            replace(/(?:^|:|,)(?:\s*\[)+/g, ''))) {
+
+                // In the third stage we use the eval function to compile the text into a  
+                // JavaScript structure. The '{' operator is subject to a syntactic ambiguity  
+                // in JavaScript: it can begin a block or an object literal. We wrap the text  
+                // in parens to eliminate the ambiguity.  
+
+                j = eval('(' + text + ')');
+
+                return j;
+            }
+
+            // If the text is not JSON parseable, then a SyntaxError is thrown.  
+            throw new SyntaxError('json_decode');
+        }
+
+        function json_encode(mixed_val) {
+            // Returns the JSON representation of a value  
+            //  
+            // version: 906.1806  
+            // discuss at: http://phpjs.org/functions/json_encode  
+            // +      original by: Public Domain (http://www.json.org/json2.js)  
+            // + reimplemented by: Kevin van Zonneveld (http://kevin.vanzonneveld.net)  
+            // + improved by: T.J. Leahy  
+            // *     example 1: json_encode(['e', {pluribus: 'unum'}]);  
+            // *     returns 1: '[\n    "e",\n    {\n    "pluribus": "unum"\n}\n]'  
+            /* 
+            http://www.JSON.org/json2.js 
+            2008-11-19 
+            Public Domain. 
+            NO WARRANTY EXPRESSED OR IMPLIED. USE AT YOUR OWN RISK. 
+            See http://www.JSON.org/js.html 
+            */
+            var json = this.window.JSON;
+            if (typeof json === 'object' && typeof json.stringify === 'function') {
+                return json.stringify(mixed_val);
+            }
+
+            var value = mixed_val;
+
+            var quote = function(string) {
+                var escapable = /[\\\"\u0000-\u001f\u007f-\u009f\u00ad\u0600-\u0604\u070f\u17b4\u17b5\u200c-\u200f\u2028-\u202f\u2060-\u206f\ufeff\ufff0-\uffff]/g;
+                var meta = {    // table of character substitutions  
+                    '\b': '\\b',
+                    '\t': '\\t',
+                    '\n': '\\n',
+                    '\f': '\\f',
+                    '\r': '\\r',
+                    '"': '\\"',
+                    '\\': '\\\\'
+                };
+
+                escapable.lastIndex = 0;
+                return escapable.test(string) ?
+        '"' + string.replace(escapable, function(a) {
+            var c = meta[a];
+            return typeof c === 'string' ? c :
+            '\\u' + ('0000' + a.charCodeAt(0).toString(16)).slice(-4);
+        }) + '"' :
+        '"' + string + '"';
+            };
+
+            var str = function(key, holder) {
+                var gap = '';
+                var indent = '    ';
+                var i = 0;          // The loop counter.  
+                var k = '';          // The member key.  
+                var v = '';          // The member value.  
+                var length = 0;
+                var mind = gap;
+                var partial = [];
+                var value = holder[key];
+
+                // If the value has a toJSON method, call it to obtain a replacement value.  
+                if (value && typeof value === 'object' &&
+            typeof value.toJSON === 'function') {
+                    value = value.toJSON(key);
+                }
+
+                // What happens next depends on the value's type.  
+                switch (typeof value) {
+                    case 'string':
+                        return quote(value);
+
+                    case 'number':
+                        // JSON numbers must be finite. Encode non-finite numbers as null.  
+                        return isFinite(value) ? String(value) : 'null';
+
+                    case 'boolean':
+                    case 'null':
+                        // If the value is a boolean or null, convert it to a string. Note:  
+                        // typeof null does not produce 'null'. The case is included here in  
+                        // the remote chance that this gets fixed someday.  
+
+                        return String(value);
+
+                    case 'object':
+                        // If the type is 'object', we might be dealing with an object or an array or  
+                        // null.  
+                        // Due to a specification blunder in ECMAScript, typeof null is 'object',  
+                        // so watch out for that case.  
+                        if (!value) {
+                            return 'null';
+                        }
+
+                        // Make an array to hold the partial results of stringifying this object value.  
+                        gap += indent;
+                        partial = [];
+
+                        // Is the value an array?  
+                        if (Object.prototype.toString.apply(value) === '[object Array]') {
+                            // The value is an array. Stringify every element. Use null as a placeholder  
+                            // for non-JSON values.  
+
+                            length = value.length;
+                            for (i = 0; i < length; i += 1) {
+                                partial[i] = str(i, value) || 'null';
+                            }
+
+                            // Join all of the elements together, separated with commas, and wrap them in  
+                            // brackets.  
+                            v = partial.length === 0 ? '[]' :
+                    gap ? '[\n' + gap +
+                    partial.join(',\n' + gap) + '\n' +
+                    mind + ']' :
+                    '[' + partial.join(',') + ']';
+                            gap = mind;
+                            return v;
+                        }
+
+                        // Iterate through all of the keys in the object.  
+                        for (k in value) {
+                            if (Object.hasOwnProperty.call(value, k)) {
+                                v = str(k, value);
+                                if (v) {
+                                    partial.push(quote(k) + (gap ? ': ' : ':') + v);
+                                }
+                            }
+                        }
+
+                        // Join all of the member texts together, separated with commas,  
+                        // and wrap them in braces.  
+                        v = partial.length === 0 ? '{}' :
+                gap ? '{\n' + gap + partial.join(',\n' + gap) + '\n' +
+                mind + '}' : '{' + partial.join(',') + '}';
+                        gap = mind;
+                        return v;
+                }
+            };
+
+            // Make a fake root object containing our value under the key of ''.  
+            // Return the result of stringifying the value.  
+            return str('', {
+                '': value
+            });
+        } 
+       
+    </script>
+	</head>
+
+	<body><a href="http://www.ptcheck.com/jack/segment.aspx" target="_blank" id="a_url" style="display:none;" ></a> <input type="hidden" id="danhao" value="2285731800810302" /><div class="mainContainer"><div align="center" class="navigation"><a href="paper_1.htm"><span class="btn_gray">首页</span></a><a  href="paper_3.htm"><span class="btn_gray">上一页</span></a><a href="paper_5.htm"><span class="btn_gray">下一页</span></a><a href="paper_5.htm">	<span class="btn_gray">尾页</span></a><span>页码：4/5页</span></div><div class="zhengwen"><div class="para"><div class="duanluo"><span>304</span></div><div class="l"><span style="margin-left:25px"></span><span >18	对本职工作的内容是否满意	1	2	3	4	5 </span></div></div><div class="para"><div class="duanluo"><span>305</span></div><div class="l"><span style="margin-left:25px"></span><span >19	对本职工作具有价值和意义是否满意	1	2	3	4	5 </span></div></div><div class="para"><div class="duanluo"><span>306</span></div><div class="l"><span style="margin-left:25px"></span><span >20	对本职工作是否具有兴趣	1	2	3	4	5 </span></div></div><div class="para"><div class="duanluo"><span>307</span></div><div class="l"><span style="margin-left:25px"></span><span >21	对工作程度及工作量是否满意	1	2	3	4	5 </span></div></div><div class="para"><div class="duanluo"><span>308</span></div><div class="l"><span style="margin-left:25px"></span><span >22	对休假时间是否满意	1	2	3	4	5 </span></div></div><div class="para"><div class="duanluo"><span>309</span></div><div class="l"><span style="margin-left:25px"></span><span >23	对公司的授权程度和实效性是否满意	1	2	3	4	5 </span></div></div><div class="para"><div class="duanluo"><span>310</span></div><div class="l"><span style="margin-left:25px"></span><span >24	对公司对于员工的信任度是否满意	1	2	3	4	5 </span></div></div><div class="para"><div class="duanluo"><span>311</span></div><div class="l"><span style="margin-left:25px"></span><span >25	对员工工作创新的鼓励与支持是否满意	1	2	3	4	5 </span></div></div><div class="para"><div class="duanluo"><span>312</span></div><div class="l"><span style="margin-left:25px"></span><span >26	对公司为员工提供的自我展现平台是否满意	1	2	3	4	5 </span></div></div><div class="para"><div class="duanluo"><span>313</span></div><div class="l"><span style="margin-left:25px"></span><span >27	对你的管理者完成工作的能力是否满意	1	2	3	4	5 </span></div></div><div class="para"><div class="duanluo"><span>314</span></div><div class="l"><span style="margin-left:25px"></span><span >28	对公司管理者的领导及判断能力是否满意	1	2	3	4	5 </span></div></div><div class="para"><div class="duanluo"><span>315</span></div><div class="l"><span style="margin-left:25px"></span><span >29	对公司管理者的沟通能力与组织协调能力是否满意	1	2	3	4	5 </span></div></div><div class="para"><div class="duanluo"><span>316</span></div><div class="l"><span style="margin-left:25px"></span><span >30	对公司管理者对于员工工作的支持程度是否满意	1	2	3	4	5 </span></div></div><div class="para"><div class="duanluo"><span>317</span></div><div class="l"><span style="margin-left:25px"></span><span >31	对工作环境和工作条件是否满意	1	2	3	4	5 </span></div></div><div class="para"><div class="duanluo"><span>318</span></div><div class="l"><span style="margin-left:25px"></span><span >32	对工作氛围是否满意	1	2	3	4	5 </span></div></div><div class="para"><div class="duanluo"><span>319</span></div><div class="l"><span style="margin-left:25px"></span><span >33	对目前公司的长远规划是否满意	1	2	3	4	5 </span></div></div><div class="para"><div class="duanluo"><span>320</span></div><div class="l"><span style="margin-left:25px"></span><span >34	个人目标与公司目标保持一致	1	2	3	4	5 </span></div></div><div class="para"><div class="duanluo"><span>321</span></div><div class="l"><span style="margin-left:25px"></span><span >35	公司尊重和关心员工	1	2	3	4	5 </span></div></div><div class="para"><div class="duanluo"><span>322</span></div><div class="l"><span style="margin-left:25px"></span><a href="../sentence_detail/696.htm" target="right" class="red">36	公司具有轻松和谐，自由畅通的工作环境和氛围	1	2	3	4	5</a></div></div><div class="para"><div class="duanluo"><span>323</span></div><div class="l"><span style="margin-left:25px"></span><span >37	公司内部员工之间人际关系和谐融洽	1	2	3	4	5 </span></div></div><div class="para"><div class="duanluo"><span>324</span></div><div class="l"><span style="margin-left:25px"></span><span >38	公司内部同事之间相互支持、相互信任	1	2	3	4	5 </span></div></div><div class="para"><div class="duanluo"><span>325</span></div><div class="l"><span style="margin-left:25px"></span><span >39	公司内部门之间相互依存、相互协作	1	2	3	4	5 </span></div></div><div class="para"><div class="duanluo"><span>326</span></div><div class="l"><span style="margin-left:25px"></span><span >40	公司内部员工与管理层之间关系融洽	1	2	3	4	5 </span></div></div><div class="para"><div class="duanluo"><span>327</span></div><div class="l"><span style="margin-left:25px"></span><span >3.3.3  问卷数据分析与结论 </span></div></div><div class="para"><div class="duanluo"><span>328</span></div><div class="l"><span style="margin-left:25px"></span><span >本次问卷调查共在F公司产品开发部中国籍员工150人进行了问卷调查，收集到了139份问卷，除去7份无效问卷，共132份有效问卷。 </span><span > 问卷有效率达88%。统计结果如下所示： </span></div><div class="modify" align="right" paraseq="327"><span class="btn btn-blue" onclick="submitPart('本次问卷调查共在F公司产品开发部中国籍员工150人进行了问卷调查，收集到了139份问卷，除去7份无效问卷，共132份有效问卷。问卷有效率达88%。统计结果如下所示：',this)" class="modify">段落修改</div></div><div class="para"><div class="duanluo"><span>329</span></div><div class="l"><span style="margin-left:25px"></span><a href="../sentence_detail/704.htm" target="right" class="red">（1）	描述性统计分析</a></div></div><div class="para"><div class="duanluo"><span>330</span></div><div class="l"><span style="margin-left:25px"></span><span >本节对样本的人口统计学量表进行描述，包括性别、年龄、婚姻状况、学历、工作年限、工作收入。 </span><span >具体调查分析结果如下：  </span></div><div class="modify" align="right" paraseq="329"><span class="btn btn-blue" onclick="submitPart('本节对样本的人口统计学量表进行描述，包括性别、年龄、婚姻状况、学历、工作年限、工作收入。具体调查分析结果如下：',this)" class="modify">段落修改</div></div><div class="para"><div class="duanluo"><span>331</span></div><div class="l"><span style="margin-left:25px"></span><span >①	按受测者的性别来看，受测者总人数132人，其中男性共计72人，所占比例55%； </span><span >女性共计60人，所占比例45%，如表3.2表述： </span></div><div class="modify" align="right" paraseq="330"><span class="btn btn-blue" onclick="submitPart('①	按受测者的性别来看，受测者总人数132人，其中男性共计72人，所占比例55%；女性共计60人，所占比例45%，如表3.2表述：',this)" class="modify">段落修改</div></div><div class="para"><div class="duanluo"><span>332</span></div><div class="l"><span style="margin-left:25px"></span><span >表3.2  性别比例示意表 </span></div></div><div class="para"><div class="duanluo"><span>333</span></div><div class="l"><span style="margin-left:25px"></span><span >Tab. 3.2  Chart of sex ratio </span></div></div><div class="para"><div class="duanluo"><span>334</span></div><div class="l"><span style="margin-left:25px"></span><span >性别	男性	女性 </span></div></div><div class="para"><div class="duanluo"><span>335</span></div><div class="l"><span style="margin-left:25px"></span><span >占比	55%	45% </span></div></div><div class="para"><div class="duanluo"><span>336</span></div><div class="l"><span style="margin-left:25px"></span><span >②	从受测者的年龄结构上，比例与公司总体员工年龄结构比例相符。 </span><span >可以看出公司的中流砥柱为中青年，主要分布在25—45岁，如表3.3表述： </span></div><div class="modify" align="right" paraseq="335"><span class="btn btn-blue" onclick="submitPart('②	从受测者的年龄结构上，比例与公司总体员工年龄结构比例相符。可以看出公司的中流砥柱为中青年，主要分布在25—45岁，如表3.3表述：',this)" class="modify">段落修改</div></div><div class="para"><div class="duanluo"><span>337</span></div><div class="l"><span style="margin-left:25px"></span><span >表3.3  年龄结构比例示意表 </span></div></div><div class="para"><div class="duanluo"><span>338</span></div><div class="l"><span style="margin-left:25px"></span><span >Tab. 3.3  Chart of age ratio </span></div></div><div class="para"><div class="duanluo"><span>339</span></div><div class="l"><span style="margin-left:25px"></span><span >年龄段	&lt;25	26-30	31-35	36-40	&gt;41 </span></div></div><div class="para"><div class="duanluo"><span>340</span></div><div class="l"><span style="margin-left:25px"></span><span >占比	17	25	34	21	3 </span></div></div><div class="para"><div class="duanluo"><span>341</span></div><div class="l"><span style="margin-left:25px"></span><span >③	按受测者的婚姻状况方面来看，已婚者所占比例为66%，如表3.4表述： </span></div><div class="modify" align="right" paraseq="340"><span class="btn btn-blue" onclick="submitPart('③	按受测者的婚姻状况方面来看，已婚者所占比例为66%，如表3.4表述：',this)" class="modify">段落修改</div></div><div class="para"><div class="duanluo"><span>342</span></div><div class="l"><span style="margin-left:25px"></span><span >表3.4  婚姻状况示意表 </span></div></div><div class="para"><div class="duanluo"><span>343</span></div><div class="l"><span style="margin-left:25px"></span><a href="../sentence_detail/721.htm" target="right" class="orange">Tab. 3.4  Chart of marital status</a></div></div><div class="para"><div class="duanluo"><span>344</span></div><div class="l"><span style="margin-left:25px"></span><span >婚姻状况	未婚	已婚 </span></div></div><div class="para"><div class="duanluo"><span>345</span></div><div class="l"><span style="margin-left:25px"></span><span >占比	34%	66% </span></div></div><div class="para"><div class="duanluo"><span>346</span></div><div class="l"><span style="margin-left:25px"></span><span >④	按受测者的教育背景方面来看，本科所占比例62%；硕士所占比例36%； </span><span >博士与大专各一人，皆占比例1%，如表3.5表述： </span></div><div class="modify" align="right" paraseq="345"><span class="btn btn-blue" onclick="submitPart('④	按受测者的教育背景方面来看，本科所占比例62%；硕士所占比例36%；博士与大专各一人，皆占比例1%，如表3.5表述：',this)" class="modify">段落修改</div></div><div class="para"><div class="duanluo"><span>347</span></div><div class="l"><span style="margin-left:25px"></span><span >表3.5  学历背景示意表 </span></div></div><div class="para"><div class="duanluo"><span>348</span></div><div class="l"><span style="margin-left:25px"></span><span >Tab. </span><span > 3.5  Chart of education background </span></div><div class="modify" align="right" paraseq="347"><span class="btn btn-blue" onclick="submitPart('Tab.3.5  Chart of education background',this)" class="modify">段落修改</div></div><div class="para"><div class="duanluo"><span>349</span></div><div class="l"><span style="margin-left:25px"></span><span >学历状况	大专	本科	研究生	博士及以上 </span></div></div><div class="para"><div class="duanluo"><span>350</span></div><div class="l"><span style="margin-left:25px"></span><span >占比	1%	62%	36%	1% </span></div></div><div class="para"><div class="duanluo"><span>351</span></div><div class="l"><span style="margin-left:25px"></span><a href="../sentence_detail/731.htm" target="right" class="red">⑤	从受测者参加工作年限方面，6至8年所占比例32%；3至5年所占比例 31%；</a><span >9至10年所占比例18%；1至2年所占比例8%；1年以内所占比例4%； </span><span >10年以上所占比例7%，如表3.6表述： </span></div><div class="modify" align="right" paraseq="350"><span class="btn btn-blue" onclick="submitPart('⑤	从受测者参加工作年限方面，6至8年所占比例32%；3至5年所占比例 31%；9至10年所占比例18%；1至2年所占比例8%；1年以内所占比例4%；10年以上所占比例7%，如表3.6表述：',this)" class="modify">段落修改</div></div><div class="para"><div class="duanluo"><span>352</span></div><div class="l"><span style="margin-left:25px"></span><span >表3.6  工作年限示意表 </span></div></div><div class="para"><div class="duanluo"><span>353</span></div><div class="l"><span style="margin-left:25px"></span><a href="../sentence_detail/735.htm" target="right" class="orange">Tab. 3.6  Chart of work experience</a></div></div><div class="para"><div class="duanluo"><span>354</span></div><div class="l"><span style="margin-left:25px"></span><span >工作年限	&lt;1	1-2	3-5	6-8	9-10	&gt;10 </span></div></div><div class="para"><div class="duanluo"><span>355</span></div><div class="l"><span style="margin-left:25px"></span><span >占比	4	8	31	32	18	7 </span></div></div><div class="para"><div class="duanluo"><span>356</span></div><div class="l"><span style="margin-left:25px"></span><a href="../sentence_detail/738.htm" target="right" class="red">⑥	从受测者的薪酬待遇方面来看，月收入8000—10000元者所占比例35%；</a><span > 10000-12000元所占比例24%；5000-8000元所占比例22%； </span><span >12000元以上所占比 例12%；3000-5000元所占比例7%，如表3.7表述： </span></div><div class="modify" align="right" paraseq="355"><span class="btn btn-blue" onclick="submitPart('⑥	从受测者的薪酬待遇方面来看，月收入8000—10000元者所占比例35%；10000-12000元所占比例24%；5000-8000元所占比例22%；12000元以上所占比 例12%；3000-5000元所占比例7%，如表3.7表述：',this)" class="modify">段落修改</div></div><div class="para"><div class="duanluo"><span>357</span></div><div class="l"><span style="margin-left:25px"></span><span >表3.7  月收入状况示意表 </span></div></div><div class="para"><div class="duanluo"><span>358</span></div><div class="l"><span style="margin-left:25px"></span><span >Tab. 3.7  Chart of monthly income </span></div></div><div class="para"><div class="duanluo"><span>359</span></div><div class="l"><span style="margin-left:25px"></span><span >月收入	3000-5000	5000-8000	8000-10000	10000-12000	&gt;12000 </span></div><div class="modify" align="right" paraseq="358"><span class="btn btn-blue" onclick="submitPart('月收入	3000-5000	5000-8000	8000-10000	10000-12000	&gt;12000',this)" class="modify">段落修改</div></div><div class="para"><div class="duanluo"><span>360</span></div><div class="l"><span style="margin-left:25px"></span><span >占比	7%	22%	35%	24%	12% </span></div></div><div class="para"><div class="duanluo"><span>361</span></div><div class="l"><span style="margin-left:25px"></span><span >描述性统计分析是对F公司问卷调查员工的范围及其成员结构的解析， </span><span >从以上分析中可以了解样本的成员结构、年龄、学历、收入等情况都较符合现今外企的在华员工的状况，表明问卷调查的结果是具有代表性的。 </span></div><div class="modify" align="right" paraseq="360"><span class="btn btn-blue" onclick="submitPart('描述性统计分析是对F公司问卷调查员工的范围及其成员结构的解析，从以上分析中可以了解样本的成员结构、年龄、学历、收入等情况都较符合现今外企的在华员工的状况，表明问卷调查的结果是具有代表性的。',this)" class="modify">段落修改</div></div><div class="para"><div class="duanluo"><span>362</span></div><div class="l"><span style="margin-left:25px"></span><span >（2）	工作满意度的均值分析 </span></div></div><div class="para"><div class="duanluo"><span>363</span></div><div class="l"><span style="margin-left:25px"></span><span >在收集调查问卷后，笔者对问卷进行了统计处理，并最终做出了工作满意度均值分析度量表，如表3.8表述： </span></div><div class="modify" align="right" paraseq="362"><span class="btn btn-blue" onclick="submitPart('在收集调查问卷后，笔者对问卷进行了统计处理，并最终做出了工作满意度均值分析度量表，如表3.8表述：',this)" class="modify">段落修改</div></div><div class="para"><div class="duanluo"><span>364</span></div><div class="l"><span style="margin-left:25px"></span><span >表3.8  工作满意度均值分析表 </span></div></div><div class="para"><div class="duanluo"><span>365</span></div><div class="l"><span style="margin-left:25px"></span><span >Tab. </span><span > 3.8  Mean value analysis table of job satisfaction </span></div><div class="modify" align="right" paraseq="364"><span class="btn btn-blue" onclick="submitPart('Tab.3.8  Mean value analysis table of job satisfaction',this)" class="modify">段落修改</div></div><div class="para"><div class="duanluo"><span>366</span></div><div class="l"><span style="margin-left:25px"></span><span >维度	编号	满意度	最大值（非常同意）	最小值（非常不同意）	均值 </span></div></div><div class="para"><div class="duanluo"><span>367</span></div><div class="l"><span style="margin-left:25px"></span><span >培训发展	1	3.81	5	1	3.736 </span></div></div><div class="para"><div class="duanluo"><span>368</span></div><div class="l"><span style="margin-left:25px"></span><span >	2	3.78	5	1	 </span></div></div><div class="para"><div class="duanluo"><span>369</span></div><div class="l"><span style="margin-left:25px"></span><span >	3	3.76	5	1	 </span></div></div><div class="para"><div class="duanluo"><span>370</span></div><div class="l"><span style="margin-left:25px"></span><span >	4	3.67	5	1	 </span></div></div><div class="para"><div class="duanluo"><span>371</span></div><div class="l"><span style="margin-left:25px"></span><span >	5	3.66	5	1	 </span></div></div><div class="para"><div class="duanluo"><span>372</span></div><div class="l"><span style="margin-left:25px"></span><span >内部沟通	6	3.89	5	1	3.784 </span></div></div><div class="para"><div class="duanluo"><span>373</span></div><div class="l"><span style="margin-left:25px"></span><span >	7	3.78	5	1	 </span></div></div><div class="para"><div class="duanluo"><span>374</span></div><div class="l"><span style="margin-left:25px"></span><span >	8	3.72	5	1	 </span></div></div><div class="para"><div class="duanluo"><span>375</span></div><div class="l"><span style="margin-left:25px"></span><span >	9	3.74	5	1	 </span></div></div><div class="para"><div class="duanluo"><span>376</span></div><div class="l"><span style="margin-left:25px"></span><span >	10	3.79	5	1	 </span></div></div><div class="para"><div class="duanluo"><span>377</span></div><div class="l"><span style="margin-left:25px"></span><a href="../sentence_detail/763.htm" target="right" class="red">薪酬福利	11	3.68	5	1	3.695</a></div></div><div class="para"><div class="duanluo"><span>378</span></div><div class="l"><span style="margin-left:25px"></span><span >	12	3.63	5	1	 </span></div></div><div class="para"><div class="duanluo"><span>379</span></div><div class="l"><span style="margin-left:25px"></span><span >	13	3.72	5	1	 </span></div></div><div class="para"><div class="duanluo"><span>380</span></div><div class="l"><span style="margin-left:25px"></span><span >	14	3.75	5	1	 </span></div></div><div class="para"><div class="duanluo"><span>381</span></div><div class="l"><span style="margin-left:25px"></span><span >晋升机制	15	3.64	5	1	3.67 </span></div></div><div class="para"><div class="duanluo"><span>382</span></div><div class="l"><span style="margin-left:25px"></span><span >	16	3.66	5	1	 </span></div></div><div class="para"><div class="duanluo"><span>383</span></div><div class="l"><span style="margin-left:25px"></span><span >	17	3.72	5	1	 </span></div></div><div class="para"><div class="duanluo"><span>384</span></div><div class="l"><span style="margin-left:25px"></span><span >工作吸引力	18	3.69	5	1	3.748 </span></div></div><div class="para"><div class="duanluo"><span>385</span></div><div class="l"><span style="margin-left:25px"></span><span >	19	3.66	5	1	 </span></div></div><div class="para"><div class="duanluo"><span>386</span></div><div class="l"><span style="margin-left:25px"></span><span >	20	3.79	5	1	 </span></div></div><div class="para"><div class="duanluo"><span>387</span></div><div class="l"><span style="margin-left:25px"></span><span >	21	4.01	5	1	 </span></div></div><div class="para"><div class="duanluo"><span>388</span></div><div class="l"><span style="margin-left:25px"></span><span >	22	3.59	5	1	 </span></div></div><div class="para"><div class="duanluo"><span>389</span></div><div class="l"><span style="margin-left:25px"></span><span >授权	23	3.56	5	1	3.622 </span></div></div><div class="para"><div class="duanluo"><span>390</span></div><div class="l"><span style="margin-left:25px"></span><span >	24	3.67	5	1	 </span></div></div><div class="para"><div class="duanluo"><span>391</span></div><div class="l"><span style="margin-left:25px"></span><span >	25	3.60	5	1	 </span></div></div><div class="para"><div class="duanluo"><span>392</span></div><div class="l"><span style="margin-left:25px"></span><span >	26	3.66	5	1	 </span></div></div><div class="para"><div class="duanluo"><span>393</span></div><div class="l"><span style="margin-left:25px"></span><span >管理者能力	27	3.86	5	1	3.817 </span></div></div><div class="para"><div class="duanluo"><span>394</span></div><div class="l"><span style="margin-left:25px"></span><span >	28	3.81	5	1	 </span></div></div><div class="para"><div class="duanluo"><span>395</span></div><div class="l"><span style="margin-left:25px"></span><span >	29	3.76	5	1	 </span></div></div><div class="para"><div class="duanluo"><span>396</span></div><div class="l"><span style="margin-left:25px"></span><span >	30	3.84	5	1	 </span></div></div><div class="para"><div class="duanluo"><span>397</span></div><div class="l"><span style="margin-left:25px"></span><span >组织环境 </span></div></div><div class="para"><div class="duanluo"><span>398</span></div><div class="l"><span style="margin-left:25px"></span><span >能力匹配	31	3.87	5	1	3.85 </span></div></div><div class="para"><div class="duanluo"><span>399</span></div><div class="l"><span style="margin-left:25px"></span><span >	32	3.84	5	1	 </span></div></div><div class="para"><div class="duanluo"><span>400</span></div><div class="l"><span style="margin-left:25px"></span><span >	33	3.84	5	1	 </span></div></div><div class="para"><div class="duanluo"><span>401</span></div><div class="l"><span style="margin-left:25px"></span><span >企业文化	34	3.85	5	1	3.807 </span></div></div><div class="para"><div class="duanluo"><span>402</span></div><div class="l"><span style="margin-left:25px"></span><span >	35	3.76	5	1	 </span></div></div><div class="para"><div class="duanluo"><span>403</span></div><div class="l"><span style="margin-left:25px"></span><span >	36	3.81	5	1	 </span></div></div><div class="para"><div class="duanluo"><span>404</span></div><div class="l"><span style="margin-left:25px"></span><span >团队合作	37	3.78	5	1	3.775 </span></div></div><div align="center" class="navigation"><a href="paper_1.htm"><span class="btn_gray">首页</span></a><a  href="paper_3.htm"><span class="btn_gray">上一页</span></a><a href="paper_5.htm"><span class="btn_gray">下一页</span></a><a href="paper_5.htm">	<span class="btn_gray">尾页</span></a><span>页码：4/5页</span></div><div class="footer"><div align="center" class="a666" style="font-size:14px;padding-top:50px;padding-bottom:30px;"><div>检测报告由 <a class="nounderline" href="http://www.ptcheck.com" target="_blank">PTcheck</a>文献相似度检测系统生成 </div><div>Copyright © 2007-2016 PTcheck </div></div></div></div></body></html>
