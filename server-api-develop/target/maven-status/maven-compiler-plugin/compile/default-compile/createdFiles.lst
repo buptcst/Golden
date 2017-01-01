@@ -1,0 +1,17 @@
+com\mousycoder\server\dto\commodity\CommodityDTO.class
+com\mousycoder\server\controller\CommodityController.class
+com\mousycoder\server\dto\IBaseDTO.class
+com\mousycoder\server\status\ResultStatus.class
+com\mousycoder\server\dto\commodity\CommoditiesDTO.class
+com\mousycoder\server\param\commodity\AddCommodityParam.class
+com\mousycoder\server\service\CommodityService.class
+com\mousycoder\server\url\CommodityUrl.class
+com\mousycoder\server\url\RestUrl.class
+com\mousycoder\server\status\CommodityStatus.class
+com\mousycoder\server\dto\ResultDTO.class
+com\mousycoder\server\swagger\CustomJavaPluginConfig$GtPaths.class
+com\mousycoder\server\swagger\CustomJavaPluginConfig.class
+com\mousycoder\server\constants\ErrorType.class
+com\mousycoder\server\dto\BaseDTO.class
+com\mousycoder\server\controller\ConsoleController.class
+com\mousycoder\server\param\BaseParam.class
