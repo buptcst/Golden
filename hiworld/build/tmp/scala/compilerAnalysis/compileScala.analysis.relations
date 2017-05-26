@@ -1,9 +1,0 @@
-products:
-   C:\scalaproject\hiworld\src\main\scala\Library.scala -> C:\scalaproject\hiworld\build\classes\main\Library.class
-binary dependencies:
-   C:\scalaproject\hiworld\src\main\scala\Library.scala -> C:\Program Files\Java\jdk1.8.0_66\jre\lib\rt.jar
-   C:\scalaproject\hiworld\src\main\scala\Library.scala -> C:\Users\shany\.gradle\caches\modules-2\files-2.1\org.scala-lang\scala-library\2.10.4\9aae4cb1802537d604e03688cab744ff47b31a7d\scala-library-2.10.4.jar
-source dependencies:
-external dependencies:
-class names:
-   C:\scalaproject\hiworld\src\main\scala\Library.scala -> Library
